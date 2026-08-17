@@ -1,5 +1,7 @@
 import HotelForm from '@/components/admin/HotelForm'
 
+export const dynamic = 'force-dynamic'
+
 export default function NewHotelPage() {
   return (
     <>

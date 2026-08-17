@@ -1,5 +1,7 @@
 import DestinationForm from '@/components/admin/DestinationForm'
 
+export const dynamic = 'force-dynamic'
+
 export default function NewDestinationPage() {
   return (
     <>
