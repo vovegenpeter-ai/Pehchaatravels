@@ -1,0 +1,200 @@
+import 'server-only'
+import { prisma } from '@/lib/prisma'
+import { mapTour, mapHotel, mapDestination, mapTestimonial } from '@/lib/mappers'
+
+const tourInclude = { images: true, category: true }
+
+export async function getPublishedTours() {
+  const tours = await prisma.tour.findMany({
+    where: { published: true },
+    include: tourInclude,
+    orderBy: { createdAt: 'desc' },
+  })
+  return tours.map(mapTour)
+}
+
+export async function getFeaturedTours(limit = 6) {
+  const tours = await prisma.tour.findMany({
+    where: { published: true, featured: true },
+    include: tourInclude,
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+  })
+  return tours.map(mapTour)
+}
+
+export async function getPopularTours(limit = 6) {
+  const tours = await prisma.tour.findMany({
+    where: { published: true, popular: true },
+    include: tourInclude,
+    take: limit,
+    orderBy: { rating: 'desc' },
+  })
+  return tours.map(mapTour)
+}
+
+export async function getLatestTours(limit = 6) {
+  const tours = await prisma.tour.findMany({
+    where: { published: true, latest: true },
+    include: tourInclude,
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+  })
+  return tours.map(mapTour)
+}
+
+export async function getTourBySlugOrId(slugOrId: string) {
+  const tour = await prisma.tour.findFirst({
+    where: {
+      OR: [{ slug: slugOrId }, { id: slugOrId }],
+      published: true,
+    },
+    include: tourInclude,
+  })
+  return tour ? mapTour(tour) : null
+}
+
+export async function getAllToursAdmin() {
+  const tours = await prisma.tour.findMany({
+    include: tourInclude,
+    orderBy: { createdAt: 'desc' },
+  })
+  return tours.map(mapTour)
+}
+
+export async function getPublishedHotels() {
+  const hotels = await prisma.hotel.findMany({
+    where: { published: true },
+    include: { images: true, category: true },
+    orderBy: { createdAt: 'desc' },
+  })
+  return hotels.map(mapHotel)
+}
+
+export async function getFeaturedHotels(limit = 6) {
+  const hotels = await prisma.hotel.findMany({
+    where: { published: true, featured: true },
+    include: { images: true, category: true },
+    take: limit,
+    orderBy: { rating: 'desc' },
+  })
+  return hotels.map(mapHotel)
+}
+
+export async function getHotelBySlugOrId(slugOrId: string) {
+  const hotel = await prisma.hotel.findFirst({
+    where: {
+      OR: [{ slug: slugOrId }, { id: slugOrId }],
+      published: true,
+    },
+    include: { images: true, category: true, destinations: { include: { destination: true } } },
+  })
+  return hotel ? mapHotel(hotel) : null
+}
+
+export async function getPublishedDestinations() {
+  const destinations = await prisma.destination.findMany({
+    where: { published: true },
+    orderBy: { name: 'asc' },
+  })
+  return destinations.map(mapDestination)
+}
+
+export async function getFeaturedDestinations(limit = 8) {
+  const destinations = await prisma.destination.findMany({
+    where: { published: true, featured: true },
+    take: limit,
+    orderBy: { name: 'asc' },
+  })
+  return destinations.map(mapDestination)
+}
+
+export async function getDestinationBySlug(slug: string) {
+  // Fetched in separate sequential queries: the local dev database (Prisma
+  // PGlite) crashes on deep nested includes, so we avoid them here.
+  const destination = await prisma.destination.findFirst({
+    where: { OR: [{ slug }, { id: slug }], published: true },
+  })
+  if (!destination) return null
+
+  const tourLinks = await prisma.destinationTour.findMany({
+    where: { destinationId: destination.id },
+    include: { tour: { include: tourInclude } },
+  })
+  const hotelLinks = await prisma.destinationHotel.findMany({
+    where: { destinationId: destination.id },
+    include: { hotel: { include: { images: true, category: true } } },
+  })
+
+  return {
+    ...mapDestination(destination),
+    tours: tourLinks.map((dt) => mapTour(dt.tour)).filter((t) => t.published),
+    hotels: hotelLinks.map((dh) => mapHotel(dh.hotel)).filter((h) => h.published),
+  }
+}
+
+export async function getPublishedCategories(type?: string) {
+  return prisma.category.findMany({
+    where: { published: true, ...(type ? { type: type as never } : {}) },
+    orderBy: { name: 'asc' },
+  })
+}
+
+export async function getFeaturedTestimonials(limit = 6) {
+  const items = await prisma.testimonial.findMany({
+    where: { published: true, featured: true },
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+  })
+  return items.map(mapTestimonial)
+}
+
+// Backward-compatible aliases for existing pages
+export const getTours = getPublishedTours
+export const getHotels = getPublishedHotels
+
+export async function addContactMessage(data: {
+  name: string
+  email: string
+  phone?: string
+  subject: string
+  message: string
+}) {
+  return prisma.contactMessage.create({ data })
+}
+
+export async function addTripRequest(data: {
+  name: string
+  email: string
+  phone: string
+  destination: string
+  travelers: number
+  startDate: string
+  endDate: string
+  budget?: string
+  message?: string
+}) {
+  return prisma.tripRequest.create({
+    data: {
+      ...data,
+      travelers: Number(data.travelers),
+    },
+  })
+}
+
+export async function getUserByEmail(email: string) {
+  return prisma.user.findUnique({ where: { email } })
+}
+
+export async function getUserByPhone(phone: string) {
+  return prisma.user.findUnique({ where: { phone } })
+}
+
+export async function createUser(data: {
+  fullName: string
+  email: string
+  phone: string
+  passwordHash: string
+}) {
+  return prisma.user.create({ data })
+}

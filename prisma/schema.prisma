@@ -1,0 +1,203 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Category {
+  id           String        @id @default(cuid())
+  name         String
+  slug         String        @unique
+  description  String?
+  type         CategoryType
+  published    Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  destinations Destination[]
+  hotels       Hotel[]
+  tours        Tour[]
+}
+
+model Tour {
+  id               String            @id @default(cuid())
+  slug             String            @unique
+  name             String
+  shortDescription String
+  fullDescription  String
+  destination      String
+  location         String?
+  price            Decimal           @db.Decimal(10, 2)
+  duration         String
+  days             Int
+  startDate        String?
+  startTime        String?
+  endDate          String?
+  endTime          String?
+  meetingPoint     String?
+  itinerary        Json?
+  includedServices String[]          @default([])
+  excludedServices String[]          @default([])
+  maxGuests        Int?
+  rating           Float             @default(0)
+  bannerImage      String
+  published        Boolean           @default(true)
+  featured         Boolean           @default(false)
+  popular          Boolean           @default(false)
+  latest           Boolean           @default(false)
+  categoryId       String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  destinations     DestinationTour[]
+  category         Category?         @relation(fields: [categoryId], references: [id])
+  images           TourImage[]
+}
+
+model TourImage {
+  id     String  @id @default(cuid())
+  url    String
+  alt    String?
+  order  Int     @default(0)
+  tourId String
+  tour   Tour    @relation(fields: [tourId], references: [id], onDelete: Cascade)
+}
+
+model Hotel {
+  id            String             @id @default(cuid())
+  slug          String             @unique
+  name          String
+  description   String
+  location      String
+  address       String?
+  pricePerNight Decimal            @db.Decimal(10, 2)
+  rating        Float              @default(0)
+  contactPhone  String?
+  contactEmail  String?
+  checkInTime   String?
+  checkOutTime  String?
+  amenities     String[]           @default([])
+  roomTypes     Json?
+  bannerImage   String
+  published     Boolean            @default(true)
+  featured      Boolean            @default(false)
+  categoryId    String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  destinations  DestinationHotel[]
+  category      Category?          @relation(fields: [categoryId], references: [id])
+  images        HotelImage[]
+}
+
+model HotelImage {
+  id      String  @id @default(cuid())
+  url     String
+  alt     String?
+  order   Int     @default(0)
+  hotelId String
+  hotel   Hotel   @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+}
+
+model Destination {
+  id          String             @id @default(cuid())
+  slug        String             @unique
+  name        String
+  description String
+  location    String
+  image       String
+  published   Boolean            @default(true)
+  featured    Boolean            @default(false)
+  categoryId  String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  category    Category?          @relation(fields: [categoryId], references: [id])
+  hotels      DestinationHotel[]
+  tours       DestinationTour[]
+}
+
+model DestinationTour {
+  destinationId String
+  tourId        String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  tour          Tour        @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@id([destinationId, tourId])
+}
+
+model DestinationHotel {
+  destinationId String
+  hotelId       String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  hotel         Hotel       @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+
+  @@id([destinationId, hotelId])
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  text      String
+  rating    Int      @default(5)
+  avatar    String?
+  published Boolean  @default(true)
+  featured  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String               @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  status    ContactMessageStatus @default(NEW)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+}
+
+enum ContactMessageStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+}
+
+model TripRequest {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  destination String
+  travelers   Int
+  startDate   String
+  endDate     String
+  budget      String?
+  message     String?
+  createdAt   DateTime @default(now())
+}
+
+model User {
+  id           String   @id @default(cuid())
+  fullName     String
+  email        String   @unique
+  phone        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+enum CategoryType {
+  TOUR
+  HOTEL
+  DESTINATION
+  ACTIVITY
+}
