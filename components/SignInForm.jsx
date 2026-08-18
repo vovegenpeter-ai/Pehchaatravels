@@ -63,7 +63,7 @@ export default function SignInForm() {
             <input name="remember" type="checkbox" checked={form.remember} onChange={handleChange} />
             Remember Me
           </label>
-          <a href="#" className="form-link">Forgot Password?</a>
+          <Link href="/forgot-password" className="form-link">Forgot Password?</Link>
         </div>
         <button type="submit" className="btn btn--primary btn--full" disabled={submitting}>
           {submitting ? 'Signing In...' : 'Sign In'}

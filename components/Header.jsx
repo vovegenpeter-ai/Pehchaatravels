@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { PHONE_NUMBER } from '@/lib/initialData'
 
 const navLinks = [
@@ -14,14 +14,84 @@ const navLinks = [
   { href: '/contact', label: 'Contact Us' },
 ]
 
+function getInitials(name) {
+  if (!name) return '?'
+  return name
+    .split(' ')
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+}
+
+function Avatar({ src, name, className }) {
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt={name || 'Avatar'}
+        className={className}
+        style={{ objectFit: 'cover', borderRadius: '50%' }}
+      />
+    )
+  }
+  return <span className={className}>{getInitials(name)}</span>
+}
+
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [user, setUser] = useState(null)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
+  const profileRef = useRef(null)
   const pathname = usePathname()
+  const router = useRouter()
+
+  const fetchUser = () => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => setUser(data?.user || null))
+      .catch(() => setUser(null))
+  }
 
   useEffect(() => {
     setMounted(true)
+    fetchUser()
+  }, [pathname])
+
+  // Re-fetch user when profile is updated from another component
+  useEffect(() => {
+    const handler = () => fetchUser()
+    window.addEventListener('user-profile-updated', handler)
+    return () => window.removeEventListener('user-profile-updated', handler)
   }, [])
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false)
+      }
+    }
+    if (profileOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [profileOpen])
+
+  const handleLogout = async () => {
+    setLoggingOut(true)
+    try {
+      await fetch('/api/auth/me', { method: 'DELETE' })
+      setUser(null)
+      setProfileOpen(false)
+      router.push('/')
+      router.refresh()
+    } catch {
+      setLoggingOut(false)
+    }
+  }
 
   const isActive = (href) => {
     if (!mounted) return false
@@ -68,9 +138,64 @@ export default function Header() {
             <a href={`tel:${PHONE_NUMBER.replace(/\s/g, '')}`} className="btn btn--phone">
               📞 {PHONE_NUMBER}
             </a>
-            <Link href="/sign-in" className="btn btn--primary" onClick={() => setMenuOpen(false)}>
-              Sign In
-            </Link>
+
+            {user ? (
+              <div className="header-profile" ref={profileRef}>
+                <button
+                  type="button"
+                  className="header-profile__trigger"
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  aria-expanded={profileOpen}
+                  aria-label="User menu"
+                >
+                  <Avatar
+                    src={user.avatar}
+                    name={user.fullName}
+                    className="header-profile__avatar"
+                  />
+                  <span className="header-profile__name">{user.fullName}</span>
+                  <span className={`header-profile__chevron ${profileOpen ? 'header-profile__chevron--open' : ''}`}>
+                    ▾
+                  </span>
+                </button>
+
+                {profileOpen && (
+                  <div className="header-profile__dropdown">
+                    <div className="header-profile__dropdown-header">
+                      <Avatar
+                        src={user.avatar}
+                        name={user.fullName}
+                        className="header-profile__avatar header-profile__avatar--lg"
+                      />
+                      <div>
+                        <strong>{user.fullName}</strong>
+                        <span>{user.email}</span>
+                      </div>
+                    </div>
+                    <div className="header-profile__dropdown-divider" />
+                    <Link
+                      href="/profile"
+                      className="header-profile__dropdown-item"
+                      onClick={() => { setProfileOpen(false); setMenuOpen(false) }}
+                    >
+                      👤 My Profile
+                    </Link>
+                    <button
+                      type="button"
+                      className="header-profile__dropdown-item header-profile__dropdown-item--danger"
+                      onClick={handleLogout}
+                      disabled={loggingOut}
+                    >
+                      {loggingOut ? 'Signing out...' : '🚪 Sign Out'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link href="/sign-in" className="btn btn--primary" onClick={() => setMenuOpen(false)}>
+                Sign In
+              </Link>
+            )}
           </div>
         </nav>
       </div>

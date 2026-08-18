@@ -5,13 +5,14 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 const links = [
+  { href: '/admin', label: 'Dashboard' },
   { href: '/admin/categories', label: 'Categories' },
   { href: '/admin/contact-queries', label: 'Contact Queries' },
-  { href: '/admin', label: 'Dashboard' },
   { href: '/admin/destinations', label: 'Destinations' },
   { href: '/admin/home', label: 'Home Page' },
   { href: '/admin/hotels', label: 'Hotels' },
   { href: '/admin/tours', label: 'Tours' },
+  { href: '/admin/users', label: 'Users' },
 ]
 
 export default function AdminNav() {

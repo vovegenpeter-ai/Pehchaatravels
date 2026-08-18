@@ -9,6 +9,7 @@ export default async function AdminDashboard() {
   const hotels = await prisma.hotel.count()
   const destinations = await prisma.destination.count()
   const categories = await prisma.category.count()
+  const users = await prisma.user.count()
   const messages = await prisma.contactMessage.count()
 
   return (
@@ -21,8 +22,9 @@ export default async function AdminDashboard() {
         <div className="admin-stat-card"><strong>{hotels}</strong><span>Hotels</span></div>
         <div className="admin-stat-card"><strong>{destinations}</strong><span>Destinations</span></div>
         <div className="admin-stat-card"><strong>{categories}</strong><span>Categories</span></div>
+        <div className="admin-stat-card"><strong>{users}</strong><span>Users</span></div>
+        <div className="admin-stat-card"><strong>{messages}</strong><span>Messages</span></div>
       </div>
-      <p style={{ color: 'var(--text-light)' }}>Contact messages received: {messages}</p>
     </>
   )
 }

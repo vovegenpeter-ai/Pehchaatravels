@@ -26,12 +26,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (
-    pathname.startsWith('/api/admin') &&
-    !pathname.startsWith('/api/admin/auth/login') &&
-    !pathname.startsWith('/api/admin/auth/logout') &&
-    !pathname.startsWith('/api/admin/auth/me')
-  ) {
+  // Public admin API routes that don't require authentication
+  const publicAdminApis = ['/api/admin/auth/login', '/api/admin/auth/logout', '/api/admin/auth/me']
+  const isPublicAdminApi = publicAdminApis.some((p) => pathname.startsWith(p))
+
+  if (pathname.startsWith('/api/admin') && !isPublicAdminApi) {
     if (!isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
