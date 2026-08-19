@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { fetchJson } from '@/lib/fetchJson'
 
 export default function ForgotPasswordPage() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -21,7 +23,10 @@ export default function ForgotPasswordPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       })
-      setSuccess(data.message || 'If an account with that email exists, a reset link has been sent.')
+      setSuccess((data.message || 'If an account with that email exists, a reset link has been sent.') + ' Redirecting to sign in...')
+      setTimeout(() => {
+        router.push('/sign-in')
+      }, 2500)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -49,9 +54,10 @@ export default function ForgotPasswordPage() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading || Boolean(success)}
               />
             </div>
-            <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
+            <button type="submit" className="btn btn--primary btn--full" disabled={loading || Boolean(success)}>
               {loading ? 'Sending...' : 'Send Reset Link'}
             </button>
           </form>
