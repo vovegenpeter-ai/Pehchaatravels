@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { PHONE_NUMBER } from '@/lib/initialData'
+import { useCart } from '@/lib/CartContext'
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -47,6 +48,7 @@ export default function Header() {
   const profileRef = useRef(null)
   const pathname = usePathname()
   const router = useRouter()
+  const { totalItems, mounted: cartMounted } = useCart()
 
   const fetchUser = () => {
     fetch('/api/auth/me')
@@ -135,6 +137,16 @@ export default function Header() {
           </ul>
 
           <div className="header__actions">
+            <Link href="/cart" className="header-cart" aria-label="Shopping Cart">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              {cartMounted && totalItems > 0 && (
+                <span className="header-cart__badge">{totalItems}</span>
+              )}
+            </Link>
             <a href={`tel:${PHONE_NUMBER.replace(/\s/g, '')}`} className="btn btn--phone">
               📞 {PHONE_NUMBER}
             </a>

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import TourCard from '@/components/TourCard'
+import BookTourButton from '@/components/BookTourButton'
 import { SectionHeader } from '@/components/UI'
 import { getTourBySlugOrId, getPublishedTours } from '@/lib/db'
 import { formatPrice } from '@/lib/tourUtils'
@@ -163,12 +164,7 @@ export default async function TourDetailPage({ params }) {
               <li><strong>Duration</strong><span>{tour.duration || `${tour.days} Days`}</span></li>
               <li><strong>Destination</strong><span>{tour.destination}</span></li>
             </ul>
-            <Link
-              href={`/contact?tour=${encodeURIComponent(tour.name)}`}
-              className="btn btn--primary btn--full"
-            >
-              Book This Tour
-            </Link>
+            <BookTourButton tour={tour} />
             <Link href="/make-my-trip" className="btn btn--outline btn--full">
               Customize Trip
             </Link>

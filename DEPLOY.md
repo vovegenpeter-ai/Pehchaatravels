@@ -53,6 +53,12 @@ Add these in **Project → Settings → Environment Variables** (copy the keys f
 | `ADMIN_EMAIL`     | Admin login email used at seed time                                  |
 | `ADMIN_PASSWORD`  | Admin login password (seed only — change it after first login)       |
 | `ADMIN_NAME`      | Admin display name                                                    |
+| `NEXT_PUBLIC_APP_URL` | Your live site domain (e.g. `https://pehchaantravels.vercel.app`) |
+| `SMTP_HOST`       | SMTP host (e.g. `smtp.gmail.com`)                                  |
+| `SMTP_PORT`       | SMTP port (e.g. `587`)                                             |
+| `SMTP_USER`       | Sender email address (e.g. `your-email@gmail.com`)                 |
+| `SMTP_PASS`       | Gmail App Password or SMTP key                                     |
+| `SMTP_FROM`       | Sender format: `"Pehchaan Travels" <your-email@gmail.com>`         |
 
 Then **Deploy** (or Redeploy) — the build works without a database because
 every data page is dynamic (server-rendered on demand).

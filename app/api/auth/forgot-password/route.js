@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { prisma } from '@/lib/prisma'
+import { sendPasswordResetEmail } from '@/lib/mail'
 
 const TOKEN_EXPIRY_HOURS = 1
 
@@ -12,11 +13,13 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
 
+    const normalizedEmail = email.toLowerCase().trim()
+
     const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
+      where: { email: normalizedEmail },
     })
 
-    // Always return success to prevent email enumeration
+    // Always return generic success to prevent email enumeration
     if (!user) {
       return NextResponse.json({
         message: 'If an account with that email exists, a reset link has been sent.',
@@ -41,14 +44,22 @@ export async function POST(request) {
       },
     })
 
-    // In production, you'd send an email here. For now, log the reset URL.
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://pehchaantravels.vercel.app'}/reset-password?token=${resetToken}`
-    console.log('User password reset URL:', resetUrl)
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://pehchaantravels.vercel.app')
+
+    const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`
+
+    // Send the password reset email via SMTP
+    const mailResult = await sendPasswordResetEmail({
+      to: user.email,
+      name: user.fullName,
+      resetUrl,
+    })
 
     return NextResponse.json({
       message: 'If an account with that email exists, a reset link has been sent.',
-      // In development, include the URL for testing
-      ...(process.env.NODE_ENV !== 'production' && { resetUrl }),
+      ...(process.env.NODE_ENV !== 'production' && { resetUrl, mailResult }),
     })
   } catch (error) {
     console.error('Forgot password error:', error)

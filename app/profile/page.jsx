@@ -64,6 +64,7 @@ export default function ProfilePage() {
   const [success, setSuccess] = useState('')
   const [avatarPreview, setAvatarPreview] = useState(null)
   const [avatarData, setAvatarData] = useState(null) // base64 to save
+  const [avatarRemoved, setAvatarRemoved] = useState(false)
 
   const [form, setForm] = useState({
     fullName: '',
@@ -118,6 +119,7 @@ export default function ProfilePage() {
       const compressed = await compressImage(file)
       setAvatarPreview(compressed)
       setAvatarData(compressed)
+      setAvatarRemoved(false)
       setError('')
     } catch {
       setError('Failed to process image')
@@ -127,6 +129,7 @@ export default function ProfilePage() {
   const handleRemoveAvatar = () => {
     setAvatarPreview(null)
     setAvatarData(null)
+    setAvatarRemoved(true)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
@@ -161,7 +164,7 @@ export default function ProfilePage() {
       // Only send avatar if changed
       if (avatarData) {
         body.avatar = avatarData
-      } else if (avatarPreview === null && user?.avatar) {
+      } else if (avatarRemoved) {
         body.avatar = null // user removed avatar
       }
 
@@ -174,6 +177,7 @@ export default function ProfilePage() {
       setUser(data.user)
       setAvatarPreview(data.user.avatar || null)
       setAvatarData(null)
+      setAvatarRemoved(false)
       setEditing(false)
       setSuccess('Profile updated successfully!')
       setForm((prev) => ({ ...prev, currentPassword: '', newPassword: '', confirmPassword: '' }))
@@ -211,7 +215,7 @@ export default function ProfilePage() {
 
   if (!user) return null
 
-  const displayAvatar = avatarPreview || user.avatar
+  const displayAvatar = avatarRemoved ? null : (avatarPreview || user.avatar)
 
   return (
     <section className="profile-section">
@@ -271,7 +275,7 @@ export default function ProfilePage() {
                       >
                         Upload Photo
                       </button>
-                      {displayAvatar && (
+                      {(displayAvatar || user.avatar) && (
                         <button
                           type="button"
                           className="btn btn--sm"
@@ -370,6 +374,7 @@ export default function ProfilePage() {
                       setSuccess('')
                       setAvatarPreview(user.avatar || null)
                       setAvatarData(null)
+                      setAvatarRemoved(false)
                       setForm((prev) => ({
                         ...prev,
                         fullName: user.fullName,
