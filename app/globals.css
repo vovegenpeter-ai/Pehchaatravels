@@ -1927,14 +1927,19 @@ ul { list-style: none; }
   }
 
   /* Header mobile nav */
-  .header__toggle { display: flex; }
+  .header__toggle { display: flex; order: 3; }
 
   /* Show mobile toolbar with cart + profile */
   .header__mobile-bar {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-left: auto;
+    order: 2;
+  }
+
+  /* Nav after toggle */
+  .header__nav {
+    order: 4;
   }
 
   /* Hide desktop-only cart, profile, and sign-in in the slide-out nav */

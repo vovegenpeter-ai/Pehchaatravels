@@ -114,18 +114,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <button
-          type="button"
-          className="header__toggle"
-          aria-label="Toggle menu"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
-
-        {/* Mobile toolbar — always visible on mobile with cart + profile */}
+        {/* Mobile toolbar — cart + profile, shown on mobile in header bar */}
         <div className="header__mobile-bar">
           <Link href="/cart" className="header-cart" aria-label="Shopping Cart">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
@@ -280,6 +269,17 @@ export default function Header() {
             )}
           </div>
         </nav>
+
+        <button
+          type="button"
+          className="header__toggle"
+          aria-label="Toggle menu"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
       </div>
     </header>
   )
