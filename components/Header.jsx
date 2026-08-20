@@ -115,6 +115,7 @@ export default function Header() {
         </Link>
 
         {/* Mobile toolbar — cart + profile, shown on mobile in header bar */}
+        {/* Mobile toolbar — cart + profile avatar only */}
         <div className="header__mobile-bar">
           <Link href="/cart" className="header-cart" aria-label="Shopping Cart">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
@@ -126,7 +127,7 @@ export default function Header() {
               <span className="header-cart__badge">{totalItems}</span>
             )}
           </Link>
-          {user ? (
+          {user && (
             <div className="header-profile" ref={profileMobileRef}>
               <button
                 type="button"
@@ -173,10 +174,6 @@ export default function Header() {
                 </div>
               )}
             </div>
-          ) : (
-            <Link href="/sign-in" className="btn btn--primary btn--sm" onClick={() => setMenuOpen(false)}>
-              Sign In
-            </Link>
           )}
         </div>
 
@@ -266,6 +263,18 @@ export default function Header() {
               <Link href="/sign-in" className="btn btn--primary header-signin--desktop" onClick={() => setMenuOpen(false)}>
                 Sign In
               </Link>
+            )}
+
+            {/* Sign In / Sign Up shown inside nav on mobile */}
+            {!user && (
+              <div className="header__mobile-signin">
+                <Link href="/sign-in" className="btn btn--primary btn--full" onClick={() => setMenuOpen(false)}>
+                  Sign In
+                </Link>
+                <Link href="/sign-up" className="btn btn--outline btn--full" onClick={() => setMenuOpen(false)}>
+                  Sign Up
+                </Link>
+              </div>
             )}
           </div>
         </nav>

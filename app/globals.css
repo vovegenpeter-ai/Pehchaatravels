@@ -1279,6 +1279,10 @@ ul { list-style: none; }
 .header-signin--desktop {
   /* Desktop-only — hidden on mobile via media query */
 }
+
+.header__mobile-signin {
+  display: none;
+}
 /* ===== Profile Page ===== */
 .profile-section {
   padding: 4rem 0;
@@ -1927,7 +1931,7 @@ ul { list-style: none; }
   }
 
   /* Header mobile nav */
-  .header__toggle { display: flex; order: 3; }
+  .header__toggle { display: flex; order: 3; z-index: 60; position: relative; }
 
   /* Show mobile toolbar with cart + profile */
   .header__mobile-bar {
@@ -1940,6 +1944,16 @@ ul { list-style: none; }
   /* Nav after toggle */
   .header__nav {
     order: 4;
+  }
+
+  /* Mobile sign-in buttons inside nav */
+  .header__mobile-signin {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--beige-dark);
+    margin-top: 0.75rem;
   }
 
   /* Hide desktop-only cart, profile, and sign-in in the slide-out nav */
@@ -1964,9 +1978,14 @@ ul { list-style: none; }
     transition: transform var(--transition);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    pointer-events: none;
+    z-index: 50;
   }
 
-  .header__nav--open { transform: translateX(0); }
+  .header__nav--open {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
 
   .header__links {
     flex-direction: column;
