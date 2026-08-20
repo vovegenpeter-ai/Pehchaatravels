@@ -265,14 +265,11 @@ export default function Header() {
               </Link>
             )}
 
-            {/* Sign In / Sign Up shown inside nav on mobile */}
+            {/* Sign In shown inside nav on mobile */}
             {!user && (
               <div className="header__mobile-signin">
-                <Link href="/sign-in" className="btn btn--primary btn--full" onClick={() => setMenuOpen(false)}>
+                <Link href="/sign-in" className="btn btn--primary" onClick={() => setMenuOpen(false)}>
                   Sign In
-                </Link>
-                <Link href="/sign-up" className="btn btn--outline btn--full" onClick={() => setMenuOpen(false)}>
-                  Sign Up
                 </Link>
               </div>
             )}
