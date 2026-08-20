@@ -55,7 +55,7 @@ export default function CheckoutPage() {
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = async (e) => {
+  const handleOrderSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
@@ -87,6 +87,7 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Failed to submit booking')
       }
 
+      // Order created successfully — clear cart and redirect to success
       clearCart()
       router.push('/checkout/success')
     } catch (err) {
@@ -105,7 +106,7 @@ export default function CheckoutPage() {
         {error && <div className="error-banner">{error}</div>}
 
         <div className="checkout-layout">
-          <form onSubmit={handleSubmit} className="checkout-form">
+          <form onSubmit={handleOrderSubmit} className="checkout-form">
             <div className="checkout-form__card">
               <h3>👤 Contact Information</h3>
               <div className="form-group">
@@ -195,7 +196,7 @@ export default function CheckoutPage() {
               className="btn btn--primary btn--full btn--lg"
               disabled={submitting}
             >
-              {submitting ? 'Submitting Booking...' : `Confirm Booking — PKR ${formatPrice(totalPrice)}`}
+              {submitting ? 'Creating Order...' : `Confirm Booking — PKR ${formatPrice(totalPrice)}`}
             </button>
           </form>
 

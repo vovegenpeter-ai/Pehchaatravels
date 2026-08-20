@@ -236,6 +236,7 @@ model Order {
   status        OrderStatus @default(PENDING)
   createdAt     DateTime    @default(now())
   items         OrderItem[]
+  transactions  Transaction[]
 }
 
 model OrderItem {
@@ -261,4 +262,29 @@ enum CategoryType {
   HOTEL
   DESTINATION
   ACTIVITY
+}
+
+enum TransactionStatus {
+  Pending
+  Successful
+  Failed
+  Refunded
+}
+
+model Transaction {
+  id            String            @id @default(cuid())
+  orderId       String?
+  tracker       String?
+  customerName  String
+  customerEmail String
+  amount        Int               // amount in PKR
+  status        TransactionStatus @default(Pending)
+  method        String
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  // Relations
+  order         Order?            @relation(fields: [orderId], references: [id])
+
+  @@index([tracker])
+  @@index([orderId])
 }

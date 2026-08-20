@@ -24,16 +24,24 @@ function getClient(): PrismaClient {
   return globalForPrisma.prisma
 }
 
-// Lazy singleton: the client is created on the first property access, not at
-// module import time. Next.js evaluates every route module during `next build`
-// ("collecting page data"), so an eager client threw "DATABASE_URL is not
-// configured" and failed the whole build when the env var wasn't set (e.g. on
-// Vercel). Now the build succeeds regardless; the error only surfaces as a
-// clean runtime message on the first actual database call.
-export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
-  get(_target, prop) {
+// Lazy singleton using a Proxy that properly forwards all operations
+// to the real PrismaClient instance.
+export const prisma: PrismaClient = new Proxy<PrismaClient>({} as PrismaClient, {
+  get(_target, prop, _receiver) {
     const client = getClient()
-    const value = Reflect.get(client, prop, client)
-    return typeof value === 'function' ? value.bind(client) : value
+
+    // Handle special symbol properties (e.g. Symbol.toPrimitive)
+    if (typeof prop === 'symbol') {
+      return Reflect.get(client, prop, client)
+    }
+
+    // Access the property directly from the real client
+    const value = client[prop as keyof PrismaClient]
+
+    if (typeof value === 'function') {
+      return value.bind(client)
+    }
+
+    return value
   },
 })

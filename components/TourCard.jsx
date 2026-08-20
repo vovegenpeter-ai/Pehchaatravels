@@ -24,19 +24,16 @@ export default function TourCard({ tour }) {
 
   return (
     <article className="card tour-card">
-      <Link href={getTourPath(tour)} className="card__image">
+      <div className="card__image">
         <img src={tour.image} alt={tour.name} loading="lazy" />
-        <span className="card__badge">{tour.days} Days</span>
-      </Link>
+        <span className="card__badge card__badge--rating">★ {tour.rating}</span>
+      </div>
       <div className="card__body">
-        <div className="card__meta">
-          <span className="card__location">📍 {tour.destination}</span>
-          <span className="card__rating">★ {tour.rating}</span>
-        </div>
+        <span className="card__location">📍 {tour.destination}</span>
         <h3>{tour.name}</h3>
         <p>{tour.description}</p>
         <div className="card__footer">
-          <span className="card__price">From PKR {formatPrice(tour.price)}</span>
+          <span className="card__price">PKR {formatPrice(tour.price)}</span>
           <div className="card__actions">
             <Link href={getTourPath(tour)} className="btn btn--outline btn--sm">
               View

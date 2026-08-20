@@ -19,30 +19,29 @@ export async function POST(request) {
       0
     )
 
-    // Create order with items in a transaction
-    const order = await prisma.$transaction(async (tx) => {
-      const newOrder = await tx.order.create({
-        data: {
-          fullName,
-          email,
-          phone,
-          address: address || null,
-          city: city || null,
-          notes: notes || null,
-          totalAmount,
-          items: {
-            create: items.map((item) => ({
-              tourId: item.id,
-              tourName: item.name,
-              tourImage: item.image || null,
-              price: Number(item.price),
-              quantity: item.quantity,
-            })),
-          },
+    // Create order with items
+    // Note: PrismaPg adapter does not support interactive $transaction(callback).
+    // We use nested create which is atomic at the DB level.
+    const order = await prisma.order.create({
+      data: {
+        fullName,
+        email,
+        phone,
+        address: address || null,
+        city: city || null,
+        notes: notes || null,
+        totalAmount,
+        items: {
+          create: items.map((item) => ({
+            tourId: item.id,
+            tourName: item.name,
+            tourImage: item.image || null,
+            price: Number(item.price),
+            quantity: item.quantity,
+          })),
         },
-        include: { items: true },
-      })
-      return newOrder
+      },
+      include: { items: true },
     })
 
     return NextResponse.json(
