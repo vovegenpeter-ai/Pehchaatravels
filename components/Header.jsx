@@ -45,7 +45,8 @@ export default function Header() {
   const [user, setUser] = useState(null)
   const [profileOpen, setProfileOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
-  const profileRef = useRef(null)
+  const profileDesktopRef = useRef(null)
+  const profileMobileRef = useRef(null)
   const pathname = usePathname()
   const router = useRouter()
   const { totalItems, mounted: cartMounted } = useCart()
@@ -72,7 +73,10 @@ export default function Header() {
   // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e) {
-      if (profileRef.current && !profileRef.current.contains(e.target)) {
+      const desktop = profileDesktopRef.current
+      const mobile = profileMobileRef.current
+      const clickedInside = (desktop && desktop.contains(e.target)) || (mobile && mobile.contains(e.target))
+      if (!clickedInside) {
         setProfileOpen(false)
       }
     }
@@ -121,6 +125,72 @@ export default function Header() {
           <span />
         </button>
 
+        {/* Mobile toolbar — always visible on mobile with cart + profile */}
+        <div className="header__mobile-bar">
+          <Link href="/cart" className="header-cart" aria-label="Shopping Cart">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            {cartMounted && totalItems > 0 && (
+              <span className="header-cart__badge">{totalItems}</span>
+            )}
+          </Link>
+          {user ? (
+            <div className="header-profile" ref={profileMobileRef}>
+              <button
+                type="button"
+                className="header-profile__trigger header-profile__trigger--mobile"
+                onClick={() => setProfileOpen(!profileOpen)}
+                aria-expanded={profileOpen}
+                aria-label="User menu"
+              >
+                <Avatar
+                  src={user.avatar}
+                  name={user.fullName}
+                  className="header-profile__avatar"
+                />
+              </button>
+              {profileOpen && (
+                <div className="header-profile__dropdown header-profile__dropdown--mobile">
+                  <div className="header-profile__dropdown-header">
+                    <Avatar
+                      src={user.avatar}
+                      name={user.fullName}
+                      className="header-profile__avatar header-profile__avatar--lg"
+                    />
+                    <div>
+                      <strong>{user.fullName}</strong>
+                      <span>{user.email}</span>
+                    </div>
+                  </div>
+                  <div className="header-profile__dropdown-divider" />
+                  <Link
+                    href="/profile"
+                    className="header-profile__dropdown-item"
+                    onClick={() => { setProfileOpen(false); setMenuOpen(false) }}
+                  >
+                    👤 My Profile
+                  </Link>
+                  <button
+                    type="button"
+                    className="header-profile__dropdown-item header-profile__dropdown-item--danger"
+                    onClick={handleLogout}
+                    disabled={loggingOut}
+                  >
+                    {loggingOut ? 'Signing out...' : '🚪 Sign Out'}
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link href="/sign-in" className="btn btn--primary btn--sm" onClick={() => setMenuOpen(false)}>
+              Sign In
+            </Link>
+          )}
+        </div>
+
         <nav className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}>
           <ul className="header__links">
             {navLinks.map(({ href, label }) => (
@@ -137,7 +207,7 @@ export default function Header() {
           </ul>
 
           <div className="header__actions">
-            <Link href="/cart" className="header-cart" aria-label="Shopping Cart">
+            <Link href="/cart" className="header-cart header-cart--desktop" aria-label="Shopping Cart">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
@@ -152,7 +222,7 @@ export default function Header() {
             </a>
 
             {user ? (
-              <div className="header-profile" ref={profileRef}>
+              <div className="header-profile header-profile--desktop" ref={profileDesktopRef}>
                 <button
                   type="button"
                   className="header-profile__trigger"
@@ -204,7 +274,7 @@ export default function Header() {
                 )}
               </div>
             ) : (
-              <Link href="/sign-in" className="btn btn--primary" onClick={() => setMenuOpen(false)}>
+              <Link href="/sign-in" className="btn btn--primary header-signin--desktop" onClick={() => setMenuOpen(false)}>
                 Sign In
               </Link>
             )}
