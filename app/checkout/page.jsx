@@ -87,9 +87,9 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Failed to submit booking')
       }
 
-      // Order created successfully — clear cart and redirect to success
+      // Order created successfully — clear cart and redirect to success with order ID
       clearCart()
-      router.push('/checkout/success')
+      router.push(`/checkout/success?orderId=${data.order.id}`)
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.')
     } finally {

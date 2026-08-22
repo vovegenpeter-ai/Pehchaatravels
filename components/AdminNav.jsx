@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 
 const links = [
   { href: '/admin', label: 'Dashboard' },
+  { href: '/admin/bookings', label: 'Bookings' },
   { href: '/admin/categories', label: 'Categories' },
   { href: '/admin/contact-queries', label: 'Contact Queries' },
   { href: '/admin/trip-requests', label: 'Trip Requests' },

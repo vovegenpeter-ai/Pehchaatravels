@@ -12,6 +12,8 @@ export default async function AdminDashboard() {
   const users = await prisma.user.count()
   const messages = await prisma.contactMessage.count()
   const tripRequests = await prisma.tripRequest.count()
+  const totalBookings = await prisma.order.count()
+  const pendingBookings = await prisma.order.count({ where: { status: 'PENDING' } })
 
   return (
     <>
@@ -19,6 +21,8 @@ export default async function AdminDashboard() {
         <h1>Dashboard</h1>
       </div>
       <div className="admin-stats">
+        <div className="admin-stat-card"><strong>{totalBookings}</strong><span>Bookings</span></div>
+        <div className="admin-stat-card"><strong>{pendingBookings}</strong><span>Pending</span></div>
         <div className="admin-stat-card"><strong>{tours}</strong><span>Tours</span></div>
         <div className="admin-stat-card"><strong>{hotels}</strong><span>Hotels</span></div>
         <div className="admin-stat-card"><strong>{destinations}</strong><span>Destinations</span></div>

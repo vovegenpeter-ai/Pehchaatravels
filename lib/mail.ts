@@ -28,6 +28,188 @@ function getMailTransporter() {
   })
 }
 
+interface SendBookingConfirmationParams {
+  to: string
+  name: string
+  orderId: string
+  tourNames: string[]
+  totalAmount: number
+  bookingDate: string
+  phone: string
+}
+
+export async function sendBookingConfirmationEmail({
+  to,
+  name,
+  orderId,
+  tourNames,
+  totalAmount,
+  bookingDate,
+  phone,
+}: SendBookingConfirmationParams) {
+  const transporter = getMailTransporter()
+
+  if (!transporter) {
+    console.warn(
+      '[EMAIL WARNING] SMTP is not configured. Booking confirmation email not sent for order:',
+      orderId
+    )
+    return { sent: false, reason: 'SMTP is not configured in environment variables.' }
+  }
+
+  const fromAddress =
+    process.env.SMTP_FROM ||
+    process.env.EMAIL_FROM ||
+    `"Pehchaan Travels" <${process.env.SMTP_USER}>`
+
+  const tourListHtml = tourNames.map((t) => `<li style="padding: 4px 0; color: #4a5568;">${t}</li>`).join('')
+  const tourListText = tourNames.map((t) => `  • ${t}`).join('\n')
+
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Confirmed</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f5f0e8; color: #2d3748;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="min-width: 100%; background-color: #f5f0e8; padding: 40px 10px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width: 560px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: 0.5px;">
+                ✈ Pehchaan <span style="font-weight: 400; opacity: 0.9;">Travels</span>
+              </h1>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding: 36px 32px;">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <div style="display: inline-block; background-color: #e6fffa; color: #1a4d3e; font-size: 40px; width: 64px; height: 64px; line-height: 64px; border-radius: 50%;">✓</div>
+              </div>
+              <h2 style="margin: 0 0 16px 0; color: #1e3a5f; font-size: 20px; font-weight: 600; text-align: center;">
+                Booking Confirmed!
+              </h2>
+              <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #4a5568;">
+                Hello <strong>${name || 'Traveler'}</strong>,
+              </p>
+              <p style="margin: 0 0 24px 0; font-size: 15px; line-height: 1.6; color: #4a5568;">
+                Thank you for booking with Pehchaan Travels! Your tour booking has been received and is being processed. Here are your booking details:
+              </p>
+              <!-- Booking Details -->
+              <table role="presentation" width="100%" style="background-color: #f7fafc; border-radius: 8px; border: 1px solid #e2e8f0; margin: 0 0 24px 0;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding: 6px 0; font-size: 14px; color: #718096; width: 140px;">Reference ID</td>
+                        <td style="padding: 6px 0; font-size: 14px; color: #1e3a5f; font-weight: 600;">${orderId}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 6px 0; font-size: 14px; color: #718096;">Customer</td>
+                        <td style="padding: 6px 0; font-size: 14px; color: #2d3748;">${name}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 6px 0; font-size: 14px; color: #718096;">Phone</td>
+                        <td style="padding: 6px 0; font-size: 14px; color: #2d3748;">${phone}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 6px 0; font-size: 14px; color: #718096;">Booking Date</td>
+                        <td style="padding: 6px 0; font-size: 14px; color: #2d3748;">${bookingDate}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 6px 0; font-size: 14px; color: #718096; vertical-align: top;">Tours</td>
+                        <td style="padding: 6px 0; font-size: 14px; color: #2d3748;">
+                          <ul style="margin: 0; padding-left: 16px; list-style: none;">${tourListHtml}</ul>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" style="padding: 8px 0;"><hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0;" /></td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 6px 0; font-size: 16px; color: #1e3a5f; font-weight: 700;">Total Amount</td>
+                        <td style="padding: 6px 0; font-size: 16px; color: #1a4d3e; font-weight: 700;">PKR ${totalAmount.toLocaleString()}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #4a5568;">
+                Our team will contact you within <strong>24 hours</strong> to confirm the details and finalize your trip arrangements.
+              </p>
+              <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #718096;">
+                If you have any questions, please reply to this email or call us at the number provided on our website.
+              </p>
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+              <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #a0aec0;">
+                Please save this email as your booking confirmation. Your reference ID is: <strong>${orderId}</strong>
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f7fafc; padding: 20px 32px; text-align: center; border-top: 1px solid #edf2f7;">
+              <p style="margin: 0; font-size: 12px; color: #a0aec0;">
+                © ${new Date().getFullYear()} Pehchaan Travels. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`
+
+  const text = `
+Hello ${name || 'Traveler'},
+
+Thank you for booking with Pehchaan Travels! Your booking has been received.
+
+Booking Details:
+─────────────────
+Reference ID: ${orderId}
+Customer:     ${name}
+Phone:        ${phone}
+Booking Date: ${bookingDate}
+Tours:
+${tourListText}
+─────────────────
+Total Amount: PKR ${totalAmount.toLocaleString()}
+
+Our team will contact you within 24 hours to confirm the details.
+
+Please save this email as your booking confirmation.
+
+— Pehchaan Travels Team
+`
+
+  try {
+    const info = await transporter.sendMail({
+      from: fromAddress,
+      to,
+      subject: `Booking Confirmed — Reference #${orderId} | Pehchaan Travels`,
+      text,
+      html,
+    })
+
+    console.log('[EMAIL SUCCESS] Booking confirmation sent to:', to, 'MessageId:', info.messageId)
+    return { sent: true, messageId: info.messageId }
+  } catch (error) {
+    console.error('[EMAIL ERROR] Failed to send booking confirmation:', error)
+    return {
+      sent: false,
+      reason: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
+
 export async function sendPasswordResetEmail({ to, name, resetUrl }: SendPasswordResetEmailParams) {
   const transporter = getMailTransporter()
 
