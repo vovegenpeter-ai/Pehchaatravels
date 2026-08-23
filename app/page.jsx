@@ -34,7 +34,7 @@ export default async function HomePage() {
       <section className="hero" style={{ backgroundImage: `url(${HERO_IMAGE})` }}>
         <div className="hero__overlay">
           <div className="container hero__content">
-            <h1>Explore Pakistan, Create Unforgettable Memories</h1>
+            <h1>With US! Explore Pakistan, Create Unforgettable Memories</h1>
             <p>
               Discover breathtaking destinations, exciting tours, comfortable stays, and
               unforgettable experiences with Pehchaan Travels.
