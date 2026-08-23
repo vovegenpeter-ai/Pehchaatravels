@@ -151,6 +151,84 @@ ul { list-style: none; }
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
+/* Transparent header overlay on hero */
+.header--transparent {
+  background: transparent;
+  box-shadow: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.header--transparent .logo,
+.header--transparent .header__links a,
+.header--transparent .header__toggle span,
+.header--transparent .header-cart,
+.header--transparent .header-profile__trigger {
+  color: var(--white);
+}
+
+.header--transparent .logo__icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--white);
+}
+
+.header--transparent .header__links a:hover,
+.header--transparent .header__links a.active {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.header--transparent .btn--phone {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--white);
+}
+
+.header--transparent .btn--phone:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.header--transparent .btn--primary {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--white);
+}
+
+.header--transparent .btn--primary:hover {
+  background: var(--orange-hover);
+  border-color: var(--orange-hover);
+}
+
+.header--transparent .header-cart:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--white);
+}
+
+.header--transparent .header-profile__trigger:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.header--transparent .header-profile__trigger {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.header--transparent .header-profile__name {
+  color: var(--white);
+}
+
+.header--transparent .header-profile__chevron {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Top accent gradient line */
+.header__accent {
+  height: 3px;
+  background: linear-gradient(90deg, #1a4d3e 0%, #2d6a4f 30%, #4ade80 60%, #ffffff 100%);
+  width: 100%;
+}
+
 .header__inner {
   display: flex;
   align-items: center;
@@ -2105,6 +2183,15 @@ ul { list-style: none; }
 
   /* Header mobile nav */
   .header__toggle { display: flex; order: 3; z-index: 110; position: relative; pointer-events: auto; }
+
+  .header--transparent {
+    position: sticky;
+    background: var(--dark-bg);
+  }
+
+  .header--transparent .header__toggle span {
+    background: var(--white);
+  }
 
   .header__inner {
     gap: 0;

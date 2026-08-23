@@ -104,8 +104,11 @@ export default function Header() {
     return href === '/' ? pathname === '/' : pathname.startsWith(href)
   }
 
+  const isHome = mounted && pathname === '/'
+
   return (
-    <header className="header">
+    <header className={`header${isHome ? ' header--transparent' : ''}`}>
+      {isHome && <div className="header__accent" />}
       <div className="container header__inner">
         <Link href="/" className="logo" onClick={() => setMenuOpen(false)}>
           <span className="logo__icon">✈</span>
