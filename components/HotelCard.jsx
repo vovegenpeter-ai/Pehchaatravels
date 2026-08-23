@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import { getHotelPath } from '@/lib/pathUtils'
 
-export default function HotelCard({ hotel }) {
+export default function HotelCard({ hotel, dark }) {
   return (
-    <article className="card hotel-card">
+    <article className={`card hotel-card${dark ? ' card--dark' : ''}`}>
       <div className="card__image">
         <img src={hotel.image} alt={hotel.name} loading="lazy" />
         <span className="card__badge card__badge--rating">★ {hotel.rating}</span>

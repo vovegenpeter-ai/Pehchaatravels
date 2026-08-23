@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import { getDestinationPath } from '@/lib/pathUtils'
 
-export default function PlaceCard({ place }) {
+export default function PlaceCard({ place, dark }) {
   return (
-    <article className="card place-card">
+    <article className={`card place-card${dark ? ' card--dark' : ''}`}>
       <div className="card__image">
         <img src={place.image} alt={place.name} loading="lazy" />
       </div>

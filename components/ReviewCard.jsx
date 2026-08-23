@@ -1,6 +1,6 @@
-export default function ReviewCard({ review }) {
+export default function ReviewCard({ review, dark }) {
   return (
-    <article className="review-card">
+    <article className={`review-card${dark ? ' review-card--dark' : ''}`}>
       <div className="review-card__header">
         <img src={review.avatar} alt={review.name} className="review-card__avatar" loading="lazy" />
         <div>
