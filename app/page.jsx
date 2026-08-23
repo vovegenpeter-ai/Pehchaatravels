@@ -115,7 +115,7 @@ export default async function HomePage() {
         <section className="section">
           <div className="container">
             <SectionHeader title="Browse by Category" description="Find tours, hotels, and destinations by category." />
-            <div className="grid grid--4">
+            <div className="grid grid--4 grid--center">
               {categories.map((cat) => (
                 <Link key={cat.id} href={`/tours?category=${cat.slug}`} className="card category-card">
                   <div className="card__body">
