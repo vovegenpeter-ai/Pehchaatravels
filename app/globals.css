@@ -538,6 +538,31 @@ ul { list-style: none; }
 }
 
 /* ===== Footer ===== */
+/* ===== WhatsApp Floating Button ===== */
+.whatsapp-fab {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9999;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #25d366;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+.whatsapp-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+}
+.whatsapp-fab:active {
+  transform: scale(0.95);
+}
+
 .footer {
   background: var(--blue);
   color: rgba(255, 255, 255, 0.85);

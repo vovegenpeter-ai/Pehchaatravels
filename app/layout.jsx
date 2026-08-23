@@ -1,4 +1,5 @@
 import LayoutShell from '@/components/LayoutShell'
+import WhatsAppButton from '@/components/WhatsAppButton'
 import { CartProvider } from '@/lib/CartContext'
 import './globals.css'
 
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
       <body suppressHydrationWarning>
         <CartProvider>
           <LayoutShell>{children}</LayoutShell>
+          <WhatsAppButton />
         </CartProvider>
       </body>
     </html>
