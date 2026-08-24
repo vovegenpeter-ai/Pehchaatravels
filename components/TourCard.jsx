@@ -19,35 +19,64 @@ export default function TourCard({ tour, dark }) {
     setTimeout(() => {
       setAdding(false)
       router.push('/cart')
-    }, 400)
+    }, 300)
   }
 
   const duration = tour.duration || `${tour.days} Days`
+  const rating = tour.rating ? Number(tour.rating).toFixed(1) : '5.0'
+  const displayPrice = tour.currency
+    ? `${tour.currency}${formatPrice(tour.price)}`
+    : tour.price < 5000
+      ? `$${formatPrice(tour.price)}`
+      : `PKR ${formatPrice(tour.price)}`
+
+  const tourUrl = getTourPath(tour)
 
   return (
-    <article className={`card tour-card${dark ? ' card--dark' : ''}`}>
-      <div className="card__image">
-        <img src={tour.image} alt={tour.name} loading="lazy" />
-      </div>
-      <div className="card__body">
-        <div className="card__title-row">
-          <h3>{tour.name}</h3>
-          <span className="card__duration">{duration}</span>
+    <article className={`tour-card-ref ${dark ? 'tour-card-ref--dark' : ''}`}>
+      <Link href={tourUrl} className="tour-card-ref__image-wrap" tabIndex={-1}>
+        <img
+          src={tour.image || tour.bannerImage}
+          alt={tour.name}
+          loading="lazy"
+          className="tour-card-ref__image"
+        />
+        <div className="tour-card-ref__rating">
+          <span className="tour-card-ref__star">★</span>
+          <span>{rating}</span>
         </div>
-        <p>{tour.description}</p>
-        <div className="card__price-row">
-          <span className="card__price-label">From</span>
-          <span className="card__price-value">PKR {formatPrice(tour.price)}</span>
+      </Link>
+
+      <div className="tour-card-ref__body">
+        <div className="tour-card-ref__header">
+          <h3 className="tour-card-ref__title">
+            <Link href={tourUrl}>{tour.name}</Link>
+          </h3>
+          <span className="tour-card-ref__duration">{duration}</span>
         </div>
-        <button
-          type="button"
-          className="btn btn--primary btn--sm btn--full"
-          onClick={handleBookNow}
-          disabled={adding}
-        >
-          {adding ? 'Adding...' : 'Book Now'}
-        </button>
+
+        <p className="tour-card-ref__desc">{tour.description || tour.shortDescription}</p>
+
+        <div className="tour-card-ref__divider" />
+
+        <div className="tour-card-ref__footer">
+          <div className="tour-card-ref__price-wrap">
+            <span className="tour-card-ref__price-label">From</span>
+            <span className="tour-card-ref__price-value">{displayPrice}</span>
+          </div>
+
+          <button
+            type="button"
+            className="tour-card-ref__btn"
+            onClick={handleBookNow}
+            disabled={adding}
+            aria-label={`Book ${tour.name}`}
+          >
+            {adding ? 'Adding...' : 'Book Now'}
+          </button>
+        </div>
       </div>
     </article>
   )
 }
+
