@@ -43,28 +43,31 @@ export default function SignInForm() {
 
   return (
     <div className="auth-card">
-      <h1>Sign In</h1>
-      <p className="auth-card__subtitle">Welcome back! Sign in to continue your journey</p>
+      <h1>Welcome Back</h1>
+      <p className="auth-card__subtitle">Sign in to continue your adventure.</p>
 
       {success && <SuccessMessage message="Signed in successfully! Redirecting..." />}
       {error && <ErrorBanner message={error} />}
 
       <form onSubmit={handleSubmit} className="auth-form">
-        <div className="form-group">
+        <div className="form-group form-group--icon">
           <label htmlFor="emailOrPhone">Email or Phone</label>
-          <input id="emailOrPhone" name="emailOrPhone" type="text" required value={form.emailOrPhone} onChange={handleChange} placeholder="Email or phone number" />
+          <div className="form-input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+            <input id="emailOrPhone" name="emailOrPhone" type="text" required value={form.emailOrPhone} onChange={handleChange} placeholder="Enter your email or phone" />
+          </div>
         </div>
-        <div className="form-group">
+        <div className="form-group form-group--icon">
           <label htmlFor="password">Password</label>
-          <input id="password" name="password" type="password" required value={form.password} onChange={handleChange} placeholder="Enter your password" />
+          <div className="form-input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+            <input id="password" name="password" type="password" required value={form.password} onChange={handleChange} placeholder="Enter your password" />
+          </div>
         </div>
-        <div className="form-row">
-          <label className="checkbox-label">
-            <input name="remember" type="checkbox" checked={form.remember} onChange={handleChange} />
-            Remember Me
-          </label>
-          <Link href="/forgot-password" className="form-link">Forgot Password?</Link>
-        </div>
+        <label className="checkbox-label">
+          <input name="remember" type="checkbox" checked={form.remember} onChange={handleChange} />
+          Remember Me
+        </label>
         <button type="submit" className="btn btn--primary btn--full" disabled={submitting}>
           {submitting ? 'Signing In...' : 'Sign In'}
         </button>
