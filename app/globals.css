@@ -908,27 +908,36 @@ ul { list-style: none; }
 }
 
 /* ===== Auth ===== */
-.auth-section {
-  padding: 4rem 0;
-  background: var(--beige);
-  min-height: calc(100vh - 72px);
+/* Full-page background auth */
+.auth-hero {
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
   display: flex;
   align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.auth-hero__overlay {
+  width: 100%;
+  max-width: 480px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  padding: 2.5rem;
 }
 
 .auth-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 2.5rem;
-  box-shadow: var(--shadow-lg);
-  max-width: 480px;
-  margin: 0 auto;
   width: 100%;
 }
 
 .auth-card h1 {
   font-size: 1.75rem;
-  color: var(--green);
+  color: #003527;
   margin-bottom: 0.5rem;
 }
 
@@ -948,6 +957,15 @@ ul { list-style: none; }
 .auth-card__footer a {
   color: var(--green);
   font-weight: 600;
+}
+
+/* Legacy auth-section (used by other pages) */
+.auth-section {
+  padding: 4rem 0;
+  background: var(--beige);
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
 }
 
 /* ===== Forms ===== */
@@ -2397,7 +2415,9 @@ ul { list-style: none; }
   .checkout-success__actions .btn { width: 100%; }
 
   /* Auth */
-  .auth-card { padding: 1.75rem; }
+  .auth-hero { padding: 1rem; }
+  .auth-hero__overlay { padding: 1.75rem; }
+  .auth-card { padding: 0; }
   .auth-section { padding: 2rem 0; }
 
   /* Profile */
