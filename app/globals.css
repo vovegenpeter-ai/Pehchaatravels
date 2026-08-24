@@ -259,15 +259,21 @@ ul { list-style: none; }
 .hero__overlay {
   width: 100%;
   min-height: 85vh;
-  background: linear-gradient(180deg, rgba(17, 24, 39, 0.55) 0%, rgba(17, 24, 39, 0.75) 100%);
+  background: linear-gradient(180deg, rgba(26, 46, 67, 0.65) 0%, rgba(26, 46, 67, 0.78) 100%);
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .hero__content {
   max-width: 720px;
   color: var(--white);
   padding: 4rem 0;
+}
+
+.hero__content--center {
+  text-align: center;
+  margin: 0 auto;
 }
 
 .hero__content h1 {
@@ -288,6 +294,34 @@ ul { list-style: none; }
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+}
+
+.hero__actions--center {
+  justify-content: center;
+}
+
+/* White button */
+.btn--white {
+  background: var(--white);
+  color: #1a2e43;
+  border: 2px solid var(--white);
+  font-weight: 600;
+}
+.btn--white:hover {
+  background: transparent;
+  color: var(--white);
+}
+
+/* Outline white button */
+.btn--outline-white {
+  background: transparent;
+  color: var(--white);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+}
+.btn--outline-white:hover {
+  background: var(--white);
+  color: #1a2e43;
+  border-color: var(--white);
 }
 
 /* ===== Page Hero ===== */
