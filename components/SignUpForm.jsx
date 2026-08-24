@@ -62,8 +62,8 @@ export default function SignUpForm() {
 
   return (
     <div className="auth-card">
-      <h1>Create Account</h1>
-      <p className="auth-card__subtitle">Join Pehchaan Travels and start exploring Pakistan</p>
+      <h1>Create Your Account</h1>
+      <p className="auth-card__subtitle">Join Pehchaan Travels for your next adventure.</p>
 
       {success && <SuccessMessage message="Account created successfully! Redirecting to home..." />}
       {error && <ErrorBanner message={error} />}
