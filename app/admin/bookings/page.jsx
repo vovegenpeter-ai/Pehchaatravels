@@ -355,23 +355,24 @@ function BookingRow({ booking, expanded, onToggle, onStatusChange, formatDate })
               </div>
             )}
 
-            <div className="cq-detail__actions" style={{ marginTop: '16px' }}>
+            <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
               <a
                 href={`mailto:${booking.email}?subject=Your booking — Reference #${shortId} — Pehchaan Travels&body=Hi ${booking.fullName},%0A%0AThank you for booking with Pehchaan Travels. Your reference ID is ${booking.id}.%0A%0AOur team will contact you shortly.%0A%0ABest regards,%0APehchaan Travels`}
                 className="btn btn--primary btn--sm"
                 target="_blank"
                 rel="noopener noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0' }}
               >
-                ✉ Email Customer
+                Email Customer
               </a>
               <a
                 href={`https://wa.me/${booking.phone?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${booking.fullName},\n\nThank you for booking with Pehchaan Travels! Your reference ID is ${shortId}.\n\nBest regards,\nPehchaan Travels`)}`}
                 className="btn btn--sm"
-                style={{ backgroundColor: '#25d366', color: '#fff' }}
+                style={{ backgroundColor: '#25d366', color: '#fff', display: 'inline-flex', alignItems: 'center', gap: '0' }}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                💬 WhatsApp
+                WhatsApp
               </a>
             </div>
           </td>
