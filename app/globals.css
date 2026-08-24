@@ -128,7 +128,7 @@ ul { list-style: none; }
   flex-shrink: 0;
 }
 .logo__img {
-  height: 40px;
+  height: 28px;
   width: auto;
   display: block;
 }
@@ -2499,7 +2499,7 @@ ul { list-style: none; }
     top: 60px;
   }
 
-  .logo__img { height: 32px; }
+  .logo__img { height: 24px; }
 
   .hero { min-height: 50vh; }
   .hero__overlay { min-height: 50vh; }
