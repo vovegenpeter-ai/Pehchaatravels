@@ -35,14 +35,14 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
             className={`places-hotels-tab ${activeTab === 'places' ? 'places-hotels-tab--active' : ''}`}
             onClick={() => setActiveTab('places')}
           >
-            🏔️ Popular Places
+            Popular Places
           </button>
           <button
             type="button"
             className={`places-hotels-tab ${activeTab === 'hotels' ? 'places-hotels-tab--active' : ''}`}
             onClick={() => setActiveTab('hotels')}
           >
-            🏨 Popular Hotels
+            Popular Hotels
           </button>
         </div>
 
