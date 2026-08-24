@@ -34,16 +34,12 @@ export default async function HomePage() {
       {/* Hero Section */}
       <section className="hero" style={{ backgroundImage: `url(${HERO_IMAGE})` }}>
         <div className="hero__overlay">
-          <div className="container hero__content hero__content--center">
+          <div className="container hero__content">
             <h1>Explore Pakistan, Create Unforgettable Memories</h1>
             <p>
-              Discover the majestic peaks, vibrant cultures, and breathtaking landscapes of
+              Discover the majestic peaks, vibrant culture, and breathtaking landscapes of
               Northern Pakistan with our expertly curated tours.
             </p>
-            <div className="hero__actions hero__actions--center">
-              <Link href="/tours" className="btn btn--white btn--lg">Explore Tours</Link>
-              <Link href="/make-my-trip" className="btn btn--outline-white btn--lg">Make My Trip</Link>
-            </div>
           </div>
         </div>
       </section>
