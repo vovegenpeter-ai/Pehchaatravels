@@ -111,10 +111,7 @@ export default function Header() {
       {isHome && <div className="header__accent" />}
       <div className="container header__inner">
         <Link href="/" className="logo" onClick={() => setMenuOpen(false)}>
-          <span className="logo__icon">✈</span>
-          <span className="logo__text">
-            Pehchaan <strong>Travels</strong>
-          </span>
+          <img src="/logo.png" alt="Pehchaan Travels" className="logo__img" />
         </Link>
 
         {/* Mobile toolbar — cart + profile, shown on mobile in header bar */}
