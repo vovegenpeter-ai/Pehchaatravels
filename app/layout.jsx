@@ -1,5 +1,5 @@
 import LayoutShell from '@/components/LayoutShell'
-import WhatsAppButton from '@/components/WhatsAppButton'
+import ConditionalWhatsApp from '@/components/ConditionalWhatsApp'
 import SmoothScroll from '@/components/SmoothScroll'
 import { CartProvider } from '@/lib/CartContext'
 import './globals.css'
@@ -36,7 +36,7 @@ export default function RootLayout({ children }) {
         <SmoothScroll>
           <CartProvider>
             <LayoutShell>{children}</LayoutShell>
-            <WhatsAppButton />
+            <ConditionalWhatsApp />
           </CartProvider>
         </SmoothScroll>
       </body>
