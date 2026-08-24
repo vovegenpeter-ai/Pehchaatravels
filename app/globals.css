@@ -605,12 +605,276 @@ ul { list-style: none; }
   box-shadow: 0 4px 12px rgba(6, 78, 59, 0.25);
 }
 
-.tour-card-ref__btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+/* 3. Popular Places & Hotels Section */
+.places-hotels-section {
+  padding: 4.5rem 0 3.5rem;
+  background-color: #ffffff;
 }
 
-/* 3. Make Your Own Trip Promotional Banner Section */
+.places-hotels-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.places-hotels-header__text {
+  max-width: 650px;
+}
+
+.places-hotels-header__title {
+  font-size: clamp(1.85rem, 3.5vw, 2.35rem);
+  font-weight: 800;
+  color: #064e3b;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
+  line-height: 1.2;
+}
+
+.places-hotels-header__subtitle {
+  font-size: 1.05rem;
+  color: #4b5563;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.places-hotels-header__link {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #064e3b;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  padding: 0.35rem 0;
+}
+
+.places-hotels-header__link:hover {
+  color: #047857;
+  transform: translateX(4px);
+}
+
+/* Tab Toggle Controls */
+.places-hotels-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2.25rem;
+  background: #f1f5f9;
+  padding: 0.35rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.places-hotels-tab {
+  background: transparent;
+  border: none;
+  padding: 0.6rem 1.35rem;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.places-hotels-tab:hover {
+  color: #064e3b;
+}
+
+.places-hotels-tab--active {
+  background: #064e3b;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(6, 78, 59, 0.25);
+}
+
+/* 4 Places / Hotels Grid */
+.places-hotels-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+/* Place / Hotel Card */
+.ph-card {
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ph-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+}
+
+.ph-card__image-wrap {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 190px;
+  overflow: hidden;
+  background-color: #f1f5f9;
+}
+
+.ph-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.ph-card:hover .ph-card__image {
+  transform: scale(1.05);
+}
+
+.ph-card__rating {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+  user-select: none;
+}
+
+.ph-card__star {
+  color: #f59e0b;
+  font-size: 0.8rem;
+}
+
+.ph-card__body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.ph-card__location {
+  font-size: 0.78rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
+.ph-card__title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #064e3b;
+  line-height: 1.3;
+  margin: 0 0 0.5rem 0;
+}
+
+.ph-card__title a {
+  color: #064e3b;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.ph-card__title a:hover {
+  color: #047857;
+}
+
+.ph-card__desc {
+  color: #4b5563;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-bottom: 1.15rem;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ph-card__divider {
+  height: 1px;
+  background-color: #f1f5f9;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.ph-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.ph-card__footer--hotel {
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.ph-card__price-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.ph-card__price-label {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.ph-card__price-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.1;
+}
+
+.ph-card__btn {
+  background-color: #064e3b;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 0.5rem 1.15rem;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.ph-card__footer--hotel .ph-card__btn {
+  width: auto;
+}
+
+.ph-card__btn:hover {
+  background-color: #043627;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(6, 78, 59, 0.25);
+}
+
+/* 4. Make Your Own Trip Promotional Banner Section */
 .custom-trip-section {
   padding: 1.5rem 0 5rem;
   background-color: #ffffff;
@@ -676,6 +940,11 @@ ul { list-style: none; }
     grid-template-columns: repeat(2, 1fr);
     gap: 1.75rem;
   }
+
+  .places-hotels-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
   
   .custom-trip-banner__overlay {
     padding: 3rem 2.5rem;
@@ -684,7 +953,7 @@ ul { list-style: none; }
 
 @media (max-width: 768px) {
   .best-tours-section {
-    padding: 3.5rem 0 2.5rem;
+    padding: 3.5rem 0 2rem;
   }
 
   .best-tours-header {
@@ -698,6 +967,35 @@ ul { list-style: none; }
 
   .tour-card-ref__image-wrap {
     height: 210px;
+  }
+
+  .places-hotels-section {
+    padding: 3rem 0 2rem;
+  }
+
+  .places-hotels-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .places-hotels-tabs {
+    width: 100%;
+    display: flex;
+  }
+
+  .places-hotels-tab {
+    flex: 1;
+    justify-content: center;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .places-hotels-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .ph-card__image-wrap {
+    height: 180px;
   }
 
   .custom-trip-section {

@@ -1,12 +1,16 @@
 import Link from 'next/link'
 import TourCard from '@/components/TourCard'
-import { getFeaturedTours } from '@/lib/db'
-import { HERO_IMAGE, TRIP_IMAGE, defaultTours } from '@/lib/initialData'
+import PlacesAndHotelsSection from '@/components/PlacesAndHotelsSection'
+import { getFeaturedTours, getFeaturedDestinations, getFeaturedHotels } from '@/lib/db'
+import { HERO_IMAGE, TRIP_IMAGE, defaultTours, popularPlaces, defaultHotels } from '@/lib/initialData'
 
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
   let tours = []
+  let places = []
+  let hotels = []
+
   try {
     const dbTours = await getFeaturedTours(3)
     if (dbTours && dbTours.length >= 3) {
@@ -16,6 +20,28 @@ export default async function HomePage() {
     }
   } catch {
     tours = defaultTours.slice(0, 3)
+  }
+
+  try {
+    const dbPlaces = await getFeaturedDestinations(4)
+    if (dbPlaces && dbPlaces.length >= 4) {
+      places = dbPlaces.slice(0, 4)
+    } else {
+      places = popularPlaces.slice(0, 4)
+    }
+  } catch {
+    places = popularPlaces.slice(0, 4)
+  }
+
+  try {
+    const dbHotels = await getFeaturedHotels(4)
+    if (dbHotels && dbHotels.length >= 4) {
+      hotels = dbHotels.slice(0, 4)
+    } else {
+      hotels = defaultHotels.slice(0, 4)
+    }
+  } catch {
+    hotels = defaultHotels.slice(0, 4)
   }
 
   return (
@@ -65,7 +91,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 3. Make Your Own Trip Promotional Banner */}
+      {/* 3. Popular Places & Hotels Section */}
+      <PlacesAndHotelsSection places={places} hotels={hotels} />
+
+      {/* 4. Make Your Own Trip Promotional Banner */}
       <section className="custom-trip-section">
         <div className="container">
           <div
