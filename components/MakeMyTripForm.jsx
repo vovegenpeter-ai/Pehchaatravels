@@ -55,17 +55,17 @@ export default function MakeMyTripForm() {
         <div className="form-row-2">
           <div className="form-group">
             <label htmlFor="name">Full Name</label>
-            <input id="name" name="name" required value={form.name} onChange={handleChange} />
+            <input id="name" name="name" required value={form.name} onChange={handleChange} placeholder="Enter your full name" />
           </div>
           <div className="form-group">
             <label htmlFor="email">Email</label>
-            <input id="email" name="email" type="email" required value={form.email} onChange={handleChange} />
+            <input id="email" name="email" type="email" required value={form.email} onChange={handleChange} placeholder="Enter your email address" />
           </div>
         </div>
         <div className="form-row-2">
           <div className="form-group">
             <label htmlFor="phone">Phone Number</label>
-            <input id="phone" name="phone" type="tel" required value={form.phone} onChange={handleChange} />
+            <input id="phone" name="phone" type="tel" required value={form.phone} onChange={handleChange} placeholder="Enter your phone number" />
           </div>
           <div className="form-group">
             <label htmlFor="destination">Preferred Destination</label>
@@ -75,7 +75,7 @@ export default function MakeMyTripForm() {
         <div className="form-row-2">
           <div className="form-group">
             <label htmlFor="travelers">Number of Travelers</label>
-            <input id="travelers" name="travelers" type="number" min="1" required value={form.travelers} onChange={handleChange} />
+            <input id="travelers" name="travelers" type="number" min="1" required value={form.travelers} onChange={handleChange} placeholder="Enter number of travelers" />
           </div>
           <div className="form-group">
             <label htmlFor="budget">Estimated Budget (PKR)</label>
