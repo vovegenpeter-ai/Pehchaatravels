@@ -5,6 +5,8 @@ import BookTourButton from '@/components/BookTourButton'
 import { SectionHeader } from '@/components/UI'
 import { getTourBySlugOrId, getPublishedTours } from '@/lib/db'
 import { formatPrice } from '@/lib/tourUtils'
+import ReviewsList from '@/components/ReviewsList'
+import WriteReviewButton from '@/components/WriteReviewButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -172,7 +174,23 @@ export default async function TourDetailPage({ params }) {
         </aside>
       </div>
 
-      {/* 5. Related Tours */}
+      {/* 5. Reviews Section */}
+      <section className="section" style={{ background: '#fff' }}>
+        <div className="container">
+          <SectionHeader
+            title="Customer Reviews"
+            description="See what our travelers have to say"
+          />
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <ReviewsList tourId={tour.id} />
+            <div style={{ marginTop: '2rem' }}>
+              <WriteReviewButton tourId={tour.id} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. Related Tours */}
       {relatedTours.length > 0 && (
         <section className="section section--beige">
           <div className="container">

@@ -75,6 +75,7 @@ model Tour {
   destinations     DestinationTour[]
   category         Category?         @relation(fields: [categoryId], references: [id])
   images           TourImage[]
+  reviews          Review[]
 }
 
 model TourImage {
@@ -219,6 +220,7 @@ model User {
   avatar          String?
   createdAt       DateTime              @default(now())
   resetTokens     UserPasswordResetToken[]
+  reviews         Review[]
 }
 
 model UserPasswordResetToken {
@@ -247,6 +249,7 @@ model Order {
   createdAt     DateTime    @default(now())
   items         OrderItem[]
   transactions  Transaction[]
+  reviews       Review[]
 }
 
 model OrderItem {
@@ -328,4 +331,29 @@ model Newsletter {
 
   @@index([status])
   @@index([sentAt])
+}
+
+model Review {
+  id            String   @id @default(cuid())
+  userId        String
+  orderId       String
+  tourId        String
+  rating        Int      // 1-5
+  comment       String
+  images        String[] @default([])
+  status        String   @default("pending") // pending, approved, rejected
+  adminResponse String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  tour          Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@unique([orderId, tourId]) // Prevent duplicate reviews per booking/tour
+  @@index([userId])
+  @@index([tourId])
+  @@index([status])
+  @@index([createdAt])
 }

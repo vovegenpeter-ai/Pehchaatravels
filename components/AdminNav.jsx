@@ -14,6 +14,7 @@ const links = [
   { href: '/admin/home', label: 'Home Page' },
   { href: '/admin/hotels', label: 'Hotels' },
   { href: '/admin/newsletter', label: 'Newsletter' },
+  { href: '/admin/reviews', label: 'Reviews' },
   { href: '/admin/tours', label: 'Tours' },
   { href: '/admin/users', label: 'Users' },
 ]
