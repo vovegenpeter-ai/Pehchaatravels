@@ -35,12 +35,15 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       return NextResponse.json({ error: 'Comment must be between 10 and 2000 characters' }, { status: 400 })
     }
 
+    // Keep approved reviews as approved; only reset rejected/pending to pending
+    const newStatus = review.status === 'approved' ? 'approved' : 'pending'
+
     const updated = await prisma.review.update({
       where: { id },
       data: {
         rating: parseInt(rating),
         comment: comment.trim(),
-        status: 'pending', // Reset to pending after edit
+        status: newStatus,
       },
     })
 
