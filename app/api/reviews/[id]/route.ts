@@ -27,8 +27,10 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       return NextResponse.json({ error: 'Rating and comment are required' }, { status: 400 })
     }
 
-    if (rating < 1 || rating > 5) {
-      return NextResponse.json({ error: 'Rating must be between 1 and 5' }, { status: 400 })
+    // Validate rating (supports 0.5 increments: 1, 1.5, 2, 2.5, etc.)
+    const ratingNum = parseFloat(rating)
+    if (isNaN(ratingNum) || ratingNum < 0.5 || ratingNum > 5 || ratingNum % 0.5 !== 0) {
+      return NextResponse.json({ error: 'Rating must be between 0.5 and 5 in 0.5 increments' }, { status: 400 })
     }
 
     if (comment.length < 10 || comment.length > 2000) {
@@ -41,7 +43,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     const updated = await prisma.review.update({
       where: { id },
       data: {
-        rating: parseInt(rating),
+        rating: ratingNum,
         comment: comment.trim(),
         status: newStatus,
       },

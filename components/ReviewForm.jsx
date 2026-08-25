@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { StarInput } from './HalfStarRating'
 
 export default function ReviewForm({ tourId, orderId, onSuccess }) {
   const [rating, setRating] = useState(0)
-  const [hoverRating, setHoverRating] = useState(0)
   const [comment, setComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -73,28 +73,17 @@ export default function ReviewForm({ tourId, orderId, onSuccess }) {
       {/* Star Rating */}
       <div style={{ marginBottom: '1rem' }}>
         <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '14px' }}>Rating *</label>
-        <div style={{ display: 'flex', gap: '4px' }}>
-          {[1, 2, 3, 4, 5].map((star) => (
-            <button
-              key={star}
-              type="button"
-              onClick={() => setRating(star)}
-              onMouseEnter={() => setHoverRating(star)}
-              onMouseLeave={() => setHoverRating(0)}
-              style={{
-                background: 'none',
-                border: 'none',
-                fontSize: '2rem',
-                cursor: 'pointer',
-                color: star <= (hoverRating || rating) ? '#f59e0b' : '#d1d5db',
-                transition: 'color 0.1s',
-                padding: '0',
-              }}
-            >
-              ★
-            </button>
-          ))}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <StarInput value={rating} onChange={setRating} size="2rem" />
+          {rating > 0 && (
+            <span style={{ fontSize: '14px', color: '#6b7280', fontWeight: 500 }}>
+              {rating.toFixed(1)} / 5.0
+            </span>
+          )}
         </div>
+        <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '0.25rem' }}>
+          Click left side of star for half (e.g., 3.5) or right side for full (e.g., 4.0)
+        </p>
       </div>
 
       {/* Comment */}

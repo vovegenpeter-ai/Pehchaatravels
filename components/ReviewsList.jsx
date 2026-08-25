@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { StarDisplay, StarInput } from './HalfStarRating'
 
 export default function ReviewsList({ tourId }) {
   const [reviews, setReviews] = useState([])
@@ -107,7 +108,7 @@ export default function ReviewsList({ tourId }) {
         {/* Average Rating */}
         <div style={{ textAlign: 'center', minWidth: '150px' }}>
           <div style={{ fontSize: '3rem', fontWeight: 700, color: '#1a4d3e' }}>{summary.averageRating}</div>
-          <div style={{ color: '#f59e0b', fontSize: '1.25rem' }}>{'★'.repeat(Math.round(summary.averageRating))}</div>
+          <div style={{ marginTop: '0.25rem' }}><StarDisplay rating={summary.averageRating} size="1.25rem" /></div>
           <div style={{ color: '#6b7280', fontSize: '14px', marginTop: '0.25rem' }}>
             Based on {summary.totalReviews} review{summary.totalReviews !== 1 ? 's' : ''}
           </div>
@@ -242,25 +243,11 @@ export default function ReviewsList({ tourId }) {
                   <div style={{ marginTop: '0.5rem' }}>
                     <div style={{ marginBottom: '0.75rem' }}>
                       <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600, fontSize: '13px' }}>Rating</label>
-                      <div style={{ display: 'flex', gap: '4px' }}>
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <button
-                            key={star}
-                            type="button"
-                            onClick={() => setEditRating(star)}
-                            onMouseEnter={() => setEditHoverRating(star)}
-                            onMouseLeave={() => setEditHoverRating(0)}
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              fontSize: '1.5rem',
-                              cursor: 'pointer',
-                              color: star <= (editHoverRating || editRating) ? '#f59e0b' : '#d1d5db',
-                              padding: '0',
-                            }}>
-                            ★
-                          </button>
-                        ))}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <StarInput value={editRating} onChange={setEditRating} size="1.5rem" />
+                        {editRating > 0 && (
+                          <span style={{ fontSize: '13px', color: '#6b7280' }}>{editRating.toFixed(1)}</span>
+                        )}
                       </div>
                     </div>
                     <div style={{ marginBottom: '0.75rem' }}>
@@ -311,8 +298,8 @@ export default function ReviewsList({ tourId }) {
                   </div>
                 ) : (
                   <>
-                    <div style={{ color: '#f59e0b', marginBottom: '0.5rem' }}>
-                      {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+                    <div style={{ marginBottom: '0.5rem' }}>
+                      <StarDisplay rating={review.rating} size="1rem" showValue />
                     </div>
                     <p style={{ color: '#374151', lineHeight: 1.6, margin: 0 }}>{review.comment}</p>
                     {review.images && review.images.length > 0 && (

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { StarDisplay, StarInput } from './HalfStarRating'
 
 const STATUS_LABELS = {
   pending: 'Awaiting Approval',
@@ -188,26 +189,11 @@ export default function MyReviews() {
                 {/* Edit Rating */}
                 <div style={{ marginBottom: '0.75rem' }}>
                   <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600, fontSize: '13px' }}>Rating</label>
-                  <div style={{ display: 'flex', gap: '4px' }}>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setEditRating(star)}
-                        onMouseEnter={() => setEditHoverRating(star)}
-                        onMouseLeave={() => setEditHoverRating(0)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          fontSize: '1.5rem',
-                          cursor: 'pointer',
-                          color: star <= (editHoverRating || editRating) ? '#f59e0b' : '#d1d5db',
-                          padding: '0',
-                        }}
-                      >
-                        ★
-                      </button>
-                    ))}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <StarInput value={editRating} onChange={setEditRating} size="1.5rem" />
+                    {editRating > 0 && (
+                      <span style={{ fontSize: '13px', color: '#6b7280' }}>{editRating.toFixed(1)}</span>
+                    )}
                   </div>
                 </div>
 
@@ -266,8 +252,8 @@ export default function MyReviews() {
               </div>
             ) : (
               <>
-                <div style={{ color: '#f59e0b', marginBottom: '0.5rem' }}>
-                  {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+                <div style={{ marginBottom: '0.5rem' }}>
+                  <StarDisplay rating={review.rating} size="1rem" showValue />
                 </div>
                 <p style={{ color: '#374151', fontSize: '14px', lineHeight: 1.5, margin: 0 }}>{review.comment}</p>
               </>
