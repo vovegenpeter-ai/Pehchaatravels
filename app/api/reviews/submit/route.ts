@@ -14,8 +14,8 @@ export async function POST(request: Request) {
     const { orderId, tourId, rating, comment, images } = body
 
     // Validate required fields
-    if (!orderId || !tourId || !rating || !comment) {
-      return NextResponse.json({ error: 'Order ID, Tour ID, rating, and comment are required' }, { status: 400 })
+    if (!tourId || !rating || !comment) {
+      return NextResponse.json({ error: 'Tour ID, rating, and comment are required' }, { status: 400 })
     }
 
     // Validate rating
@@ -28,49 +28,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Comment must be between 10 and 2000 characters' }, { status: 400 })
     }
 
-    // Verify order exists and belongs to user
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: { items: true },
-    })
+    // If orderId provided, validate it
+    let resolvedOrderId = orderId || null
+    if (orderId) {
+      const order = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: { items: true },
+      })
 
-    if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      if (order && order.email === user.email) {
+        resolvedOrderId = orderId
+      }
     }
 
-    if (order.email !== user.email) {
-      return NextResponse.json({ error: 'This order does not belong to you' }, { status: 403 })
-    }
-
-    // Verify order is completed
-    if (order.status !== 'COMPLETED') {
-      return NextResponse.json({ error: 'You can only review completed bookings' }, { status: 400 })
-    }
-
-    // Verify tour is part of the order
-    const orderItem = order.items.find((item) => item.tourId === tourId)
-    if (!orderItem) {
-      return NextResponse.json({ error: 'This tour is not part of your booking' }, { status: 400 })
-    }
-
-    // Check for duplicate review
+    // Check for duplicate review (same user + same tour)
     const existingReview = await prisma.review.findFirst({
       where: {
         userId: user.id,
-        orderId: orderId,
         tourId: tourId,
       },
     })
 
     if (existingReview) {
-      return NextResponse.json({ error: 'You have already reviewed this tour for this booking' }, { status: 400 })
+      return NextResponse.json({ error: 'You have already reviewed this tour' }, { status: 400 })
     }
 
     // Create review
     const review = await prisma.review.create({
       data: {
         userId: user.id,
-        orderId: orderId,
+        orderId: resolvedOrderId,
         tourId: tourId,
         rating: parseInt(rating),
         comment: comment.trim(),

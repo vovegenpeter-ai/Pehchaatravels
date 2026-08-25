@@ -17,27 +17,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ eligible: false, reason: 'Tour ID is required' })
     }
 
-    // Find completed orders for this user that include this tour
-    const completedOrders = await prisma.order.findMany({
-      where: {
-        email: user.email,
-        status: 'COMPLETED',
-        items: {
-          some: {
-            tourId: tourId,
-          },
-        },
-      },
-      include: {
-        items: true,
-      },
-    })
-
-    if (completedOrders.length === 0) {
-      return NextResponse.json({ eligible: false, reason: 'No completed booking found for this tour' })
-    }
-
-    // Check if user has already reviewed any of these orders for this tour
+    // Check if user has already reviewed this tour
     const existingReview = await prisma.review.findFirst({
       where: {
         userId: user.id,
@@ -53,9 +33,25 @@ export async function GET(request: Request) {
       })
     }
 
+    // Find any orders for this user that include this tour (for orderId reference)
+    const orders = await prisma.order.findMany({
+      where: {
+        email: user.email,
+        items: {
+          some: {
+            tourId: tourId,
+          },
+        },
+      },
+      include: {
+        items: true,
+      },
+      take: 1,
+    })
+
     return NextResponse.json({
       eligible: true,
-      orders: completedOrders.map((o) => ({
+      orders: orders.map((o) => ({
         id: o.id,
         createdAt: o.createdAt,
       })),

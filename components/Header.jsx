@@ -128,6 +128,11 @@ export default function Header() {
           </ul>
 
           <div className="header__actions">
+            {!user && (
+              <Link href="/sign-in" className="btn btn--primary" onClick={() => setMenuOpen(false)}>
+                Sign In
+              </Link>
+            )}
             {user && (
               <div className="header-profile header-profile--desktop" ref={profileDesktopRef}>
                 <button
@@ -192,11 +197,6 @@ export default function Header() {
         </nav>
 
         <div className="header__right">
-          {!user && (
-            <Link href="/sign-in" className="btn btn--primary" onClick={() => setMenuOpen(false)}>
-              Sign In
-            </Link>
-          )}
           <button
             type="button"
             className="header__toggle"
