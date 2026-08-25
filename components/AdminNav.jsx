@@ -48,10 +48,7 @@ export default function AdminNav() {
     <aside className="admin-nav">
       <div className="admin-nav__brand">
         <Link href="/admin" className="logo logo--admin">
-          <span className="logo__icon">✈</span>
-          <span className="logo__text">
-            Pehchaan <strong>Travels</strong>
-          </span>
+          <img src="/logo.png" alt="Pehchaan Travels" className="logo__img" />
         </Link>
       </div>
 
