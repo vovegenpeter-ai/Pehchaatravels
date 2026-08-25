@@ -16,6 +16,8 @@ export default function ReviewsList({ tourId }) {
   const [editComment, setEditComment] = useState('')
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
+  const [successMsg, setSuccessMsg] = useState('')
+  const [editError, setEditError] = useState('')
 
   useEffect(() => {
     fetch('/api/auth/me')
@@ -65,20 +67,23 @@ export default function ReviewsList({ tourId }) {
   const saveEdit = async (id) => {
     if (editRating === 0 || editComment.length < 10) return
     setSaving(true)
+    setEditError('')
     try {
       const res = await fetch(`/api/reviews/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rating: editRating, comment: editComment }),
       })
+      const data = await res.json()
       if (!res.ok) {
-        const data = await res.json()
         throw new Error(data.error || 'Failed to update review')
       }
       setEditingId(null)
+      setSuccessMsg('Review updated successfully!')
+      setTimeout(() => setSuccessMsg(''), 4000)
       await fetchReviews()
     } catch (e) {
-      console.error(e)
+      setEditError(e instanceof Error ? e.message : 'Failed to update review')
     } finally {
       setSaving(false)
     }
@@ -156,6 +161,34 @@ export default function ReviewsList({ tourId }) {
           <option value="1">1 Star</option>
         </select>
       </div>
+
+      {/* Success/Error Messages */}
+      {successMsg && (
+        <div style={{
+          padding: '0.75rem 1rem',
+          borderRadius: '8px',
+          background: '#d1fae5',
+          color: '#065f46',
+          fontWeight: 600,
+          fontSize: '14px',
+          marginBottom: '1rem',
+        }}>
+          ✅ {successMsg}
+        </div>
+      )}
+      {editError && (
+        <div style={{
+          padding: '0.75rem 1rem',
+          borderRadius: '8px',
+          background: '#fee2e2',
+          color: '#991b1b',
+          fontWeight: 600,
+          fontSize: '14px',
+          marginBottom: '1rem',
+        }}>
+          ❌ {editError}
+        </div>
+      )}
 
       {/* Reviews List */}
       {loading ? (

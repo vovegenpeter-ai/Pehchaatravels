@@ -28,8 +28,9 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     }
 
     // Validate rating (supports 0.5 increments: 1, 1.5, 2, 2.5, etc.)
-    const ratingNum = parseFloat(rating)
-    if (isNaN(ratingNum) || ratingNum < 0.5 || ratingNum > 5 || ratingNum % 0.5 !== 0) {
+    const ratingNum = typeof rating === 'number' ? rating : parseFloat(rating)
+    const rounded = Math.round(ratingNum * 2) / 2
+    if (isNaN(rounded) || rounded < 0.5 || rounded > 5 || rounded * 2 % 1 !== 0) {
       return NextResponse.json({ error: 'Rating must be between 0.5 and 5 in 0.5 increments' }, { status: 400 })
     }
 
@@ -43,7 +44,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     const updated = await prisma.review.update({
       where: { id },
       data: {
-        rating: ratingNum,
+        rating: rounded,
         comment: comment.trim(),
         status: newStatus,
       },
