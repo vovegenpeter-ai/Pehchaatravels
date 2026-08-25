@@ -34,7 +34,7 @@ export default function SignUpForm() {
       return
     }
     if (!form.terms) {
-      setError('Please accept the Terms & Conditions.')
+      setError('Please accept the Terms of Service.')
       return
     }
 
@@ -91,7 +91,7 @@ export default function SignUpForm() {
         </div>
         <label className="checkbox-label">
           <input name="terms" type="checkbox" checked={form.terms} onChange={handleChange} />
-          I agree to the Terms &amp; Conditions
+          I agree to the <Link href="/terms" target="_blank">Terms of Service</Link>
         </label>
         <button type="submit" className="btn btn--primary btn--full" disabled={submitting}>
           {submitting ? 'Creating Account...' : 'Create Account'}
