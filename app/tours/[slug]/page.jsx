@@ -7,6 +7,7 @@ import { getTourBySlugOrId, getPublishedTours } from '@/lib/db'
 import { formatPrice } from '@/lib/tourUtils'
 import ReviewsList from '@/components/ReviewsList'
 import WriteReviewButton from '@/components/WriteReviewButton'
+import ReviewStatusBanner from '@/components/ReviewStatusBanner'
 
 export const dynamic = 'force-dynamic'
 
@@ -182,6 +183,7 @@ export default async function TourDetailPage({ params }) {
             description="See what our travelers have to say"
           />
           <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <ReviewStatusBanner tourId={tour.id} />
             <ReviewsList tourId={tour.id} />
             <div style={{ marginTop: '2rem' }}>
               <WriteReviewButton tourId={tour.id} />

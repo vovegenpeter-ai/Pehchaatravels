@@ -2016,6 +2016,11 @@ ul { list-style: none; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .success-banner {
   background: #d4edda;
   color: #155724;

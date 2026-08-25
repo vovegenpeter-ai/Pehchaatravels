@@ -47,32 +47,9 @@ export default function WriteReviewButton({ tourId }) {
     )
   }
 
-  // Already reviewed
+  // Already reviewed - status shown in banner at top
   if (eligibility && !eligibility.eligible && eligibility.reason === 'Review already submitted') {
-    const statusColors = {
-      pending: { bg: '#fef3c7', color: '#92400e' },
-      approved: { bg: '#d1fae5', color: '#065f46' },
-      rejected: { bg: '#fee2e2', color: '#991b1b' },
-    }
-    const colors = statusColors[eligibility.reviewStatus] || statusColors.pending
-    const statusLabels = {
-      pending: 'Review Submitted (Awaiting Approval)',
-      approved: 'Review Published',
-      rejected: 'Review Rejected',
-    }
-
-    return (
-      <div style={{
-        padding: '1rem',
-        background: colors.bg,
-        color: colors.color,
-        borderRadius: '8px',
-        textAlign: 'center',
-        fontWeight: 600,
-      }}>
-        {statusLabels[eligibility.reviewStatus] || 'Review Submitted'}
-      </div>
-    )
+    return null
   }
 
   // Show form
