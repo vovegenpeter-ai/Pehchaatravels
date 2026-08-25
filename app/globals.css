@@ -219,6 +219,14 @@ ul { list-style: none; }
   gap: 1rem;
 }
 
+/* Header right section (sign-in/sign-up + toggle) */
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
 /* Sign In text link */
 .header__signin-text {
   font-size: 0.95rem;
@@ -3108,7 +3116,7 @@ ul { list-style: none; }
   }
 
   /* Header mobile nav */
-  .header__toggle { display: flex; order: 3; z-index: 110; position: relative; pointer-events: auto; }
+  .header__toggle { display: flex; z-index: 110; position: relative; pointer-events: auto; }
 
   .header__inner {
     gap: 0;
@@ -3118,9 +3126,16 @@ ul { list-style: none; }
     margin-right: auto;
   }
 
-  /* Nav after toggle */
+  /* Header right section on mobile */
+  .header__right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* Nav after right section */
   .header__nav {
-    order: 4;
+    order: 3;
   }
 
   /* Hide desktop actions in slide-out nav */
@@ -3128,8 +3143,8 @@ ul { list-style: none; }
     display: none;
   }
 
-  .header__signin-text,
-  .btn--signup {
+  .header__right .header__signin-text,
+  .header__right .btn--signup {
     display: none;
   }
 

@@ -128,7 +128,7 @@ export default function Header() {
           </ul>
 
           <div className="header__actions">
-            {user ? (
+            {user && (
               <div className="header-profile header-profile--desktop" ref={profileDesktopRef}>
                 <button
                   type="button"
@@ -187,29 +187,32 @@ export default function Header() {
                   </div>
                 )}
               </div>
-            ) : (
-              <>
-                <Link href="/sign-in" className="header__signin-text" onClick={() => setMenuOpen(false)}>
-                  Sign In
-                </Link>
-                <Link href="/sign-up" className="btn btn--primary btn--signup" onClick={() => setMenuOpen(false)}>
-                  Sign Up
-                </Link>
-              </>
             )}
           </div>
         </nav>
 
-        <button
-          type="button"
-          className="header__toggle"
-          aria-label="Toggle menu"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
+        <div className="header__right">
+          {!user && (
+            <>
+              <Link href="/sign-in" className="header__signin-text" onClick={() => setMenuOpen(false)}>
+                Sign In
+              </Link>
+              <Link href="/sign-up" className="btn btn--primary btn--signup" onClick={() => setMenuOpen(false)}>
+                Sign Up
+              </Link>
+            </>
+          )}
+          <button
+            type="button"
+            className="header__toggle"
+            aria-label="Toggle menu"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
       </div>
     </header>
   )
