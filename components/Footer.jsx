@@ -61,7 +61,7 @@ export default function Footer() {
         <div className="footer__col">
           <h4>Company</h4>
           <ul>
-            <li><Link href="/about">Company Bio</Link></li>
+            <li><Link href="/about">About Us</Link></li>
             <li><Link href="/contact">Contact Us</Link></li>
             <li><Link href="/terms">Terms of Service</Link></li>
           </ul>
