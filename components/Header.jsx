@@ -128,7 +128,7 @@ export default function Header() {
           </ul>
 
           <div className="header__actions">
-            {user ? (
+            {user && (
               <div className="header-profile header-profile--desktop" ref={profileDesktopRef}>
                 <button
                   type="button"
@@ -187,10 +187,6 @@ export default function Header() {
                   </div>
                 )}
               </div>
-            ) : (
-              <Link href="/sign-in" className="btn btn--primary" onClick={() => setMenuOpen(false)}>
-                Sign In
-              </Link>
             )}
           </div>
         </nav>
