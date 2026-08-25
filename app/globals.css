@@ -3143,8 +3143,7 @@ ul { list-style: none; }
     display: none;
   }
 
-  .header__right .header__signin-text,
-  .header__right .btn--signup {
+  .header__right .btn {
     display: none;
   }
 
@@ -3202,14 +3201,8 @@ ul { list-style: none; }
 
   .header__actions .btn { width: 100%; justify-content: center; }
 
-  /* Show sign-in/sign-up in mobile nav */
-  .header__signin-text {
-    display: block;
-    text-align: center;
-    padding: 0.75rem;
-    font-size: 1rem;
-  }
-  .btn--signup {
+  /* Show sign-in button in mobile nav */
+  .header__nav .btn {
     display: flex;
     width: 100%;
     justify-content: center;
