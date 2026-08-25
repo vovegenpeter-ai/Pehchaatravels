@@ -1,32 +1,10 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-
-// Helper to get user from cookie/session
-async function getUser(request: Request) {
-  const cookieHeader = request.headers.get('cookie') || ''
-  const cookies = Object.fromEntries(
-    cookieHeader.split(';').map((c) => {
-      const [key, ...val] = c.trim().split('=')
-      return [key, val.join('=')]
-    })
-  )
-
-  const sessionToken = cookies['user-session']
-  if (!sessionToken) return null
-
-  try {
-    const user = await prisma.user.findFirst({
-      where: { id: sessionToken },
-    })
-    return user
-  } catch {
-    return null
-  }
-}
+import { getUserFromRequest } from '@/lib/auth-user'
 
 export async function GET(request: Request) {
   try {
-    const user = await getUser(request)
+    const user = await getUserFromRequest(request)
 
     if (!user) {
       return NextResponse.json({ error: 'You must be logged in' }, { status: 401 })

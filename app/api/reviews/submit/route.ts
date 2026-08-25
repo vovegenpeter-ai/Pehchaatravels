@@ -1,37 +1,10 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-
-// Helper to get user from cookie/session
-async function getUser(request: Request) {
-  // Get cookies from request
-  const cookieHeader = request.headers.get('cookie') || ''
-  const cookies = Object.fromEntries(
-    cookieHeader.split(';').map((c) => {
-      const [key, ...val] = c.trim().split('=')
-      return [key, val.join('=')]
-    })
-  )
-
-  const sessionToken = cookies['user-session']
-  if (!sessionToken) return null
-
-  // Find user by session token (stored in UserPasswordResetToken with a special purpose)
-  // For simplicity, we'll use a direct lookup
-  try {
-    const user = await prisma.user.findFirst({
-      where: {
-        id: sessionToken,
-      },
-    })
-    return user
-  } catch {
-    return null
-  }
-}
+import { getUserFromRequest } from '@/lib/auth-user'
 
 export async function POST(request: Request) {
   try {
-    const user = await getUser(request)
+    const user = await getUserFromRequest(request)
 
     if (!user) {
       return NextResponse.json({ error: 'You must be logged in to submit a review' }, { status: 401 })

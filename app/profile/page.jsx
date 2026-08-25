@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { fetchJson } from '@/lib/fetchJson'
+import MyReviews from '@/components/MyReviews'
 
 function getInitials(name) {
   if (!name) return '?'
@@ -430,6 +431,16 @@ export default function ProfilePage() {
                 </div>
               </>
             )}
+          </div>
+        </div>
+
+        {/* My Reviews Section */}
+        <div className="profile-card" style={{ marginTop: '2rem' }}>
+          <div className="profile-card__header" style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
+            <h2 style={{ margin: 0, fontSize: '1.25rem' }}>My Reviews</h2>
+          </div>
+          <div className="profile-card__body" style={{ padding: '1.5rem' }}>
+            <MyReviews />
           </div>
         </div>
       </div>
