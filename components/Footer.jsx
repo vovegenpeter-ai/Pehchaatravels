@@ -42,7 +42,7 @@ export default function Footer() {
           <h4>Company</h4>
           <ul>
             <li><Link href="/about">Company Bio</Link></li>
-            <li><Link href="/contact">Contact Info</Link></li>
+            <li><Link href="/contact">Contact Us</Link></li>
             <li><Link href="/terms">Terms of Service</Link></li>
           </ul>
         </div>
