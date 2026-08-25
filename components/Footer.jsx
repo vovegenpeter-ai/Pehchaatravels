@@ -4,13 +4,33 @@ import { useState } from 'react'
 export default function Footer() {
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault()
-    if (email.trim()) {
-      setSubscribed(true)
-      setEmail('')
-      setTimeout(() => setSubscribed(false), 3000)
+    if (!email.trim()) return
+    
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setSubscribed(true)
+        setEmail('')
+        setTimeout(() => setSubscribed(false), 3000)
+      } else {
+        setError(data.error || 'Failed to subscribe')
+      }
+    } catch {
+      setError('Failed to subscribe. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -61,15 +81,17 @@ export default function Footer() {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="footer__newsletter-input"
+              disabled={loading}
             />
-            <button type="submit" className="footer__newsletter-btn" aria-label="Subscribe">
+            <button type="submit" className="footer__newsletter-btn" aria-label="Subscribe" disabled={loading}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
                 <line x1="22" y1="2" x2="11" y2="13" />
                 <polygon points="22 2 15 22 11 13 2 9 22 2" />
               </svg>
             </button>
           </form>
-          {subscribed && <p className="footer__newsletter-success">Thanks for subscribing!</p>}
+          {subscribed && <p className="footer__newsletter-success">Thank you for subscribing to our newsletter!</p>}
+          {error && <p style={{ color: '#dc2626', fontSize: '0.85rem', marginTop: '0.5rem' }}>{error}</p>}
         </div>
       </div>
 

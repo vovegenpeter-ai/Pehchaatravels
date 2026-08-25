@@ -282,14 +282,14 @@ function RequestRow({ request, expanded, onToggle, onStatusChange, formatDate })
                 <p>{request.message}</p>
               </div>
             )}
-            <div className="cq-detail__actions">
+            <div className="cq-detail__actions" style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               <a
                 href={`mailto:${request.email}?subject=Your trip to ${request.destination} — Pehchaan Travels&body=Hi ${request.name},%0A%0AThank you for your interest in visiting ${request.destination} with Pehchaan Travels.%0A%0AWe have received your trip request and would love to help plan your journey.%0A%0ABest regards,%0APehchaan Travels`}
                 className="btn btn--primary btn--sm"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                ✉ Email Customer
+                Email Customer
               </a>
               <a
                 href={`https://wa.me/${request.phone?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${request.name},\n\nThank you for your interest in visiting ${request.destination} with Pehchaan Travels! We'd love to help plan your journey.\n\nBest regards,\nPehchaan Travels`)}`}
@@ -298,7 +298,7 @@ function RequestRow({ request, expanded, onToggle, onStatusChange, formatDate })
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                💬 WhatsApp
+                WhatsApp
               </a>
             </div>
           </td>

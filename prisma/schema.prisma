@@ -298,3 +298,34 @@ model Transaction {
   @@index([tracker])
   @@index([orderId])
 }
+
+model NewsletterSubscriber {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  status          String    @default("active") // active, unsubscribed
+  subscribedAt    DateTime  @default(now())
+  unsubscribedAt  DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([email])
+  @@index([status])
+}
+
+model Newsletter {
+  id              String    @id @default(cuid())
+  subject         String
+  title           String
+  content         String
+  image           String?
+  ctaText         String?
+  ctaUrl          String?
+  status          String    @default("draft") // draft, sending, sent, failed
+  sentAt          DateTime?
+  recipientCount  Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status])
+  @@index([sentAt])
+}

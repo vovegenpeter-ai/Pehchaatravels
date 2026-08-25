@@ -335,3 +335,141 @@ This link is valid for 1 hour. If you did not request a password reset, you can 
     }
   }
 }
+
+interface SendNewsletterEmailParams {
+  to: string
+  subject: string
+  title: string
+  content: string
+  image?: string
+  ctaText?: string
+  ctaUrl?: string
+  unsubscribeEmail: string
+}
+
+export async function sendNewsletterEmail({
+  to,
+  subject,
+  title,
+  content,
+  image,
+  ctaText,
+  ctaUrl,
+  unsubscribeEmail,
+}: SendNewsletterEmailParams) {
+  const transporter = getMailTransporter()
+
+  if (!transporter) {
+    console.warn('[EMAIL WARNING] SMTP is not configured. Newsletter email not sent to:', to)
+    return { sent: false, reason: 'SMTP is not configured in environment variables.' }
+  }
+
+  const fromAddress =
+    process.env.SMTP_FROM ||
+    process.env.EMAIL_FROM ||
+    `"Pehchaan Travels" <${process.env.SMTP_USER}>`
+
+  const unsubscribeUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://pehchaantravels.vercel.app'}/api/newsletter/unsubscribe?email=${encodeURIComponent(unsubscribeEmail)}`
+
+  const imageHtml = image ? `<img src="${image}" alt="" style="width: 100%; max-width: 560px; height: auto; border-radius: 8px; margin-bottom: 24px;" />` : ''
+
+  const ctaHtml = ctaText && ctaUrl ? `
+    <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 24px 0;">
+      <tr>
+        <td align="center" style="border-radius: 8px; background-color: #1a4d3e;">
+          <a href="${ctaUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 14px 28px; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 8px; background-color: #1a4d3e;">
+            ${ctaText}
+          </a>
+        </td>
+      </tr>
+    </table>
+  ` : ''
+
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f5f0e8; color: #2d3748;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="min-width: 100%; background-color: #f5f0e8; padding: 40px 10px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width: 560px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: 0.5px;">
+                ✈ Pehchaan <span style="font-weight: 400; opacity: 0.9;">Travels</span>
+              </h1>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding: 36px 32px;">
+              <h2 style="margin: 0 0 16px 0; color: #1e3a5f; font-size: 20px; font-weight: 600;">
+                ${title}
+              </h2>
+              ${imageHtml}
+              <div style="font-size: 15px; line-height: 1.7; color: #4a5568;">
+                ${content}
+              </div>
+              ${ctaHtml}
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+              <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #a0aec0;">
+                You are receiving this email because you subscribed to our newsletter.
+                <a href="${unsubscribeUrl}" style="color: #1a4d3e;">Unsubscribe</a>
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f7fafc; padding: 20px 32px; text-align: center; border-top: 1px solid #edf2f7;">
+              <p style="margin: 0; font-size: 12px; color: #a0aec0;">
+                © ${new Date().getFullYear()} Pehchaan Travels. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`
+
+  const text = `
+${title}
+
+${content.replace(/<[^>]*>/g, '')}
+
+${ctaText && ctaUrl ? `\n${ctaText}: ${ctaUrl}` : ''}
+
+---
+You are receiving this email because you subscribed to our newsletter.
+Unsubscribe: ${unsubscribeUrl}
+
+© ${new Date().getFullYear()} Pehchaan Travels. All rights reserved.
+`
+
+  try {
+    const info = await transporter.sendMail({
+      from: fromAddress,
+      to,
+      subject,
+      text,
+      html,
+    })
+
+    console.log('[EMAIL SUCCESS] Newsletter sent to:', to, 'MessageId:', info.messageId)
+    return { sent: true, messageId: info.messageId }
+  } catch (error) {
+    console.error('[EMAIL ERROR] Failed to send newsletter:', error)
+    return {
+      sent: false,
+      reason: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
