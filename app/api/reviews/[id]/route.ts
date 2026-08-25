@@ -10,6 +10,11 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     }
 
     const { id } = await context.params
+
+    if (!id) {
+      return NextResponse.json({ error: 'Review ID is required' }, { status: 400 })
+    }
+
     const review = await prisma.review.findUnique({ where: { id } })
 
     if (!review) {
@@ -20,18 +25,25 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       return NextResponse.json({ error: 'You can only edit your own reviews' }, { status: 403 })
     }
 
-    const body = await request.json()
+    let body
+    try {
+      body = await request.json()
+    } catch {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+    }
+
     const { rating, comment } = body
 
-    if (!rating || !comment) {
+    if (rating === undefined || rating === null || rating === '' || !comment || comment.trim() === '') {
       return NextResponse.json({ error: 'Rating and comment are required' }, { status: 400 })
     }
 
     // Validate rating (supports 0.5 increments: 1, 1.5, 2, 2.5, etc.)
     const ratingNum = typeof rating === 'number' ? rating : parseFloat(rating)
     const rounded = Math.round(ratingNum * 2) / 2
-    if (isNaN(rounded) || rounded < 0.5 || rounded > 5 || rounded * 2 % 1 !== 0) {
-      return NextResponse.json({ error: 'Rating must be between 0.5 and 5 in 0.5 increments' }, { status: 400 })
+
+    if (isNaN(rounded) || rounded < 0.5 || rounded > 5) {
+      return NextResponse.json({ error: 'Rating must be between 0.5 and 5' }, { status: 400 })
     }
 
     if (comment.length < 10 || comment.length > 2000) {
@@ -53,7 +65,8 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     return NextResponse.json({ message: 'Review updated successfully', review: updated })
   } catch (error) {
     console.error('[REVIEW PATCH ERROR]', error)
-    return NextResponse.json({ error: 'Failed to update review' }, { status: 500 })
+    const message = error instanceof Error ? error.message : 'Failed to update review'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -65,6 +78,11 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
     }
 
     const { id } = await context.params
+
+    if (!id) {
+      return NextResponse.json({ error: 'Review ID is required' }, { status: 400 })
+    }
+
     const review = await prisma.review.findUnique({ where: { id } })
 
     if (!review) {
@@ -80,6 +98,7 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
     return NextResponse.json({ message: 'Review deleted successfully' })
   } catch (error) {
     console.error('[REVIEW DELETE ERROR]', error)
-    return NextResponse.json({ error: 'Failed to delete review' }, { status: 500 })
+    const message = error instanceof Error ? error.message : 'Failed to delete review'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

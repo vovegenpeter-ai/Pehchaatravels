@@ -336,7 +336,7 @@ model Newsletter {
 model Review {
   id            String   @id @default(cuid())
   userId        String
-  orderId       String
+  orderId       String?
   tourId        String
   rating        Float    // 0.5 - 5.0 (supports half-stars)
   comment       String
@@ -348,10 +348,10 @@ model Review {
 
   // Relations
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order         Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
   tour          Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
 
-  @@unique([orderId, tourId]) // Prevent duplicate reviews per booking/tour
+  @@unique([userId, tourId]) // One review per user per tour
   @@index([userId])
   @@index([tourId])
   @@index([status])

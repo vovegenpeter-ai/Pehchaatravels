@@ -89,15 +89,18 @@ export default function MyReviews() {
   const deleteReview = async (id) => {
     if (!confirm('Are you sure you want to delete this review?')) return
     setDeletingId(id)
+    setEditError('')
     try {
       const res = await fetch(`/api/reviews/${id}`, { method: 'DELETE' })
+      const data = await res.json()
       if (!res.ok) {
-        const data = await res.json()
         throw new Error(data.error || 'Failed to delete review')
       }
+      setSuccessMsg('Review deleted successfully!')
+      setTimeout(() => setSuccessMsg(''), 4000)
       await fetchReviews()
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to delete review')
+      setEditError(e instanceof Error ? e.message : 'Failed to delete review')
     } finally {
       setDeletingId(null)
     }
