@@ -181,21 +181,23 @@ export default function ReviewsList({ tourId }) {
                       </div>
                     )}
                     <div>
-                      <div style={{ fontWeight: 600 }}>{review.user.fullName}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <span style={{ fontWeight: 600 }}>{review.user.fullName}</span>
+                        <span style={{
+                          fontSize: '10px',
+                          padding: '1px 6px',
+                          borderRadius: '10px',
+                          background: '#d1fae5',
+                          color: '#065f46',
+                          fontWeight: 600,
+                        }}>
+                          ✓ Verified Customer
+                        </span>
+                      </div>
                       <div style={{ fontSize: '12px', color: '#6b7280' }}>{formatDate(review.createdAt)}</div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{
-                      fontSize: '11px',
-                      padding: '2px 8px',
-                      borderRadius: '12px',
-                      background: '#d1fae5',
-                      color: '#065f46',
-                      fontWeight: 600,
-                    }}>
-                      ✓ Verified Customer
-                    </span>
                     {isOwner && !isEditing && (
                       <>
                         <button
