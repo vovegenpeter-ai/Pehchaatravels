@@ -188,18 +188,6 @@ export default function Header() {
             </div>
           )}
 
-          {!user && (
-            <div className="header__mobile-profile">
-              <Link
-                href="/sign-in"
-                className="header__mobile-profile-signin"
-                onClick={closeMenu}
-              >
-                Sign In
-              </Link>
-            </div>
-          )}
-
           <ul className="header__links">
             {navLinks.map(({ href, label }) => (
               <li key={href}>
@@ -213,6 +201,19 @@ export default function Header() {
               </li>
             ))}
           </ul>
+
+          {/* Sign In — below nav links, only when logged out */}
+          {!user && (
+            <div className="header__mobile-signin">
+              <Link
+                href="/sign-in"
+                className="header__mobile-signin-btn"
+                onClick={closeMenu}
+              >
+                Sign In
+              </Link>
+            </div>
+          )}
         </nav>
 
         {/* Right: Cart + Profile/Sign In + Hamburger */}
