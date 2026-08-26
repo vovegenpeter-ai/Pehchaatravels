@@ -56,9 +56,8 @@ export default async function TourDetailPage({ params }) {
       >
         <div className="tour-detail-hero__overlay">
           <div className="container">
-            <Link href="/tours" className="tour-detail-back">← Back to Tours</Link>
-            <span className="tour-detail-hero__badge">{tour.duration || `${tour.days} Days`}</span>
             <h1>{tour.name}</h1>
+            <span className="tour-detail-hero__badge">{tour.duration || `${tour.days} Days`}</span>
           </div>
         </div>
       </section>
