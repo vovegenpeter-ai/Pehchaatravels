@@ -3253,6 +3253,11 @@ ul { list-style: none; }
     border-bottom: none;
   }
 
+  /* Hide active underline on mobile */
+  .header__links a.active::after {
+    display: none;
+  }
+
   /* Hide phone button on mobile nav */
   .btn--phone { display: none; }
 
