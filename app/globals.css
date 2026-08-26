@@ -3193,6 +3193,9 @@ ul { list-style: none; }
     display: none;
   }
 
+  /* Hide Sign In button in header bar on mobile — it lives inside the slide-out menu */
+  .header__signin { display: none; }
+
   /* Hamburger toggle */
   .header__toggle {
     display: flex;
