@@ -3233,7 +3233,9 @@ ul { list-style: none; }
   }
 
   .header__links {
+    width: 100%;
     flex-direction: column;
+    align-items: stretch;
     gap: 0;
   }
 
@@ -3243,6 +3245,7 @@ ul { list-style: none; }
     min-height: 44px;
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     border-bottom: 1px solid var(--beige-dark);
   }
 
