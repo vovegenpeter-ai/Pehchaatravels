@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { fetchJson } from '@/lib/fetchJson'
+import { PASSU_CONES_IMAGE } from '@/lib/initialData'
 
 export default function ForgotPasswordPage() {
   const router = useRouter()
@@ -35,8 +36,9 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <section className="auth-section">
-      <div className="container">
+    <section className="auth-split" style={{ backgroundImage: `url(${PASSU_CONES_IMAGE})` }}>
+      <div className="auth-split__image" />
+      <div className="auth-split__card">
         <div className="auth-card">
           <h1>Forgot Password</h1>
           <p className="auth-card__subtitle">
