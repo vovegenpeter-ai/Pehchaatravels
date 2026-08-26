@@ -207,29 +207,6 @@ export default function MyBookingsPage() {
                       </div>
                     ))}
 
-                    {/* Full Reference ID */}
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      paddingTop: '0.75rem',
-                      marginTop: '0.25rem',
-                      borderTop: '1px solid #f0f0f0',
-                    }}>
-                      <span style={{ fontSize: '0.85rem', color: '#718096' }}>
-                        Order ID:
-                      </span>
-                      <code style={{
-                        fontSize: '0.85rem',
-                        fontWeight: 600,
-                        color: '#1a4d3e',
-                        fontFamily: 'monospace',
-                        wordBreak: 'break-all',
-                      }}>
-                        {booking.id}
-                      </code>
-                    </div>
-
                     {/* Total */}
                     <div style={{
                       display: 'flex',
