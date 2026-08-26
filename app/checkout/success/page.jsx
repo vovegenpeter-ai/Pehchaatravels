@@ -49,7 +49,7 @@ export default async function CheckoutSuccessPage({ searchParams }) {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                 <tbody>
                   <tr>
-                    <td style={{ padding: '6px 0', color: '#718096', width: '140px' }}>Reference ID</td>
+                    <td style={{ padding: '6px 0', color: '#718096', width: '140px' }}>Order ID</td>
                     <td style={{ padding: '6px 0', fontWeight: 700, color: '#1a4d3e', fontFamily: 'monospace' }}>{order.id.slice(-8).toUpperCase()}</td>
                   </tr>
                   <tr>
@@ -107,7 +107,7 @@ export default async function CheckoutSuccessPage({ searchParams }) {
             <p>📞 Our team will call you within 24 hours to finalize your trip.</p>
             {order && (
               <p style={{ fontSize: '13px', color: '#718096', marginTop: '12px' }}>
-                💡 Save your Reference ID: <strong style={{ color: '#1a4d3e', fontFamily: 'monospace' }}>{order.id.slice(-8).toUpperCase()}</strong>
+                💡 Save your Order ID: <strong style={{ color: '#1a4d3e', fontFamily: 'monospace' }}>{order.id.slice(-8).toUpperCase()}</strong>
               </p>
             )}
           </div>

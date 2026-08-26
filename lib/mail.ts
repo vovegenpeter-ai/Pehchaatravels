@@ -107,7 +107,7 @@ export async function sendBookingConfirmationEmail({
                   <td style="padding: 20px;">
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                       <tr>
-                        <td style="padding: 6px 0; font-size: 14px; color: #718096; width: 140px;">Reference ID</td>
+                        <td style="padding: 6px 0; font-size: 14px; color: #718096; width: 140px;">Order ID</td>
                         <td style="padding: 6px 0; font-size: 14px; color: #1e3a5f; font-weight: 600;">${orderId}</td>
                       </tr>
                       <tr>
@@ -147,7 +147,7 @@ export async function sendBookingConfirmationEmail({
               </p>
               <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
               <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #a0aec0;">
-                Please save this email as your booking confirmation. Your reference ID is: <strong>${orderId}</strong>
+                Please save this email as your booking confirmation. Your Order ID is: <strong>${orderId}</strong>
               </p>
             </td>
           </tr>
@@ -174,7 +174,7 @@ Thank you for booking with Pehchaan Travels! Your booking has been received.
 
 Booking Details:
 ─────────────────
-Reference ID: ${orderId}
+Order ID:     ${orderId}
 Customer:     ${name}
 Phone:        ${phone}
 Booking Date: ${bookingDate}

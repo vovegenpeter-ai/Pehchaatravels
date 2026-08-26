@@ -119,7 +119,7 @@ export default function BookingsPage() {
         <input
           type="search"
           className="cq-search"
-          placeholder="Search by name, email, phone, reference ID, or tour…"
+          placeholder="Search by name, email, phone, order ID, or tour…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -141,7 +141,7 @@ export default function BookingsPage() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>Reference ID</th>
+              <th>Order ID</th>
               <th>Customer</th>
               <th>Tour(s)</th>
               <th>Travelers</th>
@@ -266,7 +266,7 @@ function BookingRow({ booking, expanded, onToggle, onStatusChange, formatDate })
           <td colSpan="8">
             <div className="cq-detail__grid">
               <div>
-                <strong>Reference ID</strong>
+                <strong>Order ID</strong>
                 <p style={{ fontFamily: 'monospace', fontSize: '13px', color: '#1a4d3e', wordBreak: 'break-all' }}>{booking.id}</p>
               </div>
               <div>
@@ -357,7 +357,7 @@ function BookingRow({ booking, expanded, onToggle, onStatusChange, formatDate })
 
             <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
               <a
-                href={`mailto:${booking.email}?subject=Your booking — Reference #${shortId} — Pehchaan Travels&body=Hi ${booking.fullName},%0A%0AThank you for booking with Pehchaan Travels. Your reference ID is ${booking.id}.%0A%0AOur team will contact you shortly.%0A%0ABest regards,%0APehchaan Travels`}
+                href={`mailto:${booking.email}?subject=Your booking — Order #${shortId} — Pehchaan Travels&body=Hi ${booking.fullName},%0A%0AThank you for booking with Pehchaan Travels. Your Order ID is ${booking.id}.%0A%0AOur team will contact you shortly.%0A%0ABest regards,%0APehchaan Travels`}
                 className="btn btn--primary btn--sm"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -366,7 +366,7 @@ function BookingRow({ booking, expanded, onToggle, onStatusChange, formatDate })
                 Email Customer
               </a>
               <a
-                href={`https://wa.me/${booking.phone?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${booking.fullName},\n\nThank you for booking with Pehchaan Travels! Your reference ID is ${shortId}.\n\nBest regards,\nPehchaan Travels`)}`}
+                href={`https://wa.me/${booking.phone?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${booking.fullName},\n\nThank you for booking with Pehchaan Travels! Your Order ID is ${shortId}.\n\nBest regards,\nPehchaan Travels`)}`}
                 className="btn btn--sm"
                 style={{ backgroundColor: '#25d366', color: '#fff', display: 'inline-flex', alignItems: 'center', gap: '0' }}
                 target="_blank"

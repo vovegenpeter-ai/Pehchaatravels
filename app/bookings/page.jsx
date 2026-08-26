@@ -217,7 +217,7 @@ export default function MyBookingsPage() {
                       borderTop: '1px solid #f0f0f0',
                     }}>
                       <span style={{ fontSize: '0.85rem', color: '#718096' }}>
-                        Reference ID:
+                        Order ID:
                       </span>
                       <code style={{
                         fontSize: '0.85rem',
