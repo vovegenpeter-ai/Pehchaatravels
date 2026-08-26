@@ -254,6 +254,11 @@ ul { list-style: none; }
   pointer-events: none;
 }
 
+/* Mobile-only sign-in inside nav — hidden on desktop */
+.header__mobile-signin {
+  display: none;
+}
+
 /* Sign In link in header */
 .header__signin {
   font-size: 0.95rem;
@@ -3520,6 +3525,7 @@ ul { list-style: none; }
   }
 
   .header__mobile-signin {
+    display: block;
     padding: 0.75rem 0 0;
     border-top: 1px solid var(--beige-dark);
     margin-top: 0.25rem;
