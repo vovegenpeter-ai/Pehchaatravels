@@ -138,7 +138,7 @@ export default function Header() {
         <nav className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}>
           {/* Mobile profile section — above nav links on mobile */}
           {user && (
-            <div className="header__mobile-profile">
+            <div className="header__mobile-profile" ref={profileMobileRef}>
               <button
                 type="button"
                 className="header__mobile-profile-trigger"
@@ -164,21 +164,21 @@ export default function Header() {
                   <Link
                     href="/bookings"
                     className="header__mobile-profile-dropdown-item"
-                    onClick={closeMenu}
+                    onClick={() => { setProfileOpen(false); closeMenu(); }}
                   >
                     My Bookings
                   </Link>
                   <Link
                     href="/profile"
                     className="header__mobile-profile-dropdown-item"
-                    onClick={closeMenu}
+                    onClick={() => { setProfileOpen(false); closeMenu(); }}
                   >
                     My Profile
                   </Link>
                   <button
                     type="button"
                     className="header__mobile-profile-dropdown-item header__mobile-profile-dropdown-item--danger"
-                    onClick={handleLogout}
+                    onClick={() => { setProfileOpen(false); closeMenu(); handleLogout(); }}
                     disabled={loggingOut}
                   >
                     {loggingOut ? 'Signing out...' : 'Sign Out'}
