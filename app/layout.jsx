@@ -10,7 +10,7 @@ export const viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#1a4d3e',
+  themeColor: '#ffffff',
 }
 
 export const metadata = {
@@ -35,8 +35,12 @@ export default async function RootLayout({ children }) {
   const user = await getCurrentUser()
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning>
+    <html lang="en" style={{ backgroundColor: '#ffffff', colorScheme: 'light' }} suppressHydrationWarning>
+      <head>
+        <meta name="color-scheme" content="light" />
+        <meta name="theme-color" content="#ffffff" />
+      </head>
+      <body style={{ backgroundColor: '#ffffff', colorScheme: 'light', minHeight: '100vh' }} suppressHydrationWarning>
         <SmoothScroll>
           <AuthProvider initialUser={user}>
             <CartProvider>
