@@ -1936,6 +1936,26 @@ ul { list-style: none; }
   color: var(--green-light);
 }
 
+.auth-form__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.auth-form__forgot {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--green);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--transition);
+}
+.auth-form__forgot:hover {
+  color: var(--green-light);
+  text-decoration: underline;
+}
+
 .form-link {
   font-size: 0.85rem;
   color: var(--green);

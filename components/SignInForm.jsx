@@ -64,10 +64,13 @@ export default function SignInForm() {
             <input id="password" name="password" type="password" required value={form.password} onChange={handleChange} placeholder="Enter your password" />
           </div>
         </div>
-        <label className="checkbox-label">
-          <input name="remember" type="checkbox" checked={form.remember} onChange={handleChange} />
-          Remember Me
-        </label>
+        <div className="auth-form__row">
+          <label className="checkbox-label">
+            <input name="remember" type="checkbox" checked={form.remember} onChange={handleChange} />
+            Remember Me
+          </label>
+          <Link href="/forgot-password" className="auth-form__forgot">Forgot Password?</Link>
+        </div>
         <button type="submit" className="btn btn--primary btn--full" disabled={submitting}>
           {submitting ? 'Signing In...' : 'Sign In'}
         </button>
