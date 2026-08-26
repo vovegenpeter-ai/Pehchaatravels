@@ -254,7 +254,10 @@ ul { list-style: none; }
   pointer-events: none;
 }
 
-/* Mobile-only sign-in inside nav — hidden on desktop */
+/* Mobile-only elements — hidden on desktop */
+.header__mobile-profile {
+  display: none;
+}
 .header__mobile-signin {
   display: none;
 }
@@ -3423,6 +3426,7 @@ ul { list-style: none; }
 
   /* Mobile profile section inside slide-out nav */
   .header__mobile-profile {
+    display: block;
     border-bottom: 1px solid var(--beige-dark);
     padding-bottom: 0.75rem;
     margin-bottom: 0.5rem;

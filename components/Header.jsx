@@ -62,6 +62,7 @@ function CartIcon() {
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
   const [user, setUser] = useState(null)
   const [profileOpen, setProfileOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
@@ -72,10 +73,11 @@ export default function Header() {
   const { totalItems, mounted: cartMounted } = useCart()
 
   const fetchUser = () => {
-    fetch('/api/auth/me', { cache: 'no-store' })
+    fetch('/api/auth/me', { cache: 'no-store', credentials: 'include' })
       .then((res) => res.json())
       .then((data) => setUser(data?.user || null))
       .catch(() => setUser(null))
+      .finally(() => setAuthChecked(true))
   }
 
   useEffect(() => {
@@ -137,7 +139,7 @@ export default function Header() {
         {/* Center: Nav links */}
         <nav className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}>
           {/* Mobile profile section — above nav links on mobile */}
-          {user && (
+          {authChecked && user && (
             <div className="header__mobile-profile" ref={profileMobileRef}>
               <button
                 type="button"
@@ -203,7 +205,7 @@ export default function Header() {
           </ul>
 
           {/* Sign In — below nav links, only when logged out */}
-          {!user && (
+          {authChecked && !user && (
             <div className="header__mobile-signin">
               <Link
                 href="/sign-in"
@@ -232,7 +234,7 @@ export default function Header() {
           </Link>
 
           {/* Profile dropdown — only when logged in */}
-          {user && (
+          {authChecked && user && (
             <div
               className="header-profile header-profile--desktop"
               ref={profileDesktopRef}
@@ -307,7 +309,7 @@ export default function Header() {
           )}
 
           {/* Sign In — only when logged out */}
-          {!user && (
+          {authChecked && !user && (
             <Link
               href="/sign-in"
               className="header__signin"
