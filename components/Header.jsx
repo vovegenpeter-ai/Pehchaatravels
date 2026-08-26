@@ -209,7 +209,7 @@ export default function Header() {
                   </div>
                   <div className="header-profile__dropdown-divider" />
                   <Link
-                    href="/cart"
+                    href="/bookings"
                     className="header-profile__dropdown-item"
                     onClick={() => {
                       setProfileOpen(false)
