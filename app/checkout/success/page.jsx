@@ -27,7 +27,6 @@ export default async function CheckoutSuccessPage({ searchParams }) {
     <section className="checkout-section">
       <div className="container">
         <div className="checkout-success">
-          <div className="checkout-success__icon">✅</div>
           <h1>Booking Confirmed!</h1>
           <p>
             Thank you for booking with Pehchaan Travels. We&apos;ve received your
@@ -51,7 +50,7 @@ export default async function CheckoutSuccessPage({ searchParams }) {
                 <tbody>
                   <tr>
                     <td style={{ padding: '6px 0', color: '#718096', width: '140px' }}>Reference ID</td>
-                    <td style={{ padding: '6px 0', fontWeight: 700, color: '#1a4d3e', fontFamily: 'monospace' }}>{order.id}</td>
+                    <td style={{ padding: '6px 0', fontWeight: 700, color: '#1a4d3e', fontFamily: 'monospace' }}>{order.id.slice(-8).toUpperCase()}</td>
                   </tr>
                   <tr>
                     <td style={{ padding: '6px 0', color: '#718096' }}>Name</td>
@@ -108,7 +107,7 @@ export default async function CheckoutSuccessPage({ searchParams }) {
             <p>📞 Our team will call you within 24 hours to finalize your trip.</p>
             {order && (
               <p style={{ fontSize: '13px', color: '#718096', marginTop: '12px' }}>
-                💡 Save your Reference ID: <strong style={{ color: '#1a4d3e', fontFamily: 'monospace' }}>{order.id}</strong>
+                💡 Save your Reference ID: <strong style={{ color: '#1a4d3e', fontFamily: 'monospace' }}>{order.id.slice(-8).toUpperCase()}</strong>
               </p>
             )}
           </div>
