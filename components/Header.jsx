@@ -216,7 +216,7 @@ export default function Header() {
                       closeMenu()
                     }}
                   >
-                    🛒 My Bookings
+                    My Bookings
                   </Link>
                   <Link
                     href="/profile"
@@ -226,7 +226,7 @@ export default function Header() {
                       closeMenu()
                     }}
                   >
-                    👤 My Profile
+                    My Profile
                   </Link>
                   <button
                     type="button"
@@ -234,7 +234,7 @@ export default function Header() {
                     onClick={handleLogout}
                     disabled={loggingOut}
                   >
-                    {loggingOut ? 'Signing out...' : '🚪 Sign Out'}
+                    {loggingOut ? 'Signing out...' : 'Sign Out'}
                   </button>
                 </div>
               )}
