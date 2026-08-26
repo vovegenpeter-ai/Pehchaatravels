@@ -119,7 +119,9 @@ ul { list-style: none; }
 .btn--full { width: 100%; }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* ===== Logo ===== */
+
+
+/* ===== Logo (shared) ===== */
 .logo {
   display: flex;
   align-items: center;
@@ -143,40 +145,34 @@ ul { list-style: none; }
   border-bottom: 1px solid #f0f0f0;
 }
 
+/* 3-column layout: logo | nav | right */
 .header__inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   height: 72px;
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
-.header__toggle {
-  display: none;
-  flex-direction: column;
-  gap: 5px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  min-width: 44px;
-  min-height: 44px;
-  align-items: center;
-  justify-content: center;
-}
-.header__toggle span {
-  display: block;
-  width: 24px;
-  height: 2px;
-  background: var(--green);
-  border-radius: 2px;
-  transition: var(--transition);
-}
-
-.header__nav {
+/* Left: Logo */
+.header__logo {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 2.5rem;
+}
+.logo__img {
+  height: 28px;
+  width: auto;
+  display: block;
+}
+
+/* Center: Nav */
+.header__nav {
   flex: 1;
+  display: flex;
+  align-items: center;
   justify-content: center;
 }
 
@@ -213,45 +209,97 @@ ul { list-style: none; }
   border-radius: 2px;
 }
 
+/* Right: Cart + Profile + Toggle */
+.header__right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Cart icon */
+.header__cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--green);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+.header__cart:hover {
+  color: var(--green-light);
+  background: var(--beige);
+}
+
+.header__cart-badge {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  background: #e53e3e;
+  color: var(--white);
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Sign In link in header */
+.header__signin {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--green);
+  padding: 0.55rem 1.25rem;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  transition: var(--transition);
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+.header__signin:hover {
+  background: var(--green-light);
+}
+
+/* Hamburger toggle */
+.header__toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+.header__toggle span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--green);
+  border-radius: 2px;
+  transition: var(--transition);
+}
+
+/* Legacy classes kept for compatibility */
 .header__actions {
   display: flex;
   align-items: center;
   gap: 1rem;
-}
-
-/* Header right section (sign-in/sign-up + toggle) */
-.header__right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-shrink: 0;
-}
-
-/* Sign In text link */
-.header__signin-text {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--green);
-  transition: var(--transition);
-}
-.header__signin-text:hover {
-  color: var(--green-dark, #14532d);
-}
-
-/* Sign Up button */
-.btn--signup {
-  background: #14532d;
-  color: var(--white);
-  border: none;
-  padding: 0.6rem 1.5rem;
-  border-radius: var(--radius);
-  font-weight: 600;
-  font-size: 0.95rem;
-  min-height: 42px;
-  transition: var(--transition);
-}
-.btn--signup:hover {
-  background: #0d3b1f;
 }
 
 /* ==========================================================================
@@ -3126,42 +3174,34 @@ ul { list-style: none; }
 
 /* ===== Tablet portrait / large phone (768px and below) ===== */
 @media (max-width: 768px) {
-  .container {
-    padding: 0 1rem;
-  }
-
-  /* Header mobile nav */
-  .header__toggle { display: flex; z-index: 110; position: relative; pointer-events: auto; }
-
+  /* Header mobile layout */
   .header__inner {
+    padding: 0 1rem;
     gap: 0;
   }
 
-  .logo {
+  .header__logo {
     margin-right: auto;
   }
 
-  /* Header right section on mobile */
   .header__right {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 
-  /* Nav after right section */
-  .header__nav {
-    order: 3;
-  }
-
-  /* Hide desktop actions in slide-out nav */
+  /* Hide desktop profile on mobile */
   .header-profile--desktop {
     display: none;
   }
 
-  .header__right .btn {
-    display: none;
+  /* Hamburger toggle */
+  .header__toggle {
+    display: flex;
+    z-index: 110;
+    position: relative;
+    pointer-events: auto;
   }
 
+  /* Slide-out nav overlay */
   .header__nav {
     position: fixed;
     top: 72px;
@@ -3169,8 +3209,10 @@ ul { list-style: none; }
     right: 0;
     bottom: 0;
     background: var(--white);
+    flex: none;
     flex-direction: column;
     align-items: stretch;
+    justify-content: flex-start;
     padding: 1.5rem;
     gap: 0;
     transform: translateX(100%);
@@ -3203,24 +3245,6 @@ ul { list-style: none; }
 
   .header__links li:last-child a {
     border-bottom: none;
-  }
-
-  .header__actions {
-    flex-direction: column;
-    gap: 0.75rem;
-    padding-top: 0;
-    margin-top: auto;
-    border-top: 1px solid var(--beige-dark);
-    padding-top: 1rem;
-  }
-
-  .header__actions .btn { width: 100%; justify-content: center; }
-
-  /* Show sign-in button in mobile nav */
-  .header__nav .btn {
-    display: flex;
-    width: 100%;
-    justify-content: center;
   }
 
   /* Hide phone button on mobile nav */
