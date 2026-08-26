@@ -54,6 +54,7 @@ export default function SignUpForm() {
       })
 
       setSuccess(true)
+      window.dispatchEvent(new Event('user-profile-updated'))
       setTimeout(() => router.push('/'), 2000)
     } catch (err) {
       setError(err.message)

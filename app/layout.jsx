@@ -2,6 +2,8 @@ import LayoutShell from '@/components/LayoutShell'
 import ConditionalWhatsApp from '@/components/ConditionalWhatsApp'
 import SmoothScroll from '@/components/SmoothScroll'
 import { CartProvider } from '@/lib/CartContext'
+import { AuthProvider } from '@/lib/AuthContext'
+import { getCurrentUser } from '@/lib/auth'
 import './globals.css'
 
 export const viewport = {
@@ -29,15 +31,19 @@ export const metadata = {
   },
 }
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const user = await getCurrentUser()
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <SmoothScroll>
-          <CartProvider>
-            <LayoutShell>{children}</LayoutShell>
-            <ConditionalWhatsApp />
-          </CartProvider>
+          <AuthProvider initialUser={user}>
+            <CartProvider>
+              <LayoutShell>{children}</LayoutShell>
+              <ConditionalWhatsApp />
+            </CartProvider>
+          </AuthProvider>
         </SmoothScroll>
       </body>
     </html>

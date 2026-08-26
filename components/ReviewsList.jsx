@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { StarDisplay, StarInput } from './HalfStarRating'
+import { useAuth } from '@/lib/AuthContext'
 
 export default function ReviewsList({ tourId }) {
   const [reviews, setReviews] = useState([])
@@ -9,22 +10,7 @@ export default function ReviewsList({ tourId }) {
   const [loading, setLoading] = useState(true)
   const [sortBy, setSortBy] = useState('recent')
   const [filterRating, setFilterRating] = useState('')
-  const [currentUser, setCurrentUser] = useState(null)
-  const [editingId, setEditingId] = useState(null)
-  const [editRating, setEditRating] = useState(0)
-  const [editHoverRating, setEditHoverRating] = useState(0)
-  const [editComment, setEditComment] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [deletingId, setDeletingId] = useState(null)
-  const [successMsg, setSuccessMsg] = useState('')
-  const [editError, setEditError] = useState('')
-
-  useEffect(() => {
-    fetch('/api/auth/me')
-      .then((res) => res.json())
-      .then((data) => setCurrentUser(data?.user || null))
-      .catch(() => setCurrentUser(null))
-  }, [])
+  const { user: currentUser } = useAuth()
 
   const fetchReviews = async () => {
     setLoading(true)

@@ -6,8 +6,11 @@ import { useRouter } from 'next/navigation'
 import { useCart } from '@/lib/CartContext'
 import { formatPrice } from '@/lib/tourUtils'
 
+import { useAuth } from '@/lib/AuthContext'
+
 export default function CheckoutPage() {
   const { items, mounted, totalPrice, totalItems, clearCart } = useCart()
+  const { user } = useAuth()
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -20,22 +23,17 @@ export default function CheckoutPage() {
     notes: '',
   })
 
-  // Pre-fill form with logged-in user's details
+  // Pre-fill form with logged-in user's details instantly
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.user) {
-          setForm((prev) => ({
-            ...prev,
-            fullName: prev.fullName || data.user.fullName || '',
-            email: prev.email || data.user.email || '',
-            phone: prev.phone || data.user.phone || '',
-          }))
-        }
-      })
-      .catch(() => {})
-  }, [])
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        fullName: prev.fullName || user.fullName || '',
+        email: prev.email || user.email || '',
+        phone: prev.phone || user.phone || '',
+      }))
+    }
+  }, [user])
 
   if (!mounted) {
     return (

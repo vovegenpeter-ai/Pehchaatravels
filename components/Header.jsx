@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { PHONE_NUMBER } from '@/lib/initialData'
 import { useCart } from '@/lib/CartContext'
+import { useAuth } from '@/lib/AuthContext'
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -61,9 +62,7 @@ function CartIcon() {
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [mounted, setMounted] = useState(false)
-  const [authChecked, setAuthChecked] = useState(false)
-  const [user, setUser] = useState(null)
+  const { user, authChecked, logout } = useAuth()
   const [profileOpen, setProfileOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
   const profileDesktopRef = useRef(null)
@@ -71,25 +70,6 @@ export default function Header() {
   const pathname = usePathname()
   const router = useRouter()
   const { totalItems, mounted: cartMounted } = useCart()
-
-  const fetchUser = () => {
-    fetch('/api/auth/me', { cache: 'no-store', credentials: 'include' })
-      .then((res) => res.json())
-      .then((data) => setUser(data?.user || null))
-      .catch(() => setUser(null))
-      .finally(() => setAuthChecked(true))
-  }
-
-  useEffect(() => {
-    setMounted(true)
-    fetchUser()
-  }, [pathname])
-
-  useEffect(() => {
-    const handler = () => fetchUser()
-    window.addEventListener('user-profile-updated', handler)
-    return () => window.removeEventListener('user-profile-updated', handler)
-  }, [])
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -111,8 +91,7 @@ export default function Header() {
   const handleLogout = async () => {
     setLoggingOut(true)
     try {
-      await fetch('/api/auth/me', { method: 'DELETE' })
-      setUser(null)
+      await logout()
       setProfileOpen(false)
       router.push('/')
       router.refresh()
@@ -122,7 +101,6 @@ export default function Header() {
   }
 
   const isActive = (href) => {
-    if (!mounted) return false
     return href === '/' ? pathname === '/' : pathname.startsWith(href)
   }
 
@@ -139,7 +117,7 @@ export default function Header() {
         {/* Center: Nav links */}
         <nav className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}>
           {/* Mobile profile section — above nav links on mobile */}
-          {authChecked && user && (
+          {user && (
             <div className="header__mobile-profile" ref={profileMobileRef}>
               <button
                 type="button"
@@ -205,7 +183,7 @@ export default function Header() {
           </ul>
 
           {/* Sign In — below nav links, only when logged out */}
-          {authChecked && !user && (
+          {!user && authChecked && (
             <div className="header__mobile-signin">
               <Link
                 href="/sign-in"
@@ -234,7 +212,7 @@ export default function Header() {
           </Link>
 
           {/* Profile dropdown — only when logged in */}
-          {authChecked && user && (
+          {user ? (
             <div
               className="header-profile header-profile--desktop"
               ref={profileDesktopRef}
@@ -306,10 +284,7 @@ export default function Header() {
                 </div>
               )}
             </div>
-          )}
-
-          {/* Sign In — only when logged out */}
-          {authChecked && !user && (
+          ) : authChecked ? (
             <Link
               href="/sign-in"
               className="header__signin"
@@ -317,7 +292,7 @@ export default function Header() {
             >
               Sign In
             </Link>
-          )}
+          ) : null}
 
           {/* Mobile hamburger */}
           <button
