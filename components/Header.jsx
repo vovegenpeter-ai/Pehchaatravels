@@ -81,7 +81,7 @@ export default function Header() {
   useEffect(() => {
     setMounted(true)
     fetchUser()
-  }, [])
+  }, [pathname])
 
   useEffect(() => {
     const handler = () => fetchUser()
