@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/lib/CartContext'
@@ -19,6 +19,23 @@ export default function CheckoutPage() {
     city: '',
     notes: '',
   })
+
+  // Pre-fill form with logged-in user's details
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.user) {
+          setForm((prev) => ({
+            ...prev,
+            fullName: prev.fullName || data.user.fullName || '',
+            email: prev.email || data.user.email || '',
+            phone: prev.phone || data.user.phone || '',
+          }))
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   if (!mounted) {
     return (
