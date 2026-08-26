@@ -3359,9 +3359,9 @@ ul { list-style: none; }
 
   /* Mobile profile section inside slide-out nav */
   .header__mobile-profile {
-    margin-top: auto;
-    border-top: 1px solid var(--beige-dark);
-    padding-top: 0.75rem;
+    border-bottom: 1px solid var(--beige-dark);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
   }
 
   .header__mobile-profile-trigger {

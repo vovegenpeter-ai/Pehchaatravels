@@ -136,21 +136,7 @@ export default function Header() {
 
         {/* Center: Nav links */}
         <nav className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}>
-          <ul className="header__links">
-            {navLinks.map(({ href, label }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  onClick={closeMenu}
-                  className={isActive(href) ? 'active' : ''}
-                >
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          {/* Mobile profile section — only visible inside slide-out nav on mobile */}
+          {/* Mobile profile section — above nav links on mobile */}
           {user && (
             <div className="header__mobile-profile">
               <button
@@ -213,6 +199,20 @@ export default function Header() {
               </Link>
             </div>
           )}
+
+          <ul className="header__links">
+            {navLinks.map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  onClick={closeMenu}
+                  className={isActive(href) ? 'active' : ''}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
 
         {/* Right: Cart + Profile/Sign In + Hamburger */}
