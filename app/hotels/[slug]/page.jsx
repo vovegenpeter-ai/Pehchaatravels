@@ -3,9 +3,9 @@ import { notFound } from 'next/navigation'
 import HotelCard from '@/components/HotelCard'
 import TourCard from '@/components/TourCard'
 import { SectionHeader } from '@/components/UI'
-import { getHotelBySlugOrId, getPublishedHotels } from '@/lib/db'
+import { getHotelBySlugOrId, getRelatedHotels } from '@/lib/db'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 export async function generateMetadata({ params }) {
   const { slug } = await params
@@ -22,8 +22,7 @@ export default async function HotelDetailPage({ params }) {
   const hotel = await getHotelBySlugOrId(slug)
   if (!hotel) notFound()
 
-  const allHotels = await getPublishedHotels()
-  const relatedHotels = allHotels.filter((h) => h.id !== hotel.id).slice(0, 3)
+  const relatedHotels = await getRelatedHotels(hotel.id, 3)
   const roomTypes = Array.isArray(hotel.roomTypes) ? hotel.roomTypes : []
 
   return (

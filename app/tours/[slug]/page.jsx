@@ -3,13 +3,13 @@ import { notFound } from 'next/navigation'
 import TourCard from '@/components/TourCard'
 import BookTourButton from '@/components/BookTourButton'
 import { SectionHeader } from '@/components/UI'
-import { getTourBySlugOrId, getPublishedTours } from '@/lib/db'
+import { getTourBySlugOrId, getRelatedTours } from '@/lib/db'
 import { formatPrice } from '@/lib/tourUtils'
 import ReviewsList from '@/components/ReviewsList'
 import WriteReviewButton from '@/components/WriteReviewButton'
 import ReviewStatusBanner from '@/components/ReviewStatusBanner'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 export async function generateMetadata({ params }) {
   const { slug } = await params
@@ -39,10 +39,7 @@ export default async function TourDetailPage({ params }) {
 
   if (!tour) notFound()
 
-  const allTours = await getPublishedTours()
-  const relatedTours = allTours
-    .filter((t) => t.id !== tour.id)
-    .slice(0, 3)
+  const relatedTours = await getRelatedTours(tour.id, 3)
 
   const description = tour.fullDescription || tour.description
   const itinerary = tour.itinerary || []

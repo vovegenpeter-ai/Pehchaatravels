@@ -4,9 +4,9 @@ import PlaceCard from '@/components/PlaceCard'
 import TourCard from '@/components/TourCard'
 import HotelCard from '@/components/HotelCard'
 import { SectionHeader } from '@/components/UI'
-import { getDestinationBySlug, getFeaturedDestinations } from '@/lib/db'
+import { getDestinationBySlug, getRelatedDestinations } from '@/lib/db'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 export async function generateMetadata({ params }) {
   const { slug } = await params
@@ -23,8 +23,7 @@ export default async function DestinationDetailPage({ params }) {
   const destination = await getDestinationBySlug(slug)
   if (!destination) notFound()
 
-  const allDestinations = await getFeaturedDestinations(20)
-  const related = allDestinations.filter((d) => d.id !== destination.id).slice(0, 4)
+  const related = await getRelatedDestinations(destination.id, 4)
 
   return (
     <>

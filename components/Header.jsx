@@ -72,7 +72,7 @@ export default function Header() {
   const { totalItems, mounted: cartMounted } = useCart()
 
   const fetchUser = () => {
-    fetch('/api/auth/me')
+    fetch('/api/auth/me', { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => setUser(data?.user || null))
       .catch(() => setUser(null))
@@ -81,7 +81,7 @@ export default function Header() {
   useEffect(() => {
     setMounted(true)
     fetchUser()
-  }, [pathname])
+  }, [])
 
   useEffect(() => {
     const handler = () => fetchUser()

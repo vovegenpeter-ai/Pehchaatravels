@@ -33,6 +33,35 @@ export async function getPopularTours(limit = 6) {
   return tours.map(mapTour)
 }
 
+export async function getRelatedTours(currentId: string, limit = 3) {
+  const tours = await prisma.tour.findMany({
+    where: { published: true, id: { not: currentId } },
+    include: tourInclude,
+    take: limit,
+    orderBy: { rating: 'desc' },
+  })
+  return tours.map(mapTour)
+}
+
+export async function getRelatedHotels(currentId: string, limit = 3) {
+  const hotels = await prisma.hotel.findMany({
+    where: { published: true, id: { not: currentId } },
+    include: { images: true, category: true },
+    take: limit,
+    orderBy: { rating: 'desc' },
+  })
+  return hotels.map(mapHotel)
+}
+
+export async function getRelatedDestinations(currentId: string, limit = 4) {
+  const destinations = await prisma.destination.findMany({
+    where: { published: true, id: { not: currentId } },
+    take: limit,
+    orderBy: { name: 'asc' },
+  })
+  return destinations.map(mapDestination)
+}
+
 export async function getLatestTours(limit = 6) {
   const tours = await prisma.tour.findMany({
     where: { published: true, latest: true },

@@ -4,45 +4,30 @@ import PlacesAndHotelsSection from '@/components/PlacesAndHotelsSection'
 import { getFeaturedTours, getFeaturedDestinations, getFeaturedHotels } from '@/lib/db'
 import { HERO_IMAGE, TRIP_IMAGE, defaultTours, popularPlaces, defaultHotels } from '@/lib/initialData'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 export default async function HomePage() {
   let tours = []
   let places = []
   let hotels = []
 
-  try {
-    const dbTours = await getFeaturedTours(3)
-    if (dbTours && dbTours.length >= 3) {
-      tours = dbTours.slice(0, 3)
-    } else {
-      tours = defaultTours.slice(0, 3)
-    }
-  } catch {
-    tours = defaultTours.slice(0, 3)
-  }
+  const [dbTours, dbPlaces, dbHotels] = await Promise.allSettled([
+    getFeaturedTours(3),
+    getFeaturedDestinations(4),
+    getFeaturedHotels(4),
+  ])
 
-  try {
-    const dbPlaces = await getFeaturedDestinations(4)
-    if (dbPlaces && dbPlaces.length >= 4) {
-      places = dbPlaces.slice(0, 4)
-    } else {
-      places = popularPlaces.slice(0, 4)
-    }
-  } catch {
-    places = popularPlaces.slice(0, 4)
-  }
+  tours = dbTours.status === 'fulfilled' && dbTours.value?.length >= 3
+    ? dbTours.value.slice(0, 3)
+    : defaultTours.slice(0, 3)
 
-  try {
-    const dbHotels = await getFeaturedHotels(4)
-    if (dbHotels && dbHotels.length >= 4) {
-      hotels = dbHotels.slice(0, 4)
-    } else {
-      hotels = defaultHotels.slice(0, 4)
-    }
-  } catch {
-    hotels = defaultHotels.slice(0, 4)
-  }
+  places = dbPlaces.status === 'fulfilled' && dbPlaces.value?.length >= 4
+    ? dbPlaces.value.slice(0, 4)
+    : popularPlaces.slice(0, 4)
+
+  hotels = dbHotels.status === 'fulfilled' && dbHotels.value?.length >= 4
+    ? dbHotels.value.slice(0, 4)
+    : defaultHotels.slice(0, 4)
 
   return (
     <div className="home-page-ref">

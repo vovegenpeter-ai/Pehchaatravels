@@ -3,7 +3,7 @@ import HotelCard from '@/components/HotelCard'
 import { getPublishedHotels } from '@/lib/db'
 import { HERO_IMAGE } from '@/lib/initialData'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 export const metadata = {
   title: 'Hotels — Pehchaan Travels',
