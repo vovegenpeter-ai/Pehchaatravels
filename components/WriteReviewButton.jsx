@@ -74,7 +74,7 @@ export default function WriteReviewButton({ tourId }) {
         fontSize: '14px',
       }}
     >
-      ✍️ Write a Review
+      Write a Review
     </button>
   )
 }
