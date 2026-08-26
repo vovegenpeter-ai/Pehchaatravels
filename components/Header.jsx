@@ -149,6 +149,70 @@ export default function Header() {
               </li>
             ))}
           </ul>
+
+          {/* Mobile profile section — only visible inside slide-out nav on mobile */}
+          {user && (
+            <div className="header__mobile-profile">
+              <button
+                type="button"
+                className="header__mobile-profile-trigger"
+                onClick={() => setProfileOpen(!profileOpen)}
+                aria-expanded={profileOpen}
+              >
+                <Avatar
+                  src={user.avatar}
+                  name={user.fullName}
+                  className="header__mobile-profile-avatar"
+                />
+                <div className="header__mobile-profile-info">
+                  <span className="header__mobile-profile-name">{user.fullName}</span>
+                  <span className="header__mobile-profile-email">{user.email}</span>
+                </div>
+                <span className={`header__mobile-profile-chevron ${profileOpen ? 'header__mobile-profile-chevron--open' : ''}`}>
+                  ▾
+                </span>
+              </button>
+
+              {profileOpen && (
+                <div className="header__mobile-profile-dropdown">
+                  <Link
+                    href="/bookings"
+                    className="header__mobile-profile-dropdown-item"
+                    onClick={closeMenu}
+                  >
+                    My Bookings
+                  </Link>
+                  <Link
+                    href="/profile"
+                    className="header__mobile-profile-dropdown-item"
+                    onClick={closeMenu}
+                  >
+                    My Profile
+                  </Link>
+                  <button
+                    type="button"
+                    className="header__mobile-profile-dropdown-item header__mobile-profile-dropdown-item--danger"
+                    onClick={handleLogout}
+                    disabled={loggingOut}
+                  >
+                    {loggingOut ? 'Signing out...' : 'Sign Out'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {!user && (
+            <div className="header__mobile-profile">
+              <Link
+                href="/sign-in"
+                className="header__mobile-profile-signin"
+                onClick={closeMenu}
+              >
+                Sign In
+              </Link>
+            </div>
+          )}
         </nav>
 
         {/* Right: Cart + Profile/Sign In + Hamburger */}
