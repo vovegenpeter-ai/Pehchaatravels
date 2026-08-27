@@ -34,6 +34,7 @@ export default async function AdminDestinationsPage({ searchParams }) {
           <thead>
             <tr>
               <th>Name</th>
+              <th>Short Description</th>
               <th>Location</th>
               <th>Status</th>
               <th>Actions</th>
@@ -41,10 +42,11 @@ export default async function AdminDestinationsPage({ searchParams }) {
           </thead>
           <tbody>
             {destinations.length === 0 ? (
-              <tr><td colSpan="4" className="admin-table__empty">No destinations found.</td></tr>
+              <tr><td colSpan="5" className="admin-table__empty">No destinations found.</td></tr>
             ) : destinations.map((dest) => (
               <tr key={dest.id}>
                 <td>{dest.name}</td>
+                <td>{dest.shortDescription}</td>
                 <td>{dest.location}</td>
                 <td>{dest.published ? 'Published' : 'Draft'}</td>
                 <td>

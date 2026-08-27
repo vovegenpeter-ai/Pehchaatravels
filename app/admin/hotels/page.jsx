@@ -34,6 +34,7 @@ export default async function AdminHotelsPage({ searchParams }) {
           <thead>
             <tr>
               <th>Name</th>
+              <th>Short Description</th>
               <th>Location</th>
               <th>Price/Night</th>
               <th>Status</th>
@@ -42,10 +43,11 @@ export default async function AdminHotelsPage({ searchParams }) {
           </thead>
           <tbody>
             {hotels.length === 0 ? (
-              <tr><td colSpan="5" className="admin-table__empty">No hotels found.</td></tr>
+              <tr><td colSpan="6" className="admin-table__empty">No hotels found.</td></tr>
             ) : hotels.map((hotel) => (
               <tr key={hotel.id}>
                 <td>{hotel.name}</td>
+                <td>{hotel.shortDescription}</td>
                 <td>{hotel.location}</td>
                 <td>PKR {Number(hotel.pricePerNight).toLocaleString('en-US')}</td>
                 <td>{hotel.published ? 'Published' : 'Draft'}</td>
