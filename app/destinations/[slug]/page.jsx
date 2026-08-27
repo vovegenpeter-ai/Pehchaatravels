@@ -31,7 +31,6 @@ export default async function DestinationDetailPage({ params }) {
         <div className="tour-detail-hero__overlay">
           <div className="container">
             <h1>{destination.name}</h1>
-            <span className="tour-detail-hero__badge">📍 {destination.location}</span>
           </div>
         </div>
       </section>
