@@ -11,7 +11,7 @@ export default function HotelCard({ hotel, dark }) {
       <div className="card__body">
         <span className="card__location">📍 {hotel.location}</span>
         <h3>{hotel.name}</h3>
-        <p>{hotel.description}</p>
+        <p>{hotel.shortDescription || hotel.description}</p>
         <div className="card__footer">
           <span className="card__price">PKR {hotel.pricePerNight.toLocaleString('en-US')}/night</span>
           <div className="card__actions">

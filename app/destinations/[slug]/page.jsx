@@ -14,7 +14,7 @@ export async function generateMetadata({ params }) {
   if (!destination) return { title: 'Destination Not Found — Pehchaan Travels' }
   return {
     title: `${destination.name} — Pehchaan Travels`,
-    description: destination.description,
+    description: destination.shortDescription || destination.description,
   }
 }
 
@@ -39,7 +39,7 @@ export default async function DestinationDetailPage({ params }) {
         <div className="container">
           <h2 className="tour-section-title">About {destination.name}</h2>
           <div className="tour-description">
-            {destination.description.split('\n\n').map((p) => (
+            {(destination.fullDescription || destination.description).split('\n\n').map((p) => (
               <p key={p.slice(0, 40)}>{p}</p>
             ))}
           </div>

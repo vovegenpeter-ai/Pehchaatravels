@@ -9,7 +9,7 @@ export default function PlaceCard({ place, dark }) {
       </div>
       <div className="card__body">
         <h3>{place.name}</h3>
-        <p>{place.description}</p>
+        <p>{place.shortDescription || place.description}</p>
         <Link href={getDestinationPath(place)} className="btn btn--primary btn--sm">Explore</Link>
       </div>
     </article>

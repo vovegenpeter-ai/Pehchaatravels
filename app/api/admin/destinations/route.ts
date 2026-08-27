@@ -21,9 +21,16 @@ export async function POST(request: Request) {
     const data = destinationSchema.parse(body)
     const { tourIds, hotelIds, ...destData } = data
 
+    const description = destData.fullDescription || destData.description || destData.shortDescription || ''
+    const shortDescription = destData.shortDescription || destData.description || ''
+    const fullDescription = destData.fullDescription || destData.description || ''
+
     const destination = await prisma.destination.create({
       data: {
         ...destData,
+        description,
+        shortDescription,
+        fullDescription,
         tours: { create: tourIds.map((tourId) => ({ tourId })) },
         hotels: { create: hotelIds.map((hotelId) => ({ hotelId })) },
       },

@@ -7,7 +7,7 @@ import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 
 const emptyForm = {
-  name: '', slug: '', description: '', location: '', image: '',
+  name: '', slug: '', shortDescription: '', fullDescription: '', location: '', image: '',
   published: true, featured: false, categoryId: '', tourIds: [], hotelIds: [],
 }
 
@@ -24,8 +24,6 @@ export default function DestinationForm({ destinationId = null }) {
     let cancelled = false
     async function load() {
       try {
-        // Fetched sequentially to avoid concurrent DB queries (the local dev
-        // database is unstable under concurrent relation queries).
         const cats = await fetchJson('/api/admin/categories')
         const t = await fetchJson('/api/admin/tours')
         const h = await fetchJson('/api/admin/hotels')
@@ -38,10 +36,17 @@ export default function DestinationForm({ destinationId = null }) {
           const d = await fetchJson(`/api/admin/destinations/${destinationId}`)
           if (cancelled) return
           setForm({
-            name: d.name, slug: d.slug, description: d.description,
-            location: d.location, image: d.image,
-            published: d.published, featured: d.featured,
-            categoryId: d.categoryId || '', tourIds: d.tourIds || [], hotelIds: d.hotelIds || [],
+            name: d.name,
+            slug: d.slug,
+            shortDescription: d.shortDescription || d.description || '',
+            fullDescription: d.fullDescription || d.description || '',
+            location: d.location,
+            image: d.image,
+            published: d.published,
+            featured: d.featured,
+            categoryId: d.categoryId || '',
+            tourIds: d.tourIds || [],
+            hotelIds: d.hotelIds || [],
           })
         }
       } catch (e) {
@@ -58,7 +63,6 @@ export default function DestinationForm({ destinationId = null }) {
     if (name === 'slug') nextValue = slugify(value)
     setForm((prev) => {
       const updated = { ...prev, [name]: type === 'checkbox' ? checked : nextValue }
-      // Auto-fill the slug from the name while the admin hasn't set one yet.
       if (name === 'name' && !updated.slug) updated.slug = slugify(value)
       return updated
     })
@@ -76,12 +80,25 @@ export default function DestinationForm({ destinationId = null }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+
+    // Client-side validation for descriptions
+    if (form.shortDescription.length < 10) {
+      setError('Short Description must be at least 10 characters long')
+      return
+    }
+    if (form.fullDescription.length < 20) {
+      setError('Long Description must be at least 20 characters long')
+      return
+    }
+
     setLoading(true)
     try {
       const payload = {
         name: form.name,
         slug: form.slug,
-        description: form.description,
+        shortDescription: form.shortDescription,
+        fullDescription: form.fullDescription,
+        description: form.fullDescription || form.shortDescription,
         location: form.location,
         image: form.image,
         published: form.published,
@@ -113,7 +130,37 @@ export default function DestinationForm({ destinationId = null }) {
         <div className="form-group"><label>Name</label><input name="name" required value={form.name} onChange={handleChange} /></div>
         <div className="form-group"><label>Slug</label><input name="slug" required value={form.slug} onChange={handleChange} placeholder="hunza" /></div>
         <div className="form-group"><label>Location</label><input name="location" required value={form.location} onChange={handleChange} /></div>
-        <div className="form-group form-group--full"><label>Description</label><textarea name="description" rows={5} required value={form.description} onChange={handleChange} /></div>
+        
+        {/* Short Description */}
+        <div className="form-group form-group--full">
+          <label>
+            Short Description <span style={{ fontSize: '0.85rem', fontWeight: 'normal', color: '#64748b' }}>(Displayed on Cards across Home & Places pages)</span>
+          </label>
+          <textarea
+            name="shortDescription"
+            rows={3}
+            required
+            value={form.shortDescription}
+            onChange={handleChange}
+            placeholder="A brief 1-2 sentence overview shown on cards..."
+          />
+        </div>
+
+        {/* Long Description */}
+        <div className="form-group form-group--full">
+          <label>
+            Long Description <span style={{ fontSize: '0.85rem', fontWeight: 'normal', color: '#64748b' }}>(Displayed on the Destination Detail Page)</span>
+          </label>
+          <textarea
+            name="fullDescription"
+            rows={6}
+            required
+            value={form.fullDescription}
+            onChange={handleChange}
+            placeholder="Detailed overview and background shown on the place detail page..."
+          />
+        </div>
+
         <ImageUploadField label="Destination Image" name="image" value={form.image} onChange={handleChange} />
         <div className="form-group"><label>Category</label>
           <select name="categoryId" value={form.categoryId} onChange={handleChange}>

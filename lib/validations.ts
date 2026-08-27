@@ -42,7 +42,9 @@ export const tourSchema = z.object({
 export const hotelSchema = z.object({
   name: z.string().min(3),
   slug: z.string().min(3).regex(/^[a-z0-9-]+$/),
-  description: z.string().min(20),
+  shortDescription: z.string().min(10, 'Short description must be at least 10 characters'),
+  fullDescription: z.string().min(20, 'Long description must be at least 20 characters'),
+  description: z.string().optional().or(z.literal('')),
   location: z.string().min(2),
   address: z.string().optional(),
   pricePerNight: z.number().positive(),
@@ -75,7 +77,9 @@ export const categorySchema = z.object({
 export const destinationSchema = z.object({
   name: z.string().min(2),
   slug: z.string().min(2).regex(/^[a-z0-9-]+$/),
-  description: z.string().min(20),
+  shortDescription: z.string().min(10, 'Short description must be at least 10 characters'),
+  fullDescription: z.string().min(20, 'Long description must be at least 20 characters'),
+  description: z.string().optional().or(z.literal('')),
   location: z.string().min(2),
   image: imageField,
   published: z.boolean().default(true),

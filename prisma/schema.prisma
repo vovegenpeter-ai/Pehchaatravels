@@ -88,29 +88,31 @@ model TourImage {
 }
 
 model Hotel {
-  id            String             @id @default(cuid())
-  slug          String             @unique
-  name          String
-  description   String
-  location      String
-  address       String?
-  pricePerNight Decimal            @db.Decimal(10, 2)
-  rating        Float              @default(0)
-  contactPhone  String?
-  contactEmail  String?
-  checkInTime   String?
-  checkOutTime  String?
-  amenities     String[]           @default([])
-  roomTypes     Json?
-  bannerImage   String
-  published     Boolean            @default(true)
-  featured      Boolean            @default(false)
-  categoryId    String?
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
-  destinations  DestinationHotel[]
-  category      Category?          @relation(fields: [categoryId], references: [id])
-  images        HotelImage[]
+  id               String             @id @default(cuid())
+  slug             String             @unique
+  name             String
+  shortDescription String?
+  fullDescription  String?
+  description      String
+  location         String
+  address          String?
+  pricePerNight    Decimal            @db.Decimal(10, 2)
+  rating           Float              @default(0)
+  contactPhone     String?
+  contactEmail     String?
+  checkInTime      String?
+  checkOutTime     String?
+  amenities        String[]           @default([])
+  roomTypes        Json?
+  bannerImage      String
+  published        Boolean            @default(true)
+  featured         Boolean            @default(false)
+  categoryId       String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  destinations     DestinationHotel[]
+  category         Category?          @relation(fields: [categoryId], references: [id])
+  images           HotelImage[]
 }
 
 model HotelImage {
@@ -123,20 +125,22 @@ model HotelImage {
 }
 
 model Destination {
-  id          String             @id @default(cuid())
-  slug        String             @unique
-  name        String
-  description String
-  location    String
-  image       String
-  published   Boolean            @default(true)
-  featured    Boolean            @default(false)
-  categoryId  String?
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  category    Category?          @relation(fields: [categoryId], references: [id])
-  hotels      DestinationHotel[]
-  tours       DestinationTour[]
+  id               String             @id @default(cuid())
+  slug             String             @unique
+  name             String
+  shortDescription String?
+  fullDescription  String?
+  description      String
+  location         String
+  image            String
+  published        Boolean            @default(true)
+  featured         Boolean            @default(false)
+  categoryId       String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  category         Category?          @relation(fields: [categoryId], references: [id])
+  hotels           DestinationHotel[]
+  tours            DestinationTour[]
 }
 
 model DestinationTour {

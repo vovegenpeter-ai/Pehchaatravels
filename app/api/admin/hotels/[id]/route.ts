@@ -22,10 +22,17 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     await prisma.hotelImage.deleteMany({ where: { hotelId: id } })
 
+    const description = hotelData.fullDescription || hotelData.description || hotelData.shortDescription || ''
+    const shortDescription = hotelData.shortDescription || hotelData.description || ''
+    const fullDescription = hotelData.fullDescription || hotelData.description || ''
+
     const hotel = await prisma.hotel.update({
       where: { id },
       data: {
         ...hotelData,
+        description,
+        shortDescription,
+        fullDescription,
         pricePerNight: hotelData.pricePerNight,
         contactEmail: hotelData.contactEmail || null,
         images: { create: images.map((url, index) => ({ url, order: index })) },

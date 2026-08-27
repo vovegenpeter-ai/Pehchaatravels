@@ -26,10 +26,17 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     await prisma.destinationTour.deleteMany({ where: { destinationId: id } })
     await prisma.destinationHotel.deleteMany({ where: { destinationId: id } })
 
+    const description = destData.fullDescription || destData.description || destData.shortDescription || ''
+    const shortDescription = destData.shortDescription || destData.description || ''
+    const fullDescription = destData.fullDescription || destData.description || ''
+
     const destination = await prisma.destination.update({
       where: { id },
       data: {
         ...destData,
+        description,
+        shortDescription,
+        fullDescription,
         tours: { create: tourIds.map((tourId) => ({ tourId })) },
         hotels: { create: hotelIds.map((hotelId) => ({ hotelId })) },
       },

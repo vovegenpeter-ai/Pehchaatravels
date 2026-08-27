@@ -124,8 +124,35 @@ export default function TourForm({ tourId = null }) {
       <div className="admin-form-grid">
         <div className="form-group"><label>Name</label><input name="name" required value={form.name} onChange={handleChange} /></div>
         <div className="form-group"><label>Slug</label><input name="slug" required value={form.slug} onChange={handleChange} placeholder="hunza-valley-tour" /></div>
-        <div className="form-group form-group--full"><label>Short Description</label><input name="shortDescription" required value={form.shortDescription} onChange={handleChange} /></div>
-        <div className="form-group form-group--full"><label>Full Description</label><textarea name="fullDescription" rows={5} required value={form.fullDescription} onChange={handleChange} /></div>
+        {/* Short Description */}
+        <div className="form-group form-group--full">
+          <label>
+            Short Description <span style={{ fontSize: '0.85rem', fontWeight: 'normal', color: '#64748b' }}>(Displayed on Cards across Home & Tours pages)</span>
+          </label>
+          <textarea
+            name="shortDescription"
+            rows={3}
+            required
+            value={form.shortDescription}
+            onChange={handleChange}
+            placeholder="A brief 1-2 sentence summary shown on tour cards..."
+          />
+        </div>
+
+        {/* Long Description */}
+        <div className="form-group form-group--full">
+          <label>
+            Long Description <span style={{ fontSize: '0.85rem', fontWeight: 'normal', color: '#64748b' }}>(Displayed on the Tour Detail Page)</span>
+          </label>
+          <textarea
+            name="fullDescription"
+            rows={6}
+            required
+            value={form.fullDescription}
+            onChange={handleChange}
+            placeholder="Comprehensive description and overview shown on the tour detail page..."
+          />
+        </div>
         <div className="form-group"><label>Destination</label><input name="destination" required value={form.destination} onChange={handleChange} /></div>
         <div className="form-group"><label>Location</label><input name="location" value={form.location} onChange={handleChange} /></div>
         <div className="form-group"><label>Price (PKR)</label><input name="price" type="number" required value={form.price} onChange={handleChange} /></div>

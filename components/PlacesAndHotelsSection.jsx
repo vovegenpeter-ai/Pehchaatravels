@@ -77,7 +77,7 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
                       <Link href={destUrl}>{place.name}</Link>
                     </h3>
 
-                    <p className="ph-card__desc">{place.description}</p>
+                    <p className="ph-card__desc">{place.shortDescription || place.description}</p>
 
                     <div className="ph-card__divider" />
 
@@ -127,7 +127,7 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
                       <Link href={hotelUrl}>{hotel.name}</Link>
                     </h3>
 
-                    <p className="ph-card__desc">{hotel.description}</p>
+                    <p className="ph-card__desc">{hotel.shortDescription || hotel.description}</p>
 
                     <div className="ph-card__divider" />
 

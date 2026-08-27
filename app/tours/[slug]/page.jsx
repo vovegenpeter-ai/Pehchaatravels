@@ -17,7 +17,7 @@ export async function generateMetadata({ params }) {
   if (!tour) return { title: 'Tour Not Found — Pehchaan Travels' }
   return {
     title: `${tour.name} — Pehchaan Travels`,
-    description: tour.description,
+    description: tour.shortDescription || tour.description,
   }
 }
 

@@ -7,7 +7,7 @@ import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 
 const emptyForm = {
-  name: '', slug: '', description: '', location: '', address: '',
+  name: '', slug: '', shortDescription: '', fullDescription: '', location: '', address: '',
   pricePerNight: '', rating: '4.5', contactPhone: '', contactEmail: '',
   checkInTime: '2:00 PM', checkOutTime: '12:00 PM',
   bannerImage: '', extraImages: '', amenities: '', roomTypes: '',
@@ -32,16 +32,25 @@ export default function HotelForm({ hotelId = null }) {
           const h = await fetchJson(`/api/admin/hotels/${hotelId}`)
           if (cancelled) return
           setForm({
-            name: h.name, slug: h.slug, description: h.description,
-            location: h.location, address: h.address || '',
-            pricePerNight: String(h.pricePerNight), rating: String(h.rating),
-            contactPhone: h.contactPhone || '', contactEmail: h.contactEmail || '',
-            checkInTime: h.checkInTime || '2:00 PM', checkOutTime: h.checkOutTime || '12:00 PM',
+            name: h.name,
+            slug: h.slug,
+            shortDescription: h.shortDescription || h.description || '',
+            fullDescription: h.fullDescription || h.description || '',
+            location: h.location,
+            address: h.address || '',
+            pricePerNight: String(h.pricePerNight),
+            rating: String(h.rating),
+            contactPhone: h.contactPhone || '',
+            contactEmail: h.contactEmail || '',
+            checkInTime: h.checkInTime || '2:00 PM',
+            checkOutTime: h.checkOutTime || '12:00 PM',
             bannerImage: h.bannerImage,
             extraImages: (h.images || []).filter((i) => i !== h.bannerImage).join('\n'),
             amenities: (h.amenities || []).join('\n'),
             roomTypes: JSON.stringify(h.roomTypes || [], null, 2),
-            published: h.published, featured: h.featured, categoryId: h.categoryId || '',
+            published: h.published,
+            featured: h.featured,
+            categoryId: h.categoryId || '',
           })
         }
       } catch (e) {
@@ -58,7 +67,6 @@ export default function HotelForm({ hotelId = null }) {
     if (name === 'slug') nextValue = slugify(value)
     setForm((prev) => {
       const updated = { ...prev, [name]: type === 'checkbox' ? checked : nextValue }
-      // Auto-fill the slug from the name while the admin hasn't set one yet.
       if (name === 'name' && !updated.slug) updated.slug = slugify(value)
       return updated
     })
@@ -67,13 +75,26 @@ export default function HotelForm({ hotelId = null }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+
+    // Client-side validation for descriptions
+    if (form.shortDescription.length < 10) {
+      setError('Short Description must be at least 10 characters long')
+      return
+    }
+    if (form.fullDescription.length < 20) {
+      setError('Long Description must be at least 20 characters long')
+      return
+    }
+
     setLoading(true)
     try {
       const extraImages = form.extraImages.split('\n').map((s) => s.trim()).filter(Boolean)
       const payload = {
         name: form.name,
         slug: form.slug,
-        description: form.description,
+        shortDescription: form.shortDescription,
+        fullDescription: form.fullDescription,
+        description: form.fullDescription || form.shortDescription,
         location: form.location,
         address: form.address,
         pricePerNight: Number(form.pricePerNight),
@@ -112,7 +133,37 @@ export default function HotelForm({ hotelId = null }) {
       <div className="admin-form-grid">
         <div className="form-group"><label>Name</label><input name="name" required value={form.name} onChange={handleChange} /></div>
         <div className="form-group"><label>Slug</label><input name="slug" required value={form.slug} onChange={handleChange} placeholder="serena-hotel-hunza" /></div>
-        <div className="form-group form-group--full"><label>Description</label><textarea name="description" rows={5} required value={form.description} onChange={handleChange} /></div>
+
+        {/* Short Description */}
+        <div className="form-group form-group--full">
+          <label>
+            Short Description <span style={{ fontSize: '0.85rem', fontWeight: 'normal', color: '#64748b' }}>(Displayed on Cards across Home & Hotels pages)</span>
+          </label>
+          <textarea
+            name="shortDescription"
+            rows={3}
+            required
+            value={form.shortDescription}
+            onChange={handleChange}
+            placeholder="A brief 1-2 sentence overview shown on hotel cards..."
+          />
+        </div>
+
+        {/* Long Description */}
+        <div className="form-group form-group--full">
+          <label>
+            Long Description <span style={{ fontSize: '0.85rem', fontWeight: 'normal', color: '#64748b' }}>(Displayed on the Hotel Detail Page)</span>
+          </label>
+          <textarea
+            name="fullDescription"
+            rows={6}
+            required
+            value={form.fullDescription}
+            onChange={handleChange}
+            placeholder="Comprehensive description and amenities info shown on the hotel detail page..."
+          />
+        </div>
+
         <div className="form-group"><label>Location</label><input name="location" required value={form.location} onChange={handleChange} /></div>
         <div className="form-group"><label>Address</label><input name="address" value={form.address} onChange={handleChange} /></div>
         <div className="form-group"><label>Price per Night (PKR)</label><input name="pricePerNight" type="number" required value={form.pricePerNight} onChange={handleChange} /></div>

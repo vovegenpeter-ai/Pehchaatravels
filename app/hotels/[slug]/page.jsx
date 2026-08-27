@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
   if (!hotel) return { title: 'Hotel Not Found — Pehchaan Travels' }
   return {
     title: `${hotel.name} — Pehchaan Travels`,
-    description: hotel.description,
+    description: hotel.shortDescription || hotel.description,
   }
 }
 
@@ -57,7 +57,7 @@ export default async function HotelDetailPage({ params }) {
           <section className="tour-detail-block">
             <h2 className="tour-section-title">About This Hotel</h2>
             <div className="tour-description">
-              {hotel.description.split('\n\n').map((p) => (
+              {(hotel.fullDescription || hotel.description).split('\n\n').map((p) => (
                 <p key={p.slice(0, 40)}>{p}</p>
               ))}
             </div>
