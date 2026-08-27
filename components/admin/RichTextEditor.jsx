@@ -54,6 +54,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
   const fileInputRef = useRef(null)
+  const [, forceUpdate] = useState(0)
 
   const editor = useEditor({
     extensions: [
@@ -73,6 +74,9 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     content: value,
     onUpdate: ({ editor: ed }) => {
       onChange(ed.getHTML())
+    },
+    onTransaction: () => {
+      forceUpdate((n) => n + 1)
     },
   })
 
@@ -94,12 +98,13 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
 
     setUploading(true)
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-      const res = await fetch('/api/admin/upload', { method: 'POST', body: formData })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Upload failed')
-      editor.chain().focus().setImage({ src: data.url }).run()
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = () => reject(new Error('Failed to read file'))
+        reader.readAsDataURL(file)
+      })
+      editor.chain().focus().setImage({ src: dataUrl }).run()
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : 'Upload failed')
     } finally {
