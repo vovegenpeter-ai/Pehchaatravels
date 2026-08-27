@@ -419,14 +419,7 @@ export default function ProfilePage() {
                     className="btn btn--primary"
                     onClick={() => setEditing(true)}
                   >
-                    ✏️ Edit Profile
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn--outline"
-                    onClick={handleSignOut}
-                  >
-                    🚪 Sign Out
+                    Edit Profile
                   </button>
                 </div>
               </>
