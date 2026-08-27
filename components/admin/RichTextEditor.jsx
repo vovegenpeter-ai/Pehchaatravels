@@ -155,8 +155,10 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
         <ToolbarSelect
           value={activeHeadingLevel ? `h${activeHeadingLevel}` : 'p'}
           onChange={(v) => {
-            if (v === 'p') editor.chain().focus().setParagraph().run()
-            else editor.chain().focus().toggleHeading({ level: Number(v) }).run()
+            setTimeout(() => {
+              if (v === 'p') editor.chain().focus().setParagraph().run()
+              else editor.chain().focus().toggleHeading({ level: Number(v) }).run()
+            }, 0)
           }}
           title="Text style"
           options={[
@@ -174,8 +176,10 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
         <ToolbarSelect
           value={activeFontFamily}
           onChange={(v) => {
-            if (v) editor.chain().focus().setFontFamily(v).run()
-            else editor.chain().focus().unsetFontFamily().run()
+            setTimeout(() => {
+              if (v) editor.chain().focus().setFontFamily(v).run()
+              else editor.chain().focus().unsetFontFamily().run()
+            }, 0)
           }}
           title="Font family"
           options={[
