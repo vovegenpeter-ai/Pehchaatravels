@@ -2218,6 +2218,15 @@ ul { list-style: none; }
   max-width: 800px;
 }
 
+.tour-detail-hero__subtitle {
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  font-weight: 400;
+  line-height: 1.55;
+  max-width: 700px;
+  margin-top: 0.75rem;
+  opacity: 0.9;
+}
+
 .tour-section-title {
   font-size: clamp(1.4rem, 3vw, 1.75rem);
   color: var(--green);

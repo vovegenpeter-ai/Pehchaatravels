@@ -54,6 +54,9 @@ export default async function TourDetailPage({ params }) {
         <div className="tour-detail-hero__overlay">
           <div className="container">
             <h1>{tour.name}</h1>
+            {tour.shortDescription && (
+              <p className="tour-detail-hero__subtitle">{tour.shortDescription}</p>
+            )}
             <span className="tour-detail-hero__badge">{tour.duration || `${tour.days} Days`}</span>
           </div>
         </div>

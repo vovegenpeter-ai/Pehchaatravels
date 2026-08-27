@@ -31,6 +31,9 @@ export default async function HotelDetailPage({ params }) {
         <div className="tour-detail-hero__overlay">
           <div className="container">
             <h1>{hotel.name}</h1>
+            {hotel.shortDescription && (
+              <p className="tour-detail-hero__subtitle">{hotel.shortDescription}</p>
+            )}
             <span className="tour-detail-hero__badge">★ {hotel.rating}</span>
           </div>
         </div>

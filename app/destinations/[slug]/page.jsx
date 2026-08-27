@@ -31,6 +31,9 @@ export default async function DestinationDetailPage({ params }) {
         <div className="tour-detail-hero__overlay">
           <div className="container">
             <h1>{destination.name}</h1>
+            {destination.shortDescription && (
+              <p className="tour-detail-hero__subtitle">{destination.shortDescription}</p>
+            )}
           </div>
         </div>
       </section>
