@@ -34,7 +34,6 @@ export default async function AdminToursPage({ searchParams }) {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Slug</th>
               <th>Price</th>
               <th>Status</th>
               <th>Flags</th>
@@ -43,11 +42,10 @@ export default async function AdminToursPage({ searchParams }) {
           </thead>
           <tbody>
             {tours.length === 0 ? (
-              <tr><td colSpan="6" className="admin-table__empty">No tours found.</td></tr>
+              <tr><td colSpan="5" className="admin-table__empty">No tours found.</td></tr>
             ) : tours.map((tour) => (
               <tr key={tour.id}>
                 <td>{tour.name}</td>
-                <td>{tour.slug}</td>
                 <td>PKR {Number(tour.price).toLocaleString('en-US')}</td>
                 <td>{tour.published ? 'Published' : 'Draft'}</td>
                 <td>
