@@ -11,6 +11,14 @@ export default function ReviewsList({ tourId }) {
   const [sortBy, setSortBy] = useState('recent')
   const [filterRating, setFilterRating] = useState('')
   const { user: currentUser } = useAuth()
+  const [editingId, setEditingId] = useState(null)
+  const [editRating, setEditRating] = useState(0)
+  const [editHoverRating, setEditHoverRating] = useState(0)
+  const [editComment, setEditComment] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [deletingId, setDeletingId] = useState(null)
+  const [successMsg, setSuccessMsg] = useState('')
+  const [editError, setEditError] = useState('')
 
   const fetchReviews = async () => {
     setLoading(true)
