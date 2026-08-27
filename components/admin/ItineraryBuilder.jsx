@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function emptyDay(dayNum) {
   return { day: `Day ${dayNum}`, time: '', title: '', activities: [''] }
@@ -11,6 +11,11 @@ export default function ItineraryBuilder({ value = [], onChange }) {
     if (value.length > 0) return value
     return []
   })
+
+  // Sync when parent loads async data (e.g. editing an existing tour)
+  useEffect(() => {
+    setDays(value.length > 0 ? value : [])
+  }, [value])
 
   const emit = (next) => {
     setDays(next)
