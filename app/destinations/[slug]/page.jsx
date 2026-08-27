@@ -41,11 +41,7 @@ export default async function DestinationDetailPage({ params }) {
       <section className="section">
         <div className="container">
           <h2 className="tour-section-title">About {destination.name}</h2>
-          <div className="tour-description">
-            {(destination.fullDescription || destination.description).split('\n\n').map((p) => (
-              <p key={p.slice(0, 40)}>{p}</p>
-            ))}
-          </div>
+          <div className="tour-description" dangerouslySetInnerHTML={{ __html: destination.fullDescription || destination.description }} />
         </div>
       </section>
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploadField from '@/components/admin/ImageUploadField'
+import RichTextEditor from '@/components/admin/RichTextEditor'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 
@@ -154,12 +155,9 @@ export default function HotelForm({ hotelId = null }) {
           <label>
             Long Description <span style={{ fontSize: '0.85rem', fontWeight: 'normal', color: '#64748b' }}>(Displayed on the Hotel Detail Page)</span>
           </label>
-          <textarea
-            name="fullDescription"
-            rows={6}
-            required
+          <RichTextEditor
             value={form.fullDescription}
-            onChange={handleChange}
+            onChange={(html) => setForm((prev) => ({ ...prev, fullDescription: html }))}
             placeholder="Comprehensive description and amenities info shown on the hotel detail page..."
           />
         </div>

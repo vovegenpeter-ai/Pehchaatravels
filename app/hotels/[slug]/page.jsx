@@ -59,11 +59,7 @@ export default async function HotelDetailPage({ params }) {
         <div className="tour-detail-content">
           <section className="tour-detail-block">
             <h2 className="tour-section-title">About This Hotel</h2>
-            <div className="tour-description">
-              {(hotel.fullDescription || hotel.description).split('\n\n').map((p) => (
-                <p key={p.slice(0, 40)}>{p}</p>
-              ))}
-            </div>
+            <div className="tour-description" dangerouslySetInnerHTML={{ __html: hotel.fullDescription || hotel.description }} />
           </section>
 
           {hotel.amenities?.length > 0 && (

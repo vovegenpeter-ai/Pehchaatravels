@@ -2295,6 +2295,67 @@ ul { list-style: none; }
   margin-bottom: 1.25rem;
 }
 .tour-description p:last-child { margin-bottom: 0; }
+.tour-description h1,
+.tour-description h2,
+.tour-description h3,
+.tour-description h4,
+.tour-description h5,
+.tour-description h6 {
+  color: var(--green);
+  margin: 1.5rem 0 0.75rem;
+  line-height: 1.3;
+}
+.tour-description h1 { font-size: 1.8rem; }
+.tour-description h2 { font-size: 1.5rem; }
+.tour-description h3 { font-size: 1.25rem; }
+.tour-description ul,
+.tour-description ol {
+  padding-left: 1.5rem;
+  margin: 0.75rem 0;
+  color: var(--text-light);
+}
+.tour-description li {
+  margin-bottom: 0.4rem;
+  line-height: 1.7;
+}
+.tour-description a {
+  color: var(--green);
+  text-decoration: underline;
+}
+.tour-description img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  margin: 1rem 0;
+  display: block;
+}
+.tour-description code {
+  background: #f1f5f9;
+  border-radius: 3px;
+  padding: 0.15em 0.35em;
+  font-size: 0.88em;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+}
+.tour-description pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+.tour-description pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+.tour-description blockquote {
+  border-left: 3px solid var(--green);
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  background: #f8fafb;
+  font-style: italic;
+}
 
 .tour-schedule-summary {
   display: grid;

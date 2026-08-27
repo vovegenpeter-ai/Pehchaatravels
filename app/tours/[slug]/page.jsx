@@ -83,11 +83,7 @@ export default async function TourDetailPage({ params }) {
         <div className="tour-detail-content">
           <section className="tour-detail-block">
             <h2 className="tour-section-title">About This Tour</h2>
-            <div className="tour-description">
-              {description.split('\n\n').map((paragraph) => (
-                <p key={paragraph.slice(0, 40)}>{paragraph}</p>
-              ))}
-            </div>
+            <div className="tour-description" dangerouslySetInnerHTML={{ __html: description }} />
           </section>
 
           {(tour.includedServices?.length > 0 || tour.excludedServices?.length > 0) && (
