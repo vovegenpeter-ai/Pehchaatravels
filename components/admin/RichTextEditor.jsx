@@ -54,7 +54,11 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
   const fileInputRef = useRef(null)
-  const [, forceUpdate] = useState(0)
+  const [activeFontFamily, setActiveFontFamily] = useState('')
+  const [activeHeadingLevel, setActiveHeadingLevel] = useState(0)
+  const [activeTextAlign, setActiveTextAlign] = useState('left')
+  const [activeMarks, setActiveMarks] = useState({})
+  const [activeNodes, setActiveNodes] = useState({})
 
   const editor = useEditor({
     extensions: [
@@ -75,8 +79,23 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     onUpdate: ({ editor: ed }) => {
       onChange(ed.getHTML())
     },
-    onTransaction: () => {
-      forceUpdate((n) => n + 1)
+    onTransaction: ({ editor: ed }) => {
+      setActiveFontFamily(ed.getAttributes('textStyle').fontFamily || '')
+      setActiveHeadingLevel(ed.getAttributes('heading').level || 0)
+      setActiveTextAlign(ed.isActive({ textAlign: 'center' }) ? 'center' : ed.isActive({ textAlign: 'right' }) ? 'right' : ed.isActive({ textAlign: 'justify' }) ? 'justify' : 'left')
+      setActiveMarks({
+        bold: ed.isActive('bold'),
+        italic: ed.isActive('italic'),
+        underline: ed.isActive('underline'),
+        link: ed.isActive('link'),
+        code: ed.isActive('code'),
+        codeBlock: ed.isActive('codeBlock'),
+        orderedList: ed.isActive('orderedList'),
+        bulletList: ed.isActive('bulletList'),
+      })
+      setActiveNodes({
+        image: ed.isActive('image'),
+      })
     },
   })
 
@@ -128,15 +147,13 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
 
   if (!editor) return null
 
-  const currentLevel = editor.getAttributes('heading').level || 0
-
   return (
     <div className="rte">
       {/* ── Toolbar ── */}
       <div className="rte-toolbar">
         {/* Text style */}
         <ToolbarSelect
-          value={currentLevel ? `h${currentLevel}` : 'p'}
+          value={activeHeadingLevel ? `h${activeHeadingLevel}` : 'p'}
           onChange={(v) => {
             if (v === 'p') editor.chain().focus().setParagraph().run()
             else editor.chain().focus().toggleHeading({ level: Number(v) }).run()
@@ -155,7 +172,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
 
         {/* Font family */}
         <ToolbarSelect
-          value={editor.getAttributes('textStyle').fontFamily || ''}
+          value={activeFontFamily}
           onChange={(v) => {
             if (v) editor.chain().focus().setFontFamily(v).run()
             else editor.chain().focus().unsetFontFamily().run()
@@ -174,21 +191,21 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
 
         {/* Bold / Italic / Underline */}
         <ToolbarBtn
-          active={editor.isActive('bold')}
+          active={activeMarks.bold}
           onClick={() => editor.chain().focus().toggleBold().run()}
           title="Bold"
         >
           <strong>B</strong>
         </ToolbarBtn>
         <ToolbarBtn
-          active={editor.isActive('italic')}
+          active={activeMarks.italic}
           onClick={() => editor.chain().focus().toggleItalic().run()}
           title="Italic"
         >
           <em>I</em>
         </ToolbarBtn>
         <ToolbarBtn
-          active={editor.isActive('underline')}
+          active={activeMarks.underline}
           onClick={() => editor.chain().focus().toggleUnderline().run()}
           title="Underline"
         >
@@ -199,14 +216,14 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
 
         {/* Ordered list / Unordered list */}
         <ToolbarBtn
-          active={editor.isActive('orderedList')}
+          active={activeMarks.orderedList}
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           title="Ordered list"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><text x="2" y="8" fontSize="8" fill="currentColor" stroke="none" fontFamily="sans-serif">1</text><text x="2" y="14" fontSize="8" fill="currentColor" stroke="none" fontFamily="sans-serif">2</text><text x="2" y="20" fontSize="8" fill="currentColor" stroke="none" fontFamily="sans-serif">3</text></svg>
         </ToolbarBtn>
         <ToolbarBtn
-          active={editor.isActive('bulletList')}
+          active={activeMarks.bulletList}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           title="Bullet list"
         >
@@ -217,7 +234,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
 
         {/* Link */}
         <ToolbarBtn
-          active={editor.isActive('link')}
+          active={activeMarks.link}
           onClick={setLink}
           title="Insert link"
         >
@@ -226,14 +243,14 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
 
         {/* Code */}
         <ToolbarBtn
-          active={editor.isActive('code')}
+          active={activeMarks.code}
           onClick={() => editor.chain().focus().toggleCode().run()}
           title="Inline code"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
         </ToolbarBtn>
         <ToolbarBtn
-          active={editor.isActive('codeBlock')}
+          active={activeMarks.codeBlock}
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
           title="Code block"
         >
@@ -271,28 +288,28 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
 
         {/* Alignment */}
         <ToolbarBtn
-          active={editor.isActive({ textAlign: 'left' })}
+          active={activeTextAlign === 'left'}
           onClick={() => editor.chain().focus().setTextAlign('left').run()}
           title="Align left"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
         </ToolbarBtn>
         <ToolbarBtn
-          active={editor.isActive({ textAlign: 'center' })}
+          active={activeTextAlign === 'center'}
           onClick={() => editor.chain().focus().setTextAlign('center').run()}
           title="Align center"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
         </ToolbarBtn>
         <ToolbarBtn
-          active={editor.isActive({ textAlign: 'right' })}
+          active={activeTextAlign === 'right'}
           onClick={() => editor.chain().focus().setTextAlign('right').run()}
           title="Align right"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="6" y1="18" x2="21" y2="18"/></svg>
         </ToolbarBtn>
         <ToolbarBtn
-          active={editor.isActive({ textAlign: 'justify' })}
+          active={activeTextAlign === 'justify'}
           onClick={() => editor.chain().focus().setTextAlign('justify').run()}
           title="Justify"
         >
