@@ -455,3 +455,123 @@ a.admin-pagination__btn:hover {
   font-size: 0.8rem;
   font-weight: 600;
 }
+
+/* ── Itinerary Builder ── */
+.itinerary-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.itinerary-day-card {
+  background: #f8fafb;
+  border: 1px solid var(--beige-dark);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.itinerary-day-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.itinerary-day-card__label {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--green);
+}
+
+.itinerary-day-card__fields {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.itinerary-day-card__activities {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.itinerary-day-card__activities-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.itinerary-activity-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.itinerary-activity-row input {
+  flex: 1;
+}
+
+/* Buttons */
+.itinerary-btn {
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.itinerary-btn--primary {
+  background: var(--green);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  align-self: flex-start;
+}
+
+.itinerary-btn--primary:hover {
+  opacity: 0.9;
+}
+
+.itinerary-btn--add {
+  background: transparent;
+  color: var(--green);
+  border: 1px dashed var(--green);
+  padding: 0.45rem 0.85rem;
+  align-self: flex-start;
+}
+
+.itinerary-btn--add:hover {
+  background: rgba(26, 77, 62, 0.06);
+}
+
+.itinerary-btn--danger {
+  background: transparent;
+  color: #c0392b;
+  padding: 0.35rem 0.7rem;
+}
+
+.itinerary-btn--danger:hover {
+  background: #fdecea;
+}
+
+.itinerary-btn--sm {
+  font-size: 0.78rem;
+  padding: 0.3rem 0.65rem;
+}
+
+.itinerary-btn--icon {
+  padding: 0.3rem 0.55rem;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+@media (max-width: 600px) {
+  .itinerary-day-card__fields {
+    grid-template-columns: 1fr;
+  }
+}

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 import ImageUploadField from '@/components/admin/ImageUploadField'
+import ItineraryBuilder from '@/components/admin/ItineraryBuilder'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 
@@ -13,7 +14,7 @@ const emptyForm = {
   endDate: '', endTime: '', meetingPoint: '', bannerImage: '', extraImages: '',
   includedServices: '', excludedServices: '', maxGuests: '', rating: '4.5',
   published: true, featured: false, popular: false, latest: false, categoryId: '',
-  itinerary: '',
+  itinerary: [],
 }
 
 export default function TourForm({ tourId = null }) {
@@ -45,7 +46,7 @@ export default function TourForm({ tourId = null }) {
             maxGuests: t.maxGuests ? String(t.maxGuests) : '',
             rating: String(t.rating), published: t.published, featured: t.featured,
             popular: t.popular, latest: t.latest, categoryId: t.categoryId || '',
-            itinerary: JSON.stringify(t.itinerary || [], null, 2),
+            itinerary: Array.isArray(t.itinerary) ? t.itinerary : [],
           })
         }
       } catch (e) {
@@ -100,7 +101,7 @@ export default function TourForm({ tourId = null }) {
         popular: form.popular,
         latest: form.latest,
         categoryId: form.categoryId || null,
-        itinerary: form.itinerary ? JSON.parse(form.itinerary) : [],
+        itinerary: form.itinerary,
       }
 
       const url = tourId ? `/api/admin/tours/${tourId}` : '/api/admin/tours'
@@ -177,7 +178,10 @@ export default function TourForm({ tourId = null }) {
             ))}
           </select>
         </div>
-        <div className="form-group form-group--full"><label>Itinerary (JSON)</label><textarea name="itinerary" rows={8} value={form.itinerary} onChange={handleChange} /></div>
+        <div className="form-group form-group--full">
+          <label style={{ marginBottom: '0.75rem', display: 'block' }}>Itinerary</label>
+          <ItineraryBuilder value={form.itinerary} onChange={(val) => setForm((prev) => ({ ...prev, itinerary: val }))} />
+        </div>
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
         <label className="checkbox-label"><input name="featured" type="checkbox" checked={form.featured} onChange={handleChange} /> Featured</label>
         <label className="checkbox-label"><input name="popular" type="checkbox" checked={form.popular} onChange={handleChange} /> Popular</label>
