@@ -11,7 +11,7 @@ import TextStyle from '@tiptap/extension-text-style'
 import FontFamily from '@tiptap/extension-font-family'
 import Color from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 
 /* ─── Toolbar button ─── */
 function ToolbarBtn({ active, disabled, onClick, title, children }) {
@@ -28,19 +28,57 @@ function ToolbarBtn({ active, disabled, onClick, title, children }) {
   )
 }
 
-/* ─── Dropdown helper ─── */
-function ToolbarSelect({ value, onChange, title, options }) {
+/* ─── Custom Dropdown (replaces native <select>) ─── */
+function ToolbarDropdown({ label, options, value, onChange }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const selected = options.find((o) => o.value === value)
+  const displayLabel = selected ? selected.label : options[0]?.label || ''
+
+  const handleSelect = (opt) => {
+    setOpen(false)
+    onChange(opt.value)
+  }
+
   return (
-    <select
-      className="rte-toolbar__select"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      title={title}
-    >
-      {options.map((o) => (
-        <option key={o.value} value={o.value}>{o.label}</option>
-      ))}
-    </select>
+    <div className="rte-dropdown" ref={ref}>
+      <button
+        type="button"
+        className="rte-dropdown__trigger"
+        onClick={() => setOpen(!open)}
+      >
+        {displayLabel}
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style={{ marginLeft: 4 }}>
+          <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" fill="none" />
+        </svg>
+      </button>
+      {open && (
+        <div className="rte-dropdown__menu">
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              className={`rte-dropdown__item${opt.value === value ? ' rte-dropdown__item--active' : ''}`}
+              onMouseDown={(e) => {
+                e.preventDefault()
+                handleSelect(opt)
+              }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -147,48 +185,50 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
 
   if (!editor) return null
 
+  const headingOptions = [
+    { value: 'p', label: 'Normal' },
+    { value: 'h1', label: 'Heading 1' },
+    { value: 'h2', label: 'Heading 2' },
+    { value: 'h3', label: 'Heading 3' },
+    { value: 'h4', label: 'Heading 4' },
+    { value: 'h5', label: 'Heading 5' },
+    { value: 'h6', label: 'Heading 6' },
+  ]
+
+  const fontOptions = [
+    { value: '', label: 'Default' },
+    { value: 'sans-serif', label: 'Sans Serif' },
+    { value: 'serif', label: 'Serif' },
+    { value: 'monospace', label: 'Monospace' },
+    { value: 'cursive', label: 'Cursive' },
+  ]
+
   return (
     <div className="rte">
       {/* ── Toolbar ── */}
       <div className="rte-toolbar">
         {/* Text style */}
-        <ToolbarSelect
+        <ToolbarDropdown
+          label="Text Style"
           value={activeHeadingLevel ? `h${activeHeadingLevel}` : 'p'}
+          options={headingOptions}
           onChange={(v) => {
-            setTimeout(() => {
-              if (v === 'p') editor.chain().focus().setParagraph().run()
-              else editor.chain().focus().toggleHeading({ level: Number(v) }).run()
-            }, 0)
+            editor.chain().focus().run()
+            if (v === 'p') editor.chain().focus().setParagraph().run()
+            else editor.chain().focus().toggleHeading({ level: Number(v) }).run()
           }}
-          title="Text style"
-          options={[
-            { value: 'p', label: 'Normal' },
-            { value: 'h1', label: 'Heading 1' },
-            { value: 'h2', label: 'Heading 2' },
-            { value: 'h3', label: 'Heading 3' },
-            { value: 'h4', label: 'Heading 4' },
-            { value: 'h5', label: 'Heading 5' },
-            { value: 'h6', label: 'Heading 6' },
-          ]}
         />
 
         {/* Font family */}
-        <ToolbarSelect
+        <ToolbarDropdown
+          label="Font Family"
           value={activeFontFamily}
+          options={fontOptions}
           onChange={(v) => {
-            setTimeout(() => {
-              if (v) editor.chain().focus().setFontFamily(v).run()
-              else editor.chain().focus().unsetFontFamily().run()
-            }, 0)
+            editor.chain().focus().run()
+            if (v) editor.chain().focus().setFontFamily(v).run()
+            else editor.chain().focus().unsetFontFamily().run()
           }}
-          title="Font family"
-          options={[
-            { value: '', label: 'Default' },
-            { value: 'sans-serif', label: 'Sans Serif' },
-            { value: 'serif', label: 'Serif' },
-            { value: 'monospace', label: 'Monospace' },
-            { value: 'cursive', label: 'Cursive' },
-          ]}
         />
 
         <Sep />
