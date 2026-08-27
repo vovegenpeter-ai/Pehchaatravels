@@ -30,9 +30,8 @@ export default async function DestinationDetailPage({ params }) {
       <section className="tour-detail-hero" style={{ backgroundImage: `url(${destination.image})` }}>
         <div className="tour-detail-hero__overlay">
           <div className="container">
-            <Link href="/places" className="tour-detail-back">← Back to Places</Link>
-            <span className="tour-detail-hero__badge">📍 {destination.location}</span>
             <h1>{destination.name}</h1>
+            <span className="tour-detail-hero__badge">📍 {destination.location}</span>
           </div>
         </div>
       </section>

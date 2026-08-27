@@ -30,9 +30,8 @@ export default async function HotelDetailPage({ params }) {
       <section className="tour-detail-hero" style={{ backgroundImage: `url(${hotel.image})` }}>
         <div className="tour-detail-hero__overlay">
           <div className="container">
-            <Link href="/hotels" className="tour-detail-back">← Back to Hotels</Link>
-            <span className="tour-detail-hero__badge">★ {hotel.rating}</span>
             <h1>{hotel.name}</h1>
+            <span className="tour-detail-hero__badge">★ {hotel.rating}</span>
           </div>
         </div>
       </section>
