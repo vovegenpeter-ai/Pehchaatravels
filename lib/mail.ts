@@ -62,6 +62,9 @@ export async function sendBookingConfirmationEmail({
     process.env.EMAIL_FROM ||
     `"Pehchaan Travels" <${process.env.SMTP_USER}>`
 
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://pehchaantravels.vercel.app').replace(/\/$/, '')
+  const logoUrl = `${baseUrl}/logo.png`
+
   const tourListHtml = tourNames.map((t) => `<li style="padding: 4px 0; color: #4a5568;">${t}</li>`).join('')
   const tourListText = tourNames.map((t) => `  • ${t}`).join('\n')
 
@@ -81,9 +84,7 @@ export async function sendBookingConfirmationEmail({
           <!-- Header -->
           <tr>
             <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: 0.5px;">
-                ✈ Pehchaan <span style="font-weight: 400; opacity: 0.9;">Travels</span>
-              </h1>
+              <img src="${logoUrl}" alt="Pehchaan Travels" style="height: 50px; width: auto; filter: brightness(0) invert(1);" />
             </td>
           </tr>
           <!-- Body -->
@@ -230,6 +231,9 @@ export async function sendPasswordResetEmail({ to, name, resetUrl }: SendPasswor
     process.env.EMAIL_FROM ||
     `"Pehchaan Travels" <${process.env.SMTP_USER}>`
 
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://pehchaantravels.vercel.app').replace(/\/$/, '')
+  const logoUrl = `${baseUrl}/logo.png`
+
   const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -246,9 +250,7 @@ export async function sendPasswordResetEmail({ to, name, resetUrl }: SendPasswor
           <!-- Header -->
           <tr>
             <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: 0.5px;">
-                ✈ Pehchaan <span style="font-weight: 400; opacity: 0.9;">Travels</span>
-              </h1>
+              <img src="${logoUrl}" alt="Pehchaan Travels" style="height: 50px; width: auto; filter: brightness(0) invert(1);" />
             </td>
           </tr>
           <!-- Body -->
@@ -369,7 +371,9 @@ export async function sendNewsletterEmail({
     process.env.EMAIL_FROM ||
     `"Pehchaan Travels" <${process.env.SMTP_USER}>`
 
-  const unsubscribeUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://pehchaantravels.vercel.app'}/api/newsletter/unsubscribe?email=${encodeURIComponent(unsubscribeEmail)}`
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://pehchaantravels.vercel.app').replace(/\/$/, '')
+  const logoUrl = `${baseUrl}/logo.png`
+  const unsubscribeUrl = `${baseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(unsubscribeEmail)}`
 
   const imageHtml = image ? `<img src="${image}" alt="" style="width: 100%; max-width: 560px; height: auto; border-radius: 8px; margin-bottom: 24px;" />` : ''
 
@@ -401,9 +405,7 @@ export async function sendNewsletterEmail({
           <!-- Header -->
           <tr>
             <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: 0.5px;">
-                ✈ Pehchaan <span style="font-weight: 400; opacity: 0.9;">Travels</span>
-              </h1>
+              <img src="${logoUrl}" alt="Pehchaan Travels" style="height: 50px; width: auto; filter: brightness(0) invert(1);" />
             </td>
           </tr>
           <!-- Body -->
