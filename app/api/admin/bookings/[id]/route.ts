@@ -1,6 +1,22 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+
+  const order = await prisma.order.findUnique({ where: { id } })
+  if (!order) {
+    return NextResponse.json({ error: 'Booking not found.' }, { status: 404 })
+  }
+
+  await prisma.order.delete({ where: { id } })
+
+  return NextResponse.json({ success: true })
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

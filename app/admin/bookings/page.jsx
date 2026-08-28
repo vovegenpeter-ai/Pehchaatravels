@@ -67,10 +67,27 @@ export default function BookingsPage() {
         body: JSON.stringify({ status: nextStatus }),
       })
       if (!res.ok) throw new Error('Failed to update status')
-      const updated = await res.json()
       setBookings((prev) => prev.map((b) => (b.id === id ? { ...b, status: nextStatus } : b)))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to update status')
+    }
+  }
+
+  const deleteBooking = async (id) => {
+    const shortId = id.slice(-8).toUpperCase()
+    if (!window.confirm(`Are you sure you want to delete booking #${shortId}? This action cannot be undone.`)) {
+      return
+    }
+    setError('')
+    try {
+      const res = await fetch(`/api/admin/bookings/${id}`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) throw new Error('Failed to delete booking')
+      setBookings((prev) => prev.filter((b) => b.id !== id))
+      setExpandedId((prev) => (prev === id ? null : prev))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to delete booking')
     }
   }
 
@@ -168,6 +185,7 @@ export default function BookingsPage() {
                   expanded={expandedId === b.id}
                   onToggle={() => toggleExpand(b.id)}
                   onStatusChange={updateStatus}
+                  onDelete={deleteBooking}
                   formatDate={formatDate}
                 />
               ))
@@ -216,7 +234,7 @@ export default function BookingsPage() {
   )
 }
 
-function BookingRow({ booking, expanded, onToggle, onStatusChange, formatDate }) {
+function BookingRow({ booking, expanded, onToggle, onStatusChange, onDelete, formatDate }) {
   const totalTravelers = booking.items.reduce((sum, item) => sum + item.quantity, 0)
   const shortId = booking.id.slice(-8).toUpperCase()
   const colors = STATUS_COLORS[booking.status] || STATUS_COLORS.PENDING
@@ -256,9 +274,19 @@ function BookingRow({ booking, expanded, onToggle, onStatusChange, formatDate })
           </select>
         </td>
         <td>
-          <button type="button" className="btn btn--outline btn--sm" onClick={onToggle}>
-            {expanded ? 'Hide' : 'Details'}
-          </button>
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+            <button type="button" className="btn btn--outline btn--sm" onClick={onToggle}>
+              {expanded ? 'Hide' : 'Details'}
+            </button>
+            <button
+              type="button"
+              className="btn btn--danger btn--sm"
+              onClick={() => onDelete(booking.id)}
+              title="Delete booking"
+            >
+              Delete
+            </button>
+          </div>
         </td>
       </tr>
       {expanded && (
