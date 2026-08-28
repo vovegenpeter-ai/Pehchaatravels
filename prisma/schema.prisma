@@ -67,7 +67,6 @@ model Tour {
   bannerImage      String
   published        Boolean           @default(true)
   featured         Boolean           @default(false)
-  popular          Boolean           @default(false)
   latest           Boolean           @default(false)
   categoryId       String?
   createdAt        DateTime          @default(now())

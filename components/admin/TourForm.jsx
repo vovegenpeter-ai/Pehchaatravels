@@ -14,7 +14,7 @@ const emptyForm = {
   location: '', price: '', duration: '', days: '', startDate: '', startTime: '',
   endDate: '', endTime: '', meetingPoint: '', bannerImage: '', extraImages: '',
   includedServices: '', excludedServices: '', maxGuests: '', rating: '4.5',
-  published: true, featured: false, popular: false, latest: false, categoryId: '',
+  published: true, featured: false, latest: false, categoryId: '',
   itinerary: [],
 }
 
@@ -46,7 +46,7 @@ export default function TourForm({ tourId = null }) {
             excludedServices: (t.excludedServices || []).join('\n'),
             maxGuests: t.maxGuests ? String(t.maxGuests) : '',
             rating: String(t.rating), published: t.published, featured: t.featured,
-            popular: t.popular, latest: t.latest, categoryId: t.categoryId || '',
+            latest: t.latest, categoryId: t.categoryId || '',
             itinerary: Array.isArray(t.itinerary) ? t.itinerary : [],
           })
         }
@@ -99,7 +99,7 @@ export default function TourForm({ tourId = null }) {
         rating: Number(form.rating),
         published: form.published,
         featured: form.featured,
-        popular: form.popular,
+
         latest: form.latest,
         categoryId: form.categoryId || null,
         itinerary: form.itinerary,
@@ -182,7 +182,7 @@ export default function TourForm({ tourId = null }) {
         </div>
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
         <label className="checkbox-label"><input name="featured" type="checkbox" checked={form.featured} onChange={handleChange} /> Featured</label>
-        <label className="checkbox-label"><input name="popular" type="checkbox" checked={form.popular} onChange={handleChange} /> Popular</label>
+
         <label className="checkbox-label"><input name="latest" type="checkbox" checked={form.latest} onChange={handleChange} /> Latest</label>
       </div>
       <button type="submit" className="btn btn--primary btn--lg" disabled={loading} style={{ marginTop: '1.5rem' }}>

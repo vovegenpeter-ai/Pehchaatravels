@@ -23,16 +23,6 @@ export async function getFeaturedTours(limit = 6) {
   return tours.map(mapTour)
 }
 
-export async function getPopularTours(limit = 6) {
-  const tours = await prisma.tour.findMany({
-    where: { published: true, popular: true },
-    include: tourInclude,
-    take: limit,
-    orderBy: { rating: 'desc' },
-  })
-  return tours.map(mapTour)
-}
-
 export async function getRelatedTours(currentId: string, limit = 3) {
   const tours = await prisma.tour.findMany({
     where: { published: true, id: { not: currentId } },

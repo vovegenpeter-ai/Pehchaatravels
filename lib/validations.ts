@@ -34,7 +34,6 @@ export const tourSchema = z.object({
   images: z.array(imageField).default([]),
   published: z.boolean().default(true),
   featured: z.boolean().default(false),
-  popular: z.boolean().default(false),
   latest: z.boolean().default(false),
   categoryId: z.string().optional().nullable(),
 })

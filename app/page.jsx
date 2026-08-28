@@ -23,7 +23,7 @@ export default async function HomePage() {
 
   places = dbPlaces.status === 'fulfilled' && dbPlaces.value?.length >= 4
     ? dbPlaces.value.slice(0, 4)
-    : popularPlaces.slice(0, 4)
+    : defaultHotels.slice(0, 4)
 
   hotels = dbHotels.status === 'fulfilled' && dbHotels.value?.length >= 4
     ? dbHotels.value.slice(0, 4)

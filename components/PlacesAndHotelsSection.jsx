@@ -17,9 +17,9 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
         {/* Header Row */}
         <div className="places-hotels-header">
           <div className="places-hotels-header__text">
-            <h2 className="places-hotels-header__title">Popular Places &amp; Hotels</h2>
+            <h2 className="places-hotels-header__title">Featured Places &amp; Hotels</h2>
             <p className="places-hotels-header__subtitle">
-              Explore the most popular destinations and stay at the best hotels across Pakistan.
+              Explore featured destinations and stay at the best hotels across Pakistan.
             </p>
           </div>
 
@@ -35,14 +35,14 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
             className={`places-hotels-tab ${activeTab === 'places' ? 'places-hotels-tab--active' : ''}`}
             onClick={() => setActiveTab('places')}
           >
-            Popular Places
+            Featured Places
           </button>
           <button
             type="button"
             className={`places-hotels-tab ${activeTab === 'hotels' ? 'places-hotels-tab--active' : ''}`}
             onClick={() => setActiveTab('hotels')}
           >
-            Popular Hotels
+            Featured Hotels
           </button>
         </div>
 

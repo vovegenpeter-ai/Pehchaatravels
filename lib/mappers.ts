@@ -38,7 +38,6 @@ export function mapTour(tour: TourWithRelations) {
     maxGuests: tour.maxGuests,
     published: tour.published,
     featured: tour.featured,
-    popular: tour.popular,
     latest: tour.latest,
     categoryId: tour.categoryId,
     category: tour.category,

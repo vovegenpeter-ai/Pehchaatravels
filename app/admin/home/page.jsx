@@ -46,20 +46,19 @@ export default function AdminHomePage() {
     <>
       <div className="admin-header"><h1>Home Page Featured Content</h1></div>
       <p style={{ marginBottom: '1.5rem', color: 'var(--text-light)' }}>
-        Toggle which items appear in Featured Tours, Popular Tours, Latest Tours, Featured Hotels, and Popular Destinations on the home page.
+        Toggle which items appear in Featured Tours, Latest Tours, and Featured Hotels on the home page.
       </p>
       {error && <div className="error-banner">{error}</div>}
 
       <h2 style={{ color: 'var(--green)', marginBottom: '1rem' }}>Tours</h2>
       <div className="admin-table-wrap" style={{ marginBottom: '2rem' }}>
         <table className="admin-table">
-          <thead><tr><th>Name</th><th>Featured</th><th>Popular</th><th>Latest</th><th>Edit</th></tr></thead>
+          <thead><tr><th>Name</th><th>Featured</th><th>Latest</th><th>Edit</th></tr></thead>
           <tbody>
             {tours.map((t) => (
               <tr key={t.id}>
                 <td>{t.name}</td>
                 <td><input type="checkbox" checked={t.featured} onChange={() => toggle('tours', t.id, 'featured', t.featured)} /></td>
-                <td><input type="checkbox" checked={t.popular} onChange={() => toggle('tours', t.id, 'popular', t.popular)} /></td>
                 <td><input type="checkbox" checked={t.latest} onChange={() => toggle('tours', t.id, 'latest', t.latest)} /></td>
                 <td><Link href={`/admin/tours/${t.id}`}>Edit</Link></td>
               </tr>

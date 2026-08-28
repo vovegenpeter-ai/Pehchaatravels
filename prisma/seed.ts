@@ -83,7 +83,6 @@ async function main() {
         bannerImage: tour.image,
         published: true,
         featured: index < 3,
-        popular: index < 4,
         latest: index >= 2,
         categoryId: tourCategory.id,
         images: {

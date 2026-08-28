@@ -52,7 +52,6 @@ export default async function AdminToursPage({ searchParams }) {
                 <td>{tour.published ? 'Published' : 'Draft'}</td>
                 <td>
                   {tour.featured && 'Featured '}
-                  {tour.popular && 'Popular '}
                   {tour.latest && 'Latest'}
                 </td>
                 <td>

@@ -15,7 +15,7 @@ export default async function PlacesPage() {
   return (
     <>
       <PageHero
-        title="Popular Places"
+        title="Destinations"
         subtitle="Discover Pakistan's most iconic destinations — from Hunza to Fairy Meadows"
         image={HERO_IMAGE}
       />
