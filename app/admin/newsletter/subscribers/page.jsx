@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import ConfirmDialog from '@/components/admin/ConfirmDialog'
 
 export default function SubscribersPage() {
   const [subscribers, setSubscribers] = useState([])
@@ -31,8 +32,9 @@ export default function SubscribersPage() {
     return () => clearTimeout(timer)
   }, [fetchSubscribers])
 
+  const [confirmDelete, setConfirmDelete] = useState(null)
+
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this subscriber?')) return
     try {
       const res = await fetch(`/api/admin/newsletter/subscribers?id=${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error('Failed to delete subscriber')
@@ -135,7 +137,7 @@ export default function SubscribersPage() {
                   <td style={{ fontSize: '13px' }}>{s.unsubscribedAt ? formatDate(s.unsubscribedAt) : '—'}</td>
                   <td>
                     <button
-                      onClick={() => handleDelete(s.id)}
+                      onClick={() => setConfirmDelete(s.id)}
                       className="btn btn--outline btn--sm"
                       style={{ color: '#dc2626', borderColor: '#fecaca' }}
                     >
@@ -148,6 +150,19 @@ export default function SubscribersPage() {
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        title="Delete Subscriber"
+        message="Are you sure you want to delete this subscriber? This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => {
+          const id = confirmDelete
+          setConfirmDelete(null)
+          handleDelete(id)
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import ConfirmDialog from '@/components/admin/ConfirmDialog'
 
 export default function DraftsPage() {
   const router = useRouter()
@@ -27,8 +28,11 @@ export default function DraftsPage() {
     fetchDrafts()
   }, [fetchDrafts])
 
+  const [confirmDelete, setConfirmDelete] = useState(null)
+  const [confirmSend, setConfirmSend] = useState(null)
+  const [sendSuccess, setSendSuccess] = useState('')
+
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this draft?')) return
     try {
       const res = await fetch(`/api/admin/newsletter?id=${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error('Failed to delete draft')
@@ -39,11 +43,6 @@ export default function DraftsPage() {
   }
 
   const handleSend = async (id) => {
-    const confirmed = window.confirm(
-      'Are you sure you want to send this newsletter to all active subscribers?'
-    )
-    if (!confirmed) return
-
     setSendingId(id)
     try {
       const res = await fetch('/api/admin/newsletter/send', {
@@ -53,7 +52,8 @@ export default function DraftsPage() {
       })
       if (!res.ok) throw new Error('Failed to send newsletter')
       const result = await res.json()
-      alert(result.message)
+      setSendSuccess(result.message)
+      setTimeout(() => setSendSuccess(''), 5000)
       fetchDrafts()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to send newsletter')
@@ -72,6 +72,7 @@ export default function DraftsPage() {
       </div>
 
       {error && <p className="cq-error">{error}</p>}
+      {sendSuccess && <p style={{ background: '#d1fae5', color: '#065f46', padding: '0.6rem 1rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem' }}>{sendSuccess}</p>}
 
       <div className="admin-table-wrap">
         <table className="admin-table">
@@ -103,14 +104,14 @@ export default function DraftsPage() {
                   <td>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                       <button
-                        onClick={() => handleSend(draft.id)}
+                        onClick={() => setConfirmSend(draft.id)}
                         className="btn btn--primary btn--sm"
                         disabled={sendingId === draft.id}
                       >
                         {sendingId === draft.id ? 'Sending...' : 'Send'}
                       </button>
                       <button
-                        onClick={() => handleDelete(draft.id)}
+                        onClick={() => setConfirmDelete(draft.id)}
                         className="btn btn--outline btn--sm"
                         style={{ color: '#dc2626', borderColor: '#fecaca' }}
                       >
@@ -124,6 +125,33 @@ export default function DraftsPage() {
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        title="Delete Draft"
+        message="Are you sure you want to delete this newsletter draft? This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => {
+          const id = confirmDelete
+          setConfirmDelete(null)
+          handleDelete(id)
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
+
+      <ConfirmDialog
+        open={!!confirmSend}
+        title="Send Newsletter"
+        message="Are you sure you want to send this newsletter to all active subscribers?"
+        confirmLabel="Send Now"
+        danger={false}
+        onConfirm={() => {
+          const id = confirmSend
+          setConfirmSend(null)
+          handleSend(id)
+        }}
+        onCancel={() => setConfirmSend(null)}
+      />
     </>
   )
 }

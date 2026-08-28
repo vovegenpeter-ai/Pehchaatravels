@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import ConfirmDialog from '@/components/admin/ConfirmDialog'
 
 const STATUS_LABELS = {
   pending: 'Pending',
@@ -76,8 +77,9 @@ export default function ReviewsPage() {
     }
   }
 
+  const [confirmDelete, setConfirmDelete] = useState(null)
+
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this review?')) return
     try {
       const res = await fetch(`/api/admin/reviews?id=${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error('Failed to delete review')
@@ -169,7 +171,7 @@ export default function ReviewsPage() {
                   expanded={expandedId === review.id}
                   onToggle={() => toggleExpand(review.id)}
                   onStatusChange={updateStatus}
-                  onDelete={handleDelete}
+                  onDelete={(id) => setConfirmDelete(id)}
                   formatDate={formatDate}
                   updating={updatingId === review.id}
                 />
@@ -178,6 +180,19 @@ export default function ReviewsPage() {
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        title="Delete Review"
+        message="Are you sure you want to delete this review? This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => {
+          const id = confirmDelete
+          setConfirmDelete(null)
+          handleDelete(id)
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </>
   )
 }
