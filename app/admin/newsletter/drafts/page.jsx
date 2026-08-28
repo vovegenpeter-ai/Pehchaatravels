@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ConfirmDialog from '@/components/admin/ConfirmDialog'
+import AdminLoadingRow from '@/components/admin/AdminLoadingRow'
 
 export default function DraftsPage() {
   const router = useRouter()
@@ -86,9 +87,7 @@ export default function DraftsPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan="4" className="cq-empty">Loading drafts...</td>
-              </tr>
+              <AdminLoadingRow colSpan={4} />
             ) : drafts.length === 0 ? (
               <tr>
                 <td colSpan="4" className="cq-empty">

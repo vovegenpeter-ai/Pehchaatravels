@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ConfirmDialog from '@/components/admin/ConfirmDialog'
+import AdminLoadingRow from '@/components/admin/AdminLoadingRow'
 
 const STATUS_LABELS = {
   PENDING: 'Pending',
@@ -169,9 +170,7 @@ export default function BookingsPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan="8" className="cq-empty">Loading bookings…</td>
-              </tr>
+              <AdminLoadingRow colSpan={8} />
             ) : pageBookings.length === 0 ? (
               <tr>
                 <td colSpan="8" className="cq-empty">No bookings found.</td>

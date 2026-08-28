@@ -4012,3 +4012,58 @@ ul { list-style: none; }
   border-radius: 8px;
 }
 
+/* ===== Loading Spinner Card ===== */
+.loading-spinner-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.loading-spinner-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 3rem 4rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+@keyframes spinner-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-spinner-ring {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spinner-spin 0.8s linear infinite;
+  margin-bottom: 0.5rem;
+}
+
+.loading-spinner-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.loading-spinner-sub {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .loading-spinner-card {
+    padding: 2rem 2.5rem;
+  }
+}
+

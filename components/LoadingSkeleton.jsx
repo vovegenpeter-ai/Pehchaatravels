@@ -1,6 +1,48 @@
 'use client'
 
 export default function LoadingSkeleton({ variant = 'default' }) {
+  if (variant === 'admin') {
+    return (
+      <div className="loading-page-skeleton" style={{ backgroundColor: '#f4f6f8', minHeight: '85vh' }}>
+        <div style={{ padding: '2rem' }}>
+          {/* Header skeleton */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem' }}>
+            <div className="skeleton-line" style={{ height: 32, width: 200, borderRadius: 8 }} />
+            <div className="skeleton-btn" style={{ width: 120, height: 38 }} />
+          </div>
+
+          {/* Toolbar skeleton */}
+          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem' }}>
+            <div className="skeleton-line" style={{ flex: 1, height: 40, borderRadius: 8 }} />
+            <div className="skeleton-line" style={{ width: 160, height: 40, borderRadius: 8 }} />
+          </div>
+
+          {/* Table skeleton */}
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <th key={i}><div className="skeleton-line" style={{ height: 14, width: '80%', borderRadius: 4 }} /></th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[1, 2, 3, 4, 5].map((row) => (
+                  <tr key={row}>
+                    {[1, 2, 3, 4, 5, 6].map((col) => (
+                      <td key={col}><div className="skeleton-line" style={{ height: 14, width: `${60 + (col * 7) % 30}%`, borderRadius: 4 }} /></td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (variant === 'detail') {
     return (
       <div className="loading-page-skeleton" style={{ backgroundColor: '#ffffff', minHeight: '85vh' }}>

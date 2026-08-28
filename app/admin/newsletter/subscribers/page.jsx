@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import ConfirmDialog from '@/components/admin/ConfirmDialog'
+import AdminLoadingRow from '@/components/admin/AdminLoadingRow'
 
 export default function SubscribersPage() {
   const [subscribers, setSubscribers] = useState([])
@@ -109,9 +110,7 @@ export default function SubscribersPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan="5" className="cq-empty">Loading subscribers...</td>
-              </tr>
+              <AdminLoadingRow colSpan={5} />
             ) : subscribers.length === 0 ? (
               <tr>
                 <td colSpan="5" className="cq-empty">No subscribers found.</td>

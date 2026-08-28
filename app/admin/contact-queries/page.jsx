@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ConfirmDialog from '@/components/admin/ConfirmDialog'
+import AdminLoadingRow from '@/components/admin/AdminLoadingRow'
 
 const STATUS_LABELS = {
   NEW: 'New',
@@ -154,9 +155,7 @@ export default function ContactQueriesPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan="7" className="cq-empty">Loading queries…</td>
-              </tr>
+              <AdminLoadingRow colSpan={7} />
             ) : pageQueries.length === 0 ? (
               <tr>
                 <td colSpan="7" className="cq-empty">No contact queries found.</td>

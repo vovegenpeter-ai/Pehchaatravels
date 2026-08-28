@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import AdminLoadingRow from '@/components/admin/AdminLoadingRow'
 
 export default function SentNewslettersPage() {
   const [newsletters, setNewsletters] = useState([])
@@ -48,9 +49,7 @@ export default function SentNewslettersPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan="5" className="cq-empty">Loading newsletters...</td>
-              </tr>
+              <AdminLoadingRow colSpan={5} />
             ) : newsletters.length === 0 ? (
               <tr>
                 <td colSpan="5" className="cq-empty">No sent newsletters found.</td>
