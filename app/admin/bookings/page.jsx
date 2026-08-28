@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import ConfirmDialog from '@/components/admin/ConfirmDialog'
 
 const STATUS_LABELS = {
   PENDING: 'Pending',
@@ -73,11 +74,9 @@ export default function BookingsPage() {
     }
   }
 
+  const [confirmDelete, setConfirmDelete] = useState(null)
+
   const deleteBooking = async (id) => {
-    const shortId = id.slice(-8).toUpperCase()
-    if (!window.confirm(`Are you sure you want to delete booking #${shortId}? This action cannot be undone.`)) {
-      return
-    }
     setError('')
     try {
       const res = await fetch(`/api/admin/bookings/${id}`, {
@@ -185,7 +184,7 @@ export default function BookingsPage() {
                   expanded={expandedId === b.id}
                   onToggle={() => toggleExpand(b.id)}
                   onStatusChange={updateStatus}
-                  onDelete={deleteBooking}
+                  onDelete={(id) => setConfirmDelete(id)}
                   formatDate={formatDate}
                 />
               ))
@@ -230,6 +229,19 @@ export default function BookingsPage() {
           </nav>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        title="Delete Booking"
+        message="Are you sure you want to delete this booking? This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => {
+          const id = confirmDelete
+          setConfirmDelete(null)
+          deleteBooking(id)
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </>
   )
 }

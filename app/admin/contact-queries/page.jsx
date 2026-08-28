@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import ConfirmDialog from '@/components/admin/ConfirmDialog'
 
 const STATUS_LABELS = {
   NEW: 'New',
@@ -64,10 +65,9 @@ export default function ContactQueriesPage() {
     }
   }
 
+  const [confirmDelete, setConfirmDelete] = useState(null)
+
   const deleteQuery = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this contact query? This action cannot be undone.')) {
-      return
-    }
     setError('')
     try {
       const res = await fetch(`/api/admin/contact-queries/${id}`, {
@@ -169,7 +169,7 @@ export default function ContactQueriesPage() {
                   expanded={expandedId === q.id}
                   onToggle={() => toggleExpand(q.id)}
                   onStatusChange={updateStatus}
-                  onDelete={deleteQuery}
+                  onDelete={(id) => setConfirmDelete(id)}
                   formatDate={formatDate}
                 />
               ))
@@ -214,6 +214,19 @@ export default function ContactQueriesPage() {
           </nav>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        title="Delete Contact Query"
+        message="Are you sure you want to delete this contact query? This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => {
+          const id = confirmDelete
+          setConfirmDelete(null)
+          deleteQuery(id)
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </>
   )
 }

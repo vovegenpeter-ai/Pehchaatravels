@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import ConfirmDialog from '@/components/admin/ConfirmDialog'
 
 const STATUS_LABELS = {
   PENDING: 'Pending',
@@ -66,10 +67,9 @@ export default function TripRequestsPage() {
     }
   }
 
+  const [confirmDelete, setConfirmDelete] = useState(null)
+
   const deleteRequest = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this trip request? This action cannot be undone.')) {
-      return
-    }
     setError('')
     try {
       const res = await fetch(`/api/admin/trip-requests/${id}`, {
@@ -173,7 +173,7 @@ export default function TripRequestsPage() {
                   expanded={expandedId === r.id}
                   onToggle={() => toggleExpand(r.id)}
                   onStatusChange={updateStatus}
-                  onDelete={deleteRequest}
+                  onDelete={(id) => setConfirmDelete(id)}
                   formatDate={formatDate}
                 />
               ))
@@ -218,6 +218,19 @@ export default function TripRequestsPage() {
           </nav>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        title="Delete Trip Request"
+        message="Are you sure you want to delete this trip request? This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => {
+          const id = confirmDelete
+          setConfirmDelete(null)
+          deleteRequest(id)
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </>
   )
 }

@@ -855,3 +855,117 @@ a.admin-pagination__btn:hover {
     min-height: 180px;
   }
 }
+
+/* ── Confirm Dialog ── */
+.cd-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  padding: 1rem;
+  animation: cd-fadeIn 0.15s ease-out;
+}
+
+@keyframes cd-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cd-slideIn {
+  from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.cd-dialog {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 100%;
+  padding: 2rem;
+  text-align: center;
+  animation: cd-slideIn 0.2s ease-out;
+}
+
+.cd-icon-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.cd-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--green);
+}
+
+.cd-icon--danger {
+  background: #c0392b;
+}
+
+.cd-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  color: var(--text);
+}
+
+.cd-message {
+  margin: 0 0 1.5rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text-light);
+}
+
+.cd-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.cd-btn {
+  padding: 0.6rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.cd-btn--cancel {
+  background: #e8ecef;
+  color: var(--text);
+}
+
+.cd-btn--cancel:hover {
+  background: #d5dde5;
+}
+
+.cd-btn--danger {
+  background: #c0392b;
+  color: #fff;
+}
+
+.cd-btn--danger:hover {
+  background: #a93226;
+}
+
+.cd-btn--confirm {
+  background: var(--green);
+  color: #fff;
+}
+
+.cd-btn--confirm:hover {
+  background: #145a3e;
+}
