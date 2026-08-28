@@ -44,6 +44,14 @@ function ToolbarDropdown({ options, value, onChange }) {
 
   const selected = options.find((o) => o.value === value) || options[0]
 
+  const selectItem = useCallback((opt) => {
+    // Apply the editor command FIRST (while editor still has focus thanks to preventDefault),
+    // then close the menu. This avoids the timing race where the dropdown DOM is
+    // removed before the command executes.
+    onChange(opt.value)
+    setOpen(false)
+  }, [onChange])
+
   return (
     <div className="rte-dropdown" ref={ref}>
       <button
@@ -65,10 +73,7 @@ function ToolbarDropdown({ options, value, onChange }) {
               className={`rte-dropdown__item${opt.value === value ? ' rte-dropdown__item--active' : ''}`}
               onMouseDown={(e) => {
                 e.preventDefault()
-                e.stopPropagation()
-                setOpen(false)
-                // Defer the command so the dropdown is fully closed first
-                setTimeout(() => onChange(opt.value), 0)
+                selectItem(opt)
               }}
             >
               {opt.label}
@@ -176,9 +181,10 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
             { value: 'h6', label: 'Heading 6' },
           ]}
           onChange={(v) => {
-            editor.chain().focus().run()
-            if (v === 'p') editor.commands.setParagraph()
-            else editor.commands.toggleHeading({ level: Number(v) })
+            const chain = editor.chain()
+            if (v === 'p') chain.setParagraph()
+            else chain.toggleHeading({ level: Number(v) })
+            chain.focus().run()
           }}
         />
 
@@ -193,9 +199,10 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
             { value: 'cursive', label: 'Cursive' },
           ]}
           onChange={(v) => {
-            editor.chain().focus().run()
-            if (v) editor.commands.setFontFamily(v)
-            else editor.commands.unsetFontFamily()
+            const chain = editor.chain()
+            if (v) chain.setFontFamily(v)
+            else chain.unsetFontFamily()
+            chain.focus().run()
           }}
         />
 
