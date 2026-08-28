@@ -66,6 +66,23 @@ export default function TripRequestsPage() {
     }
   }
 
+  const deleteRequest = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this trip request? This action cannot be undone.')) {
+      return
+    }
+    setError('')
+    try {
+      const res = await fetch(`/api/admin/trip-requests/${id}`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) throw new Error('Failed to delete trip request')
+      setRequests((prev) => prev.filter((r) => r.id !== id))
+      setExpandedId((prev) => (prev === id ? null : prev))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to delete trip request')
+    }
+  }
+
   const formatDate = (iso) =>
     new Date(iso).toLocaleString(undefined, {
       dateStyle: 'medium',
@@ -156,6 +173,7 @@ export default function TripRequestsPage() {
                   expanded={expandedId === r.id}
                   onToggle={() => toggleExpand(r.id)}
                   onStatusChange={updateStatus}
+                  onDelete={deleteRequest}
                   formatDate={formatDate}
                 />
               ))
@@ -204,7 +222,7 @@ export default function TripRequestsPage() {
   )
 }
 
-function RequestRow({ request, expanded, onToggle, onStatusChange, formatDate }) {
+function RequestRow({ request, expanded, onToggle, onStatusChange, onDelete, formatDate }) {
   const startDate = new Date(request.startDate).toLocaleDateString(undefined, { dateStyle: 'medium' })
   const endDate = new Date(request.endDate).toLocaleDateString(undefined, { dateStyle: 'medium' })
 
@@ -230,9 +248,19 @@ function RequestRow({ request, expanded, onToggle, onStatusChange, formatDate })
           </select>
         </td>
         <td>
-          <button type="button" className="btn btn--outline btn--sm" onClick={onToggle}>
-            {expanded ? 'Hide Details' : 'View Details'}
-          </button>
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+            <button type="button" className="btn btn--outline btn--sm" onClick={onToggle}>
+              {expanded ? 'Hide Details' : 'View Details'}
+            </button>
+            <button
+              type="button"
+              className="btn btn--danger btn--sm"
+              onClick={() => onDelete(request.id)}
+              title="Delete trip request"
+            >
+              Delete
+            </button>
+          </div>
         </td>
       </tr>
       {expanded && (
