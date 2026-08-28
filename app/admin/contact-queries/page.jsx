@@ -64,6 +64,23 @@ export default function ContactQueriesPage() {
     }
   }
 
+  const deleteQuery = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this contact query? This action cannot be undone.')) {
+      return
+    }
+    setError('')
+    try {
+      const res = await fetch(`/api/admin/contact-queries/${id}`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) throw new Error('Failed to delete contact query')
+      setQueries((prev) => prev.filter((q) => q.id !== id))
+      setExpandedId((prev) => (prev === id ? null : prev))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to delete contact query')
+    }
+  }
+
   const formatDate = (iso) =>
     new Date(iso).toLocaleString(undefined, {
       dateStyle: 'medium',
@@ -152,6 +169,7 @@ export default function ContactQueriesPage() {
                   expanded={expandedId === q.id}
                   onToggle={() => toggleExpand(q.id)}
                   onStatusChange={updateStatus}
+                  onDelete={deleteQuery}
                   formatDate={formatDate}
                 />
               ))
@@ -200,7 +218,7 @@ export default function ContactQueriesPage() {
   )
 }
 
-function QueryRow({ query, expanded, onToggle, onStatusChange, formatDate }) {
+function QueryRow({ query, expanded, onToggle, onStatusChange, onDelete, formatDate }) {
   return (
     <>
       <tr className={expanded ? 'cq-row cq-row--expanded' : 'cq-row'}>
@@ -224,9 +242,19 @@ function QueryRow({ query, expanded, onToggle, onStatusChange, formatDate }) {
           </select>
         </td>
         <td>
-          <button type="button" className="btn btn--outline btn--sm" onClick={onToggle}>
-            {expanded ? 'Hide Details' : 'View Details'}
-          </button>
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+            <button type="button" className="btn btn--outline btn--sm" onClick={onToggle}>
+              {expanded ? 'Hide Details' : 'View Details'}
+            </button>
+            <button
+              type="button"
+              className="btn btn--danger btn--sm"
+              onClick={() => onDelete(query.id)}
+              title="Delete query"
+            >
+              Delete
+            </button>
+          </div>
         </td>
       </tr>
       {expanded && (
