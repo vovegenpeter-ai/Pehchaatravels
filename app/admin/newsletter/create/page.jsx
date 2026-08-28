@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import ConfirmDialog from '@/components/admin/ConfirmDialog'
 
 export default function CreateNewsletterPage() {
   const router = useRouter()
@@ -17,6 +18,7 @@ export default function CreateNewsletterPage() {
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [confirmSend, setConfirmSend] = useState(false)
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -50,12 +52,6 @@ export default function CreateNewsletterPage() {
       setError('Subject, title, and content are required')
       return
     }
-
-    // Confirm before sending
-    const confirmed = window.confirm(
-      'Are you sure you want to send this newsletter to all active subscribers?'
-    )
-    if (!confirmed) return
 
     setSending(true)
     setError('')
@@ -190,7 +186,7 @@ export default function CreateNewsletterPage() {
             {saving ? 'Saving...' : 'Save as Draft'}
           </button>
           <button
-            onClick={handleSend}
+            onClick={() => setConfirmSend(true)}
             className="btn btn--primary"
             disabled={saving || sending}
           >
@@ -198,6 +194,19 @@ export default function CreateNewsletterPage() {
           </button>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmSend}
+        title="Send Newsletter"
+        message="Are you sure you want to send this newsletter to all active subscribers?"
+        confirmLabel="Send Now"
+        danger={false}
+        onConfirm={() => {
+          setConfirmSend(false)
+          handleSend()
+        }}
+        onCancel={() => setConfirmSend(false)}
+      />
     </>
   )
 }
