@@ -17,6 +17,12 @@
   top: 0;
   height: 100vh;
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.admin-nav::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
 }
 
 .admin-nav__brand .logo--admin {
