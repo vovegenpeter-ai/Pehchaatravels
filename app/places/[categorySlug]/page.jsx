@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import PlaceCard from '@/components/PlaceCard'
-import { getCategoryBySlug, getDestinationsByCategory } from '@/lib/db'
+import { getCategoryBySlug } from '@/lib/db'
 import { HERO_IMAGE } from '@/lib/initialData'
 
 export const revalidate = 300
@@ -20,8 +19,6 @@ export default async function CategoryPage({ params }) {
   const { categorySlug } = await params
   const category = await getCategoryBySlug(categorySlug)
   if (!category) notFound()
-
-  const destinations = await getDestinationsByCategory(category.id)
 
   return (
     <>
@@ -62,20 +59,24 @@ export default async function CategoryPage({ params }) {
       </section>
 
       {/* Subcategories Section */}
-      {category.children.length > 0 && (
-        <section className="section places-subcategories">
-          <div className="container">
-            <div className="places-section-header">
-              <h2 className="places-section-header__title">
-                Explore {category.name}
-              </h2>
-              <p className="places-section-header__subtitle">
-                Choose a subcategory to discover destinations within {category.name}
-              </p>
-            </div>
+      <section className="section places-subcategories">
+        <div className="container">
+          <div className="places-section-header">
+            <h2 className="places-section-header__title">
+              Explore {category.name}
+            </h2>
+            <p className="places-section-header__subtitle">
+              Choose a subcategory to discover destinations within {category.name}
+            </p>
+          </div>
+          {category.children.length > 0 ? (
             <div className="places-subcategories__grid">
               {category.children.map((sub) => (
-                <div key={sub.id} className="places-subcategory-card">
+                <Link
+                  key={sub.id}
+                  href={`/places/${category.slug}/${sub.slug}`}
+                  className="places-subcategory-card places-subcategory-card--link"
+                >
                   <div className="places-subcategory-card__icon">📂</div>
                   <h3 className="places-subcategory-card__name">{sub.name}</h3>
                   <p className="places-subcategory-card__count">
@@ -84,36 +85,15 @@ export default async function CategoryPage({ params }) {
                   {sub.description && (
                     <p className="places-subcategory-card__desc">{sub.description}</p>
                   )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Destinations Section */}
-      <section className="section places-destinations">
-        <div className="container">
-          <div className="places-section-header">
-            <h2 className="places-section-header__title">
-              Destinations in {category.name}
-            </h2>
-            <p className="places-section-header__subtitle">
-              {destinations.length > 0
-                ? `Discover ${destinations.length} amazing ${destinations.length === 1 ? 'place' : 'places'} in ${category.name}`
-                : `No destinations available in ${category.name} yet`
-              }
-            </p>
-          </div>
-          {destinations.length > 0 ? (
-            <div className="grid grid--3">
-              {destinations.map((place) => (
-                <PlaceCard key={place.id} place={place} />
+                  <span className="places-subcategory-card__cta">
+                    Explore {sub.name} →
+                  </span>
+                </Link>
               ))}
             </div>
           ) : (
             <div className="places-empty">
-              <p>No destinations available in this category yet. Check back soon!</p>
+              <p>No subcategories available in {category.name} yet.</p>
               <Link href="/places" className="btn btn--primary">
                 Browse All Places
               </Link>

@@ -211,6 +211,44 @@ export async function getDestinationsBySubcategory(subcategoryId: string) {
   return destinations.map(mapDestination)
 }
 
+/** Subcategory by slug, with parent info and destinations */
+export async function getSubcategoryBySlug(parentSlug: string, subSlug: string) {
+  /* First find the parent category */
+  const parent = await prisma.category.findFirst({
+    where: { slug: parentSlug, type: 'DESTINATION', published: true },
+  })
+  if (!parent) return null
+
+  /* Then find the subcategory under that parent */
+  const subcategory = await prisma.category.findFirst({
+    where: { slug: subSlug, parentId: parent.id, published: true },
+    include: {
+      _count: { select: { destinations: { where: { published: true } } } },
+    },
+  })
+  if (!subcategory) return null
+
+  /* Get destinations for this subcategory */
+  const destinations = await prisma.destination.findMany({
+    where: { published: true, categoryId: subcategory.id },
+    orderBy: { name: 'asc' },
+  })
+
+  return {
+    id: subcategory.id,
+    slug: subcategory.slug,
+    name: subcategory.name,
+    description: subcategory.description,
+    destinationCount: subcategory._count.destinations,
+    parent: {
+      id: parent.id,
+      slug: parent.slug,
+      name: parent.name,
+    },
+    destinations: destinations.map(mapDestination),
+  }
+}
+
 export async function getFeaturedDestinations(limit = 8) {
   const destinations = await prisma.destination.findMany({
     where: { published: true, featured: true },

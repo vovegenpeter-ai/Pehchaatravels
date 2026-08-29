@@ -4397,6 +4397,43 @@ ul { list-style: none; }
   line-height: 1.5;
 }
 
+/* Clickable subcategory card */
+.places-subcategory-card--link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.places-subcategory-card--link:hover {
+  border-color: #064e3b;
+}
+
+.places-subcategory-card__cta {
+  display: inline-block;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #064e3b;
+  transition: color 0.2s;
+}
+
+.places-subcategory-card--link:hover .places-subcategory-card__cta {
+  color: #047857;
+}
+
+/* Subcategory hero */
+.places-hero--subcategory .places-hero__overlay {
+  min-height: 380px;
+}
+
+.places-hero--subcategory .places-hero {
+  min-height: 380px;
+}
+
 /* --- Destinations section on category page --- */
 .places-destinations {
   padding: 2rem 0 5rem;
