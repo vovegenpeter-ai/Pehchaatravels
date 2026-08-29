@@ -1,18 +1,33 @@
 'use client'
 
 import { Editor } from '@tinymce/tinymce-react'
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 
 export default function RichTextEditor({ value = '', onChange, placeholder = 'Write something...' }) {
   const editorRef = useRef(null)
+  const isInternalChange = useRef(false)
+
+  /* Sync editor when value prop changes from outside (e.g. API data loaded) */
+  useEffect(() => {
+    const ed = editorRef.current
+    if (!ed) return
+    // Skip if this change came from the editor itself
+    if (isInternalChange.current) { isInternalChange.current = false; return }
+    // Only update if the content actually differs
+    if (ed.getContent() !== value) {
+      ed.setContent(value || '')
+    }
+  }, [value])
 
   return (
     <div className="rte">
       <Editor
         tinymceScriptSrc="/tinymce/tinymce.min.js"
         onInit={(_evt, ed) => { editorRef.current = ed }}
-        value={value}
-        onEditorChange={(content) => onChange(content)}
+        onEditorChange={(content) => {
+          isInternalChange.current = true
+          onChange(content)
+        }}
         init={{
           height: 400,
           menubar: false,
