@@ -28,63 +28,6 @@ function ToolbarBtn({ active, disabled, onClick, title, children }) {
   )
 }
 
-/* ─── Custom Dropdown ─── */
-function ToolbarDropdown({ options, value, onChange }) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef(null)
-
-  useEffect(() => {
-    if (!open) return
-    const close = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
-    }
-    document.addEventListener('mousedown', close)
-    return () => document.removeEventListener('mousedown', close)
-  }, [open])
-
-  const selected = options.find((o) => o.value === value) || options[0]
-
-  const selectItem = useCallback((opt) => {
-    // Apply the editor command FIRST (while editor still has focus thanks to preventDefault),
-    // then close the menu. This avoids the timing race where the dropdown DOM is
-    // removed before the command executes.
-    onChange(opt.value)
-    setOpen(false)
-  }, [onChange])
-
-  return (
-    <div className="rte-dropdown" ref={ref}>
-      <button
-        type="button"
-        className="rte-dropdown__trigger"
-        onClick={() => setOpen((o) => !o)}
-      >
-        {selected.label}
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style={{ marginLeft: 4 }}>
-          <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" fill="none" />
-        </svg>
-      </button>
-      {open && (
-        <div className="rte-dropdown__menu">
-          {options.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              className={`rte-dropdown__item${opt.value === value ? ' rte-dropdown__item--active' : ''}`}
-              onMouseDown={(e) => {
-                e.preventDefault()
-                selectItem(opt)
-              }}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
 /* ─── Separator ─── */
 function Sep() {
   return <span className="rte-toolbar__sep" />
@@ -95,7 +38,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
   const fileInputRef = useRef(null)
-  const [tick, setTick] = useState(0)
+  const [, setTick] = useState(0)
 
   const editor = useEditor({
     extensions: [
@@ -165,49 +108,88 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     : editor.isActive({ textAlign: 'justify' }) ? 'justify'
     : 'left'
 
+  /* ── Font family cycle button ── */
+  const fontOptions = [
+    { value: '', label: 'Default' },
+    { value: 'sans-serif', label: 'Sans' },
+    { value: 'serif', label: 'Serif' },
+    { value: 'monospace', label: 'Mono' },
+    { value: 'cursive', label: 'Cursive' },
+  ]
+  const currentFontLabel = fontOptions.find(f => f.value === currentFont)?.label || 'Default'
+  const cycleFont = () => {
+    const idx = fontOptions.findIndex(f => f.value === currentFont)
+    const next = fontOptions[(idx + 1) % fontOptions.length]
+    const chain = editor.chain()
+    if (next.value) chain.setFontFamily(next.value)
+    else chain.unsetFontFamily()
+    chain.focus().run()
+  }
+
   return (
     <div className="rte">
       <div className="rte-toolbar">
-        {/* Text style */}
-        <ToolbarDropdown
-          value={currentLevel ? `h${currentLevel}` : 'p'}
-          options={[
-            { value: 'p', label: 'Normal' },
-            { value: 'h1', label: 'Heading 1' },
-            { value: 'h2', label: 'Heading 2' },
-            { value: 'h3', label: 'Heading 3' },
-            { value: 'h4', label: 'Heading 4' },
-            { value: 'h5', label: 'Heading 5' },
-            { value: 'h6', label: 'Heading 6' },
-          ]}
-          onChange={(v) => {
-            const chain = editor.chain()
-            if (v === 'p') chain.setParagraph()
-            else chain.toggleHeading({ level: Number(v) })
-            chain.focus().run()
-          }}
-        />
-
-        {/* Font family */}
-        <ToolbarDropdown
-          value={currentFont}
-          options={[
-            { value: '', label: 'Default' },
-            { value: 'sans-serif', label: 'Sans Serif' },
-            { value: 'serif', label: 'Serif' },
-            { value: 'monospace', label: 'Monospace' },
-            { value: 'cursive', label: 'Cursive' },
-          ]}
-          onChange={(v) => {
-            const chain = editor.chain()
-            if (v) chain.setFontFamily(v)
-            else chain.unsetFontFamily()
-            chain.focus().run()
-          }}
-        />
+        {/* ── Heading buttons (same pattern as Bold — reliable onClick) ── */}
+        <ToolbarBtn
+          active={currentLevel === 0}
+          onClick={() => { editor.chain().focus().setParagraph().run() }}
+          title="Normal text"
+        >
+          <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>¶</span>
+        </ToolbarBtn>
+        <ToolbarBtn
+          active={currentLevel === 1}
+          onClick={() => { editor.chain().focus().toggleHeading({ level: 1 }).run() }}
+          title="Heading 1"
+        >
+          <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>H1</span>
+        </ToolbarBtn>
+        <ToolbarBtn
+          active={currentLevel === 2}
+          onClick={() => { editor.chain().focus().toggleHeading({ level: 2 }).run() }}
+          title="Heading 2"
+        >
+          <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>H2</span>
+        </ToolbarBtn>
+        <ToolbarBtn
+          active={currentLevel === 3}
+          onClick={() => { editor.chain().focus().toggleHeading({ level: 3 }).run() }}
+          title="Heading 3"
+        >
+          <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>H3</span>
+        </ToolbarBtn>
+        <ToolbarBtn
+          active={currentLevel === 4}
+          onClick={() => { editor.chain().focus().toggleHeading({ level: 4 }).run() }}
+          title="Heading 4"
+        >
+          <span style={{ fontSize: '0.7rem', fontWeight: 600 }}>H4</span>
+        </ToolbarBtn>
+        <ToolbarBtn
+          active={currentLevel === 5}
+          onClick={() => { editor.chain().focus().toggleHeading({ level: 5 }).run() }}
+          title="Heading 5"
+        >
+          <span style={{ fontSize: '0.65rem', fontWeight: 600 }}>H5</span>
+        </ToolbarBtn>
+        <ToolbarBtn
+          active={currentLevel === 6}
+          onClick={() => { editor.chain().focus().toggleHeading({ level: 6 }).run() }}
+          title="Heading 6"
+        >
+          <span style={{ fontSize: '0.6rem', fontWeight: 600 }}>H6</span>
+        </ToolbarBtn>
 
         <Sep />
 
+        {/* ── Font family cycle button ── */}
+        <ToolbarBtn onClick={cycleFont} title={`Font: ${currentFontLabel} (click to cycle)`}>
+          <span style={{ fontSize: '0.72rem', fontWeight: 500, whiteSpace: 'nowrap' }}>{currentFontLabel}</span>
+        </ToolbarBtn>
+
+        <Sep />
+
+        {/* ── Text formatting ── */}
         <ToolbarBtn active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()} title="Bold">
           <strong>B</strong>
         </ToolbarBtn>
