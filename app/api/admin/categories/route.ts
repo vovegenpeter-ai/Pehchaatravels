@@ -3,7 +3,10 @@ import { prisma } from '@/lib/prisma'
 import { categorySchema, formatZodError } from '@/lib/validations'
 
 export async function GET() {
-  const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } })
+  const categories = await prisma.category.findMany({
+    orderBy: { name: 'asc' },
+    include: { children: { orderBy: { name: 'asc' } } },
+  })
   return NextResponse.json(categories)
 }
 

@@ -71,6 +71,7 @@ export const categorySchema = z.object({
   description: z.string().optional(),
   type: z.enum(['TOUR', 'HOTEL', 'DESTINATION', 'ACTIVITY']),
   published: z.boolean().default(true),
+  parentId: z.string().optional().nullable(),
 })
 
 export const destinationSchema = z.object({

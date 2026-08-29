@@ -5,21 +5,37 @@ import { useRouter } from 'next/navigation'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 
-const emptyForm = { name: '', slug: '', description: '', type: 'TOUR', published: true }
+const emptyForm = { name: '', slug: '', description: '', type: 'TOUR', published: true, parentId: '' }
 
-export default function CategoryForm({ categoryId = null }) {
+export default function CategoryForm({ categoryId = null, prefillParentId = null, prefillType = null }) {
   const router = useRouter()
-  const [form, setForm] = useState(emptyForm)
+  const [form, setForm] = useState(() => ({
+    ...emptyForm,
+    ...(prefillParentId ? { parentId: prefillParentId } : {}),
+    ...(prefillType ? { type: prefillType } : {}),
+  }))
+  const [categories, setCategories] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     let cancelled = false
+    async function loadCats() {
+      try {
+        const cats = await fetchJson('/api/admin/categories')
+        if (!cancelled) setCategories(cats)
+      } catch { /* ignore */ }
+    }
+    loadCats()
+    return () => { cancelled = true }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
     async function load() {
       if (!categoryId) return
-      try {
-        const data = await fetchJson(`/api/admin/categories/${categoryId}`)
-        if (!cancelled) setForm(data)
+      try {          const data = await fetchJson(`/api/admin/categories/${categoryId}`)
+          if (!cancelled) setForm((prev) => ({ ...prev, ...data, parentId: data.parentId || '' }))
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load category')
       }
@@ -73,6 +89,16 @@ export default function CategoryForm({ categoryId = null }) {
             <option value="HOTEL">Hotels</option>
             <option value="DESTINATION">Destinations</option>
             <option value="ACTIVITY">Activities</option>
+          </select>
+        </div>
+        <div className="form-group"><label>Parent Category</label>
+          <select name="parentId" value={form.parentId || ''} onChange={handleChange}>
+            <option value="">None (top-level)</option>
+            {categories
+              .filter((c) => !c.parentId && c.id !== categoryId && c.type === form.type)
+              .map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
           </select>
         </div>
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>

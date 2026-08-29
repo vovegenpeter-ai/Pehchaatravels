@@ -991,6 +991,46 @@ a.admin-pagination__btn:hover {
   color: #94a3b8;
 }
 
+/* ── Subcategory level ── */
+.tree-subcategory {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  transition: background 0.12s;
+}
+.tree-subcategory:hover { background: #f1f5f9; }
+
+.tree-subcategory__name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.tree-subcategory__desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-left: 0.25rem;
+}
+
+.tree-add-subcategory {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+  color: var(--green);
+  border: 1px dashed var(--green);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.15s;
+  margin: 0.25rem 0 0.5rem 1rem;
+}
+.tree-add-subcategory:hover {
+  background: #f0fdf4;
+}
+
 .badge--outline {
   background: transparent;
   border: 1px solid #e2e8f0;
