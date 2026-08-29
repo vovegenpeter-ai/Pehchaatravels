@@ -28,7 +28,6 @@ export default function ImageUploadField({ label, value, onChange, name }) {
     <div className="form-group form-group--full">
       <label>{label}</label>
       <div className="image-upload-field">
-        <input name={name} value={value} onChange={onChange} placeholder="Image URL or upload below" />
         <input type="file" accept="image/*" onChange={handleFile} disabled={uploading} />
         {uploading && <span className="upload-status">Uploading...</span>}
         {error && <span className="upload-error">{error}</span>}
