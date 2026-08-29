@@ -22,7 +22,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
   return (
     <div className="rte">
       <Editor
-        tinymceScriptSrc="https://cdn.jsdelivr.net/npm/tinymce@8/tinymce.min.js"
+        tinymceScriptSrc="https://cdn.jsdelivr.net/npm/tinymce@7/tinymce.min.js"
         onInit={(_evt, ed) => { editorRef.current = ed }}
         onEditorChange={(content) => {
           isInternalChange.current = true
