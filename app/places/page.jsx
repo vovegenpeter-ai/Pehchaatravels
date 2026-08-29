@@ -9,15 +9,16 @@ export const metadata = {
   description: 'Discover Pakistan\'s most breathtaking destinations — from the peaks of Gilgit-Baltistan to the shores of Sindh.',
 }
 
-/* Category images for visual appeal */
+/* Category images — high-quality, relevant images for each region */
 const categoryImages = {
-  'kashmir': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+  'kashmir': 'https://images.unsplash.com/photo-1597074866923-dc0589150a32?w=800&q=80',
+  'khyber-pakhtunkhwa': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+  'kpk': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
   'gilgit-baltistan': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80',
-  'khyber-pakhtunkhwa': 'https://images.unsplash.com/photo-1476820865390-c52aeebb9891?w=800&q=80',
-  'kpk': 'https://images.unsplash.com/photo-1476820865390-c52aeebb9891?w=800&q=80',
   'punjab': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80',
   'sindh': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80',
   'balochistan': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80',
+  'popular-destinations': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80',
 }
 
 const fallbackImage = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80'

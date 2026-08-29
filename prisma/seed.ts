@@ -45,6 +45,41 @@ async function main() {
     },
   })
 
+  /* Main destination categories for the Places section */
+  const kashmir = await prisma.category.upsert({
+    where: { slug: 'kashmir' },
+    update: {},
+    create: {
+      name: 'Kashmir',
+      slug: 'kashmir',
+      type: 'DESTINATION',
+      description: 'Paradise on Earth — lush valleys, pristine lakes, and breathtaking mountain landscapes',
+    },
+  })
+
+  const kpk = await prisma.category.upsert({
+    where: { slug: 'khyber-pakhtunkhwa' },
+    update: {},
+    create: {
+      name: 'Khyber Pakhtunkhwa',
+      slug: 'khyber-pakhtunkhwa',
+      type: 'DESTINATION',
+      description: 'Land of hospitality — from Swat Valley to the majestic Hindu Kush range',
+    },
+  })
+
+  const gilgitBaltistan = await prisma.category.upsert({
+    where: { slug: 'gilgit-baltistan' },
+    update: {},
+    create: {
+      name: 'Gilgit-Baltistan',
+      slug: 'gilgit-baltistan',
+      type: 'DESTINATION',
+      description: 'Roof of the World — home to K2, Deosai, and the legendary Karakoram Highway',
+    },
+  })
+
+  /* Keep the old Popular Destinations as a fallback */
   const destCategory = await prisma.category.upsert({
     where: { slug: 'popular-destinations' },
     update: {},
@@ -53,6 +88,105 @@ async function main() {
       slug: 'popular-destinations',
       type: 'DESTINATION',
       description: 'Top places to explore in Pakistan',
+    },
+  })
+
+  /* Create subcategories for Kashmir */
+  const neelumValley = await prisma.category.upsert({
+    where: { slug: 'neelum-valley' },
+    update: {},
+    create: {
+      name: 'Neelum Valley',
+      slug: 'neelum-valley',
+      type: 'DESTINATION',
+      description: 'A lush green valley with turquoise rivers and picturesque villages',
+      parentId: kashmir.id,
+    },
+  })
+
+  const leepaValley = await prisma.category.upsert({
+    where: { slug: 'leepa-valley' },
+    update: {},
+    create: {
+      name: 'Leepa Valley',
+      slug: 'leepa-valley',
+      type: 'DESTINATION',
+      description: 'Hidden gem with terraced fields and traditional wooden houses',
+      parentId: kashmir.id,
+    },
+  })
+
+  const muzaffarabad = await prisma.category.upsert({
+    where: { slug: 'muzaffarabad' },
+    update: {},
+    create: {
+      name: 'Muzaffarabad',
+      slug: 'muzaffarabad',
+      type: 'DESTINATION',
+      description: 'Capital of Azad Kashmir at the confluence of two rivers',
+      parentId: kashmir.id,
+    },
+  })
+
+  /* Create subcategories for KPK */
+  const swat = await prisma.category.upsert({
+    where: { slug: 'swat' },
+    update: {},
+    create: {
+      name: 'Swat Valley',
+      slug: 'swat',
+      type: 'DESTINATION',
+      description: 'The Switzerland of Pakistan — alpine meadows and crystal-clear lakes',
+      parentId: kpk.id,
+    },
+  })
+
+  const chitral = await prisma.category.upsert({
+    where: { slug: 'chitral' },
+    update: {},
+    create: {
+      name: 'Chitral',
+      slug: 'chitral',
+      type: 'DESTINATION',
+      description: 'Remote valleys, Kalash culture, and the stunning Tirich Mir peak',
+      parentId: kpk.id,
+    },
+  })
+
+  /* Create subcategories for Gilgit-Baltistan */
+  const hunza = await prisma.category.upsert({
+    where: { slug: 'hunza' },
+    update: {},
+    create: {
+      name: 'Hunza Valley',
+      slug: 'hunza',
+      type: 'DESTINATION',
+      description: 'Fairy-tale valley with ancient forts, turquoise lakes, and warm hospitality',
+      parentId: gilgitBaltistan.id,
+    },
+  })
+
+  const skardu = await prisma.category.upsert({
+    where: { slug: 'skardu' },
+    update: {},
+    create: {
+      name: 'Skardu',
+      slug: 'skardu',
+      type: 'DESTINATION',
+      description: 'Gateway to K2 — cold desert, Shangrila Resort, and mighty Karakoram peaks',
+      parentId: gilgitBaltistan.id,
+    },
+  })
+
+  const deosai = await prisma.category.upsert({
+    where: { slug: 'deosai' },
+    update: {},
+    create: {
+      name: 'Deosai Plains',
+      slug: 'deosai',
+      type: 'DESTINATION',
+      description: 'Second highest plateau in the world — wildflowers, marmots, and golden bears',
+      parentId: gilgitBaltistan.id,
     },
   })
 
@@ -120,7 +254,29 @@ async function main() {
     })
   }
 
+  /* Map destinations to appropriate categories */
+  const categoryMap: Record<string, string> = {
+    'kashmir': kashmir.id,
+    'kpk': kpk.id,
+    'gilgit-baltistan': gilgitBaltistan.id,
+    'hunza': hunza.id,
+    'skardu': skardu.id,
+    'swat': swat.id,
+    'neelum': neelumValley.id,
+    'fairy-meadows': gilgitBaltistan.id,
+  }
+
   for (const place of popularPlaces) {
+    /* Try to match destination to a specific category, fallback to Popular */
+    const placeKey = place.id.toLowerCase()
+    let categoryId = destCategory.id
+    for (const [key, catId] of Object.entries(categoryMap)) {
+      if (placeKey.includes(key)) {
+        categoryId = catId
+        break
+      }
+    }
+
     await prisma.destination.upsert({
       where: { slug: place.id },
       update: {},
@@ -132,7 +288,7 @@ async function main() {
         image: place.image,
         published: true,
         featured: true,
-        categoryId: destCategory.id,
+        categoryId,
       },
     })
   }
