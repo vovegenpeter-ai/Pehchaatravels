@@ -34,7 +34,6 @@ export default async function AdminCategoriesPage({ searchParams }) {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Slug</th>
               <th>Type</th>
               <th>Status</th>
               <th>Actions</th>
@@ -42,11 +41,10 @@ export default async function AdminCategoriesPage({ searchParams }) {
           </thead>
           <tbody>
             {categories.length === 0 ? (
-              <tr><td colSpan="5" className="admin-table__empty">No categories found.</td></tr>
+              <tr><td colSpan="4" className="admin-table__empty">No categories found.</td></tr>
             ) : categories.map((cat) => (
               <tr key={cat.id}>
                 <td>{cat.name}</td>
-                <td>{cat.slug}</td>
                 <td>{cat.type}</td>
                 <td>{cat.published ? 'Published' : 'Draft'}</td>
                 <td>
