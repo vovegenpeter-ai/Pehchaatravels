@@ -15,41 +15,28 @@ const emptyForm = {
 export default function DestinationForm({ destinationId = null }) {
   const router = useRouter()
   const [form, setForm] = useState(emptyForm)
-  const [categories, setCategories] = useState([])
+  const [categoriesTree, setCategoriesTree] = useState([])
+  const [parentId, setParentId] = useState('')
   const [tours, setTours] = useState([])
   const [hotels, setHotels] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  /* Flatten category tree into a flat list with parent labels */
-  const flattenCategories = (cats) => {
-    const result = []
-    for (const cat of cats) {
-      if (cat.children && cat.children.length > 0) {
-        /* Show parent */
-        result.push({ ...cat, depth: 0 })
-        /* Show subcategories indented */
-        for (const child of cat.children) {
-          result.push({ ...child, depth: 1, parentName: cat.name })
-        }
-      } else {
-        result.push({ ...cat, depth: 0 })
-      }
-    }
-    return result
-  }
+  /* Derived: subcategories of the selected parent */
+  const subcategories = parentId
+    ? categoriesTree.find((c) => c.id === parentId)?.children || []
+    : []
 
   useEffect(() => {
     let cancelled = false
     async function load() {
-      /* Load each resource independently — a failure in one never blocks the others */
       const [cats, t, h] = await Promise.allSettled([
         fetchJson('/api/admin/categories'),
         fetchJson('/api/admin/tours'),
         fetchJson('/api/admin/hotels'),
       ])
       if (cancelled) return
-      if (cats.status === 'fulfilled') setCategories(flattenCategories(cats.value))
+      if (cats.status === 'fulfilled') setCategoriesTree(cats.value)
       if (t.status === 'fulfilled') setTours(t.value)
       if (h.status === 'fulfilled') setHotels(h.value)
 
@@ -57,6 +44,19 @@ export default function DestinationForm({ destinationId = null }) {
         try {
           const d = await fetchJson(`/api/admin/destinations/${destinationId}`)
           if (cancelled) return
+          const catId = d.categoryId || ''
+          /* Determine parentId: check if catId is a child of any parent */
+          const catsData = cats.status === 'fulfilled' ? cats.value : []
+          let foundParentId = ''
+          if (catId) {
+            for (const parent of catsData) {
+              if (parent.children?.some((child) => child.id === catId)) {
+                foundParentId = parent.id
+                break
+              }
+            }
+          }
+          setParentId(foundParentId)
           setForm({
             name: d.name,
             slug: d.slug,
@@ -66,7 +66,7 @@ export default function DestinationForm({ destinationId = null }) {
             image: d.image,
             published: d.published,
             featured: d.featured,
-            categoryId: d.categoryId || '',
+            categoryId: catId,
             tourIds: d.tourIds || [],
             hotelIds: d.hotelIds || [],
           })
@@ -88,6 +88,19 @@ export default function DestinationForm({ destinationId = null }) {
       if (name === 'name' && !updated.slug) updated.slug = slugify(value)
       return updated
     })
+  }
+
+  const handleParentChange = (e) => {
+    const newParentId = e.target.value
+    setParentId(newParentId)
+    /* When parent changes, reset subcategory to the parent itself */
+    setForm((prev) => ({ ...prev, categoryId: newParentId }))
+  }
+
+  const handleSubcategoryChange = (e) => {
+    const subId = e.target.value
+    /* If a subcategory is selected, use it; otherwise fall back to parent */
+    setForm((prev) => ({ ...prev, categoryId: subId || parentId }))
   }
 
   const toggleRelation = (field, id) => {
@@ -181,17 +194,29 @@ export default function DestinationForm({ destinationId = null }) {
         </div>
 
         <ImageUploadField label="Destination Image" name="image" value={form.image} onChange={handleChange} />
-        <div className="form-group"><label>Category / Subcategory</label>
-          <select name="categoryId" value={form.categoryId} onChange={handleChange}>
+        <div className="form-group">
+          <label>Category</label>
+          <select value={parentId} onChange={handleParentChange}>
             <option value="">None</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.depth > 0 ? '\u00A0\u00A0\u2514 ' : ''}{c.name}
-                {c.parentName ? ` (${c.parentName})` : ''}
-              </option>
+            {categoriesTree.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
         </div>
+        {parentId && subcategories.length > 0 && (
+          <div className="form-group">
+            <label>Subcategory</label>
+            <select
+              value={form.categoryId === parentId ? '' : form.categoryId}
+              onChange={handleSubcategoryChange}
+            >
+              <option value="">None (use parent category)</option>
+              {subcategories.map((sub) => (
+                <option key={sub.id} value={sub.id}>{sub.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
         <label className="checkbox-label"><input name="featured" type="checkbox" checked={form.featured} onChange={handleChange} /> Featured</label>
       </div>
