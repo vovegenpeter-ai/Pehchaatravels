@@ -4,6 +4,7 @@ import { categorySchema, formatZodError } from '@/lib/validations'
 
 export async function GET() {
   const categories = await prisma.category.findMany({
+    where: { parentId: null },
     orderBy: { name: 'asc' },
     include: { children: { orderBy: { name: 'asc' } } },
   })

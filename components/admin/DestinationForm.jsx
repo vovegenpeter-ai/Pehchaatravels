@@ -184,14 +184,12 @@ export default function DestinationForm({ destinationId = null }) {
         <div className="form-group"><label>Category / Subcategory</label>
           <select name="categoryId" value={form.categoryId} onChange={handleChange}>
             <option value="">None</option>
-            {categories
-              .filter((c) => c.type === 'DESTINATION')
-              .map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.depth > 0 ? '\u00A0\u00A0\u2514 ' : ''}{c.name}
-                  {c.parentName ? ` (${c.parentName})` : ''}
-                </option>
-              ))}
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.depth > 0 ? '\u00A0\u00A0\u2514 ' : ''}{c.name}
+                {c.parentName ? ` (${c.parentName})` : ''}
+              </option>
+            ))}
           </select>
         </div>
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
