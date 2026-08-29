@@ -490,6 +490,16 @@ a.admin-pagination__btn:hover {
   color: #fff;
 }
 
+.badge--gray {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.badge:hover {
+  opacity: 0.85;
+  transition: opacity 0.15s;
+}
+
 /* ===== Row actions (Edit / Delete) ===== */
 .admin-row-actions {
   display: flex;

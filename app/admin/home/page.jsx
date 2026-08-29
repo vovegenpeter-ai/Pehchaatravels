@@ -58,7 +58,7 @@ export default function AdminHomePage() {
             {tours.map((t) => (
               <tr key={t.id}>
                 <td>{t.name}</td>
-                <td><input type="checkbox" checked={t.featured} onChange={() => toggle('tours', t.id, 'featured', t.featured)} /></td>
+                <td><span className={`badge${t.featured ? ' badge--green' : ' badge--gray'}`} style={{ cursor: 'pointer' }} onClick={() => toggle('tours', t.id, 'featured', t.featured)}>{t.featured ? 'Featured' : 'Not Featured'}</span></td>
                 <td><Link href={`/admin/tours/${t.id}`}>Edit</Link></td>
               </tr>
             ))}
@@ -74,7 +74,7 @@ export default function AdminHomePage() {
             {hotels.map((h) => (
               <tr key={h.id}>
                 <td>{h.name}</td>
-                <td><input type="checkbox" checked={h.featured} onChange={() => toggle('hotels', h.id, 'featured', h.featured)} /></td>
+                <td><span className={`badge${h.featured ? ' badge--green' : ' badge--gray'}`} style={{ cursor: 'pointer' }} onClick={() => toggle('hotels', h.id, 'featured', h.featured)}>{h.featured ? 'Featured' : 'Not Featured'}</span></td>
                 <td><Link href={`/admin/hotels/${h.id}`}>Edit</Link></td>
               </tr>
             ))}
@@ -90,7 +90,7 @@ export default function AdminHomePage() {
             {destinations.map((d) => (
               <tr key={d.id}>
                 <td>{d.name}</td>
-                <td><input type="checkbox" checked={d.featured} onChange={() => toggle('destinations', d.id, 'featured', d.featured)} /></td>
+                <td><span className={`badge${d.featured ? ' badge--green' : ' badge--gray'}`} style={{ cursor: 'pointer' }} onClick={() => toggle('destinations', d.id, 'featured', d.featured)}>{d.featured ? 'Featured' : 'Not Featured'}</span></td>
                 <td><Link href={`/admin/destinations/${d.id}`}>Edit</Link></td>
               </tr>
             ))}
