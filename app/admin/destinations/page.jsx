@@ -48,7 +48,10 @@ export default async function AdminDestinationsPage({ searchParams }) {
                 <td>{dest.name}</td>
                 <td>{dest.shortDescription}</td>
                 <td>{dest.location}</td>
-                <td>{dest.published ? 'Published' : 'Draft'}</td>
+                <td>
+                  {dest.published ? 'Published' : 'Draft'}
+                  {dest.featured && <span className="badge badge--green" style={{ marginLeft: 6 }}>Featured</span>}
+                </td>
                 <td>
                   <div className="admin-row-actions">
                     <Link href={`/admin/destinations/${dest.id}`} className="btn btn--outline btn--sm">Edit</Link>

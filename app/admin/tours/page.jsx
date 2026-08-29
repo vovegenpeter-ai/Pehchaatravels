@@ -37,22 +37,20 @@ export default async function AdminToursPage({ searchParams }) {
               <th>Short Description</th>
               <th>Price</th>
               <th>Status</th>
-              <th>Flags</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {tours.length === 0 ? (
-              <tr><td colSpan="6" className="admin-table__empty">No tours found.</td></tr>
+              <tr><td colSpan="5" className="admin-table__empty">No tours found.</td></tr>
             ) : tours.map((tour) => (
               <tr key={tour.id}>
                 <td>{tour.name}</td>
                 <td>{tour.shortDescription}</td>
                 <td>PKR {Number(tour.price).toLocaleString('en-US')}</td>
-                <td>{tour.published ? 'Published' : 'Draft'}</td>
                 <td>
-                  {tour.featured && 'Featured '}
-                  {tour.latest && 'Latest'}
+                  {tour.published ? 'Published' : 'Draft'}
+                  {tour.featured && <span className="badge badge--green" style={{ marginLeft: 6 }}>Featured</span>}
                 </td>
                 <td>
                   <div className="admin-row-actions">

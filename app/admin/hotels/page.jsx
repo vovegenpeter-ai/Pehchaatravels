@@ -50,7 +50,10 @@ export default async function AdminHotelsPage({ searchParams }) {
                 <td>{hotel.shortDescription}</td>
                 <td>{hotel.location}</td>
                 <td>PKR {Number(hotel.pricePerNight).toLocaleString('en-US')}</td>
-                <td>{hotel.published ? 'Published' : 'Draft'}</td>
+                <td>
+                  {hotel.published ? 'Published' : 'Draft'}
+                  {hotel.featured && <span className="badge badge--green" style={{ marginLeft: 6 }}>Featured</span>}
+                </td>
                 <td>
                   <div className="admin-row-actions">
                     <Link href={`/admin/hotels/${hotel.id}`} className="btn btn--outline btn--sm">Edit</Link>

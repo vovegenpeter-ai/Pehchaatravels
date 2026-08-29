@@ -14,7 +14,7 @@ const emptyForm = {
   location: '', price: '', duration: '', days: '', startDate: '', startTime: '',
   endDate: '', endTime: '', meetingPoint: '', bannerImage: '', extraImages: '',
   includedServices: '', excludedServices: '', maxGuests: '', rating: '4.5',
-  published: true, featured: false, latest: false, categoryId: '',
+  published: true, featured: false, categoryId: '',
   itinerary: [],
 }
 
@@ -50,7 +50,7 @@ export default function TourForm({ tourId = null }) {
             excludedServices: (t.excludedServices || []).join('\n'),
             maxGuests: t.maxGuests ? String(t.maxGuests) : '',
             rating: String(t.rating), published: t.published, featured: t.featured,
-            latest: t.latest, categoryId: t.categoryId || '',
+            categoryId: t.categoryId || '',
             itinerary: Array.isArray(t.itinerary) ? t.itinerary : [],
           })
         } catch (e) {
@@ -104,7 +104,6 @@ export default function TourForm({ tourId = null }) {
         published: form.published,
         featured: form.featured,
 
-        latest: form.latest,
         categoryId: form.categoryId || null,
         itinerary: form.itinerary,
       }
@@ -187,7 +186,7 @@ export default function TourForm({ tourId = null }) {
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
         <label className="checkbox-label"><input name="featured" type="checkbox" checked={form.featured} onChange={handleChange} /> Featured</label>
 
-        <label className="checkbox-label"><input name="latest" type="checkbox" checked={form.latest} onChange={handleChange} /> Latest</label>
+
       </div>
       <button type="submit" className="btn btn--primary btn--lg" disabled={loading} style={{ marginTop: '1.5rem' }}>
         {loading ? 'Saving...' : tourId ? 'Update Tour' : 'Create Tour'}
