@@ -21,6 +21,24 @@ export default function DestinationForm({ destinationId = null }) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+  /* Flatten category tree into a flat list with parent labels */
+  const flattenCategories = (cats) => {
+    const result = []
+    for (const cat of cats) {
+      if (cat.children && cat.children.length > 0) {
+        /* Show parent */
+        result.push({ ...cat, depth: 0 })
+        /* Show subcategories indented */
+        for (const child of cat.children) {
+          result.push({ ...child, depth: 1, parentName: cat.name })
+        }
+      } else {
+        result.push({ ...cat, depth: 0 })
+      }
+    }
+    return result
+  }
+
   useEffect(() => {
     let cancelled = false
     async function load() {
@@ -31,7 +49,7 @@ export default function DestinationForm({ destinationId = null }) {
         fetchJson('/api/admin/hotels'),
       ])
       if (cancelled) return
-      if (cats.status === 'fulfilled') setCategories(cats.value)
+      if (cats.status === 'fulfilled') setCategories(flattenCategories(cats.value))
       if (t.status === 'fulfilled') setTours(t.value)
       if (h.status === 'fulfilled') setHotels(h.value)
 
@@ -163,12 +181,17 @@ export default function DestinationForm({ destinationId = null }) {
         </div>
 
         <ImageUploadField label="Destination Image" name="image" value={form.image} onChange={handleChange} />
-        <div className="form-group"><label>Category</label>
+        <div className="form-group"><label>Category / Subcategory</label>
           <select name="categoryId" value={form.categoryId} onChange={handleChange}>
             <option value="">None</option>
-            {categories.filter((c) => c.type === 'DESTINATION').map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
+            {categories
+              .filter((c) => c.type === 'DESTINATION')
+              .map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.depth > 0 ? '\u00A0\u00A0\u2514 ' : ''}{c.name}
+                  {c.parentName ? ` (${c.parentName})` : ''}
+                </option>
+              ))}
           </select>
         </div>
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
