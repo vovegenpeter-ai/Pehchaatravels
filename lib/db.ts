@@ -119,6 +119,98 @@ export async function getPublishedDestinations() {
   return destinations.map(mapDestination)
 }
 
+/* === Places section: Category hierarchy === */
+
+/** Top-level DESTINATION categories with children and destination counts */
+export async function getDestinationCategories() {
+  const categories = await prisma.category.findMany({
+    where: { type: 'DESTINATION', parentId: null, published: true },
+    orderBy: { name: 'asc' },
+    include: {
+      children: {
+        where: { published: true },
+        orderBy: { name: 'asc' },
+        include: {
+          _count: { select: { destinations: { where: { published: true } } } },
+        },
+      },
+      _count: { select: { destinations: { where: { published: true } } } },
+    },
+  })
+  return categories.map((c) => ({
+    id: c.id,
+    slug: c.slug,
+    name: c.name,
+    description: c.description,
+    destinationCount: c._count.destinations + c.children.reduce((sum, ch) => sum + ch._count.destinations, 0),
+    children: c.children.map((ch) => ({
+      id: ch.id,
+      slug: ch.slug,
+      name: ch.name,
+      description: ch.description,
+      destinationCount: ch._count.destinations,
+    })),
+  }))
+}
+
+/** Category by slug (with children) */
+export async function getCategoryBySlug(slug: string) {
+  const category = await prisma.category.findFirst({
+    where: { slug, type: 'DESTINATION', published: true },
+    include: {
+      children: {
+        where: { published: true },
+        orderBy: { name: 'asc' },
+        include: {
+          _count: { select: { destinations: { where: { published: true } } } },
+        },
+      },
+      _count: { select: { destinations: { where: { published: true } } } },
+    },
+  })
+  if (!category) return null
+  return {
+    id: category.id,
+    slug: category.slug,
+    name: category.name,
+    description: category.description,
+    destinationCount: category._count.destinations + category.children.reduce((sum, ch) => sum + ch._count.destinations, 0),
+    children: category.children.map((ch) => ({
+      id: ch.id,
+      slug: ch.slug,
+      name: ch.name,
+      description: ch.description,
+      destinationCount: ch._count.destinations,
+    })),
+  }
+}
+
+/** All destinations under a category (including its subcategories) */
+export async function getDestinationsByCategory(categoryId: string) {
+  /* Get the category and its children */
+  const category = await prisma.category.findUnique({
+    where: { id: categoryId },
+    include: { children: { select: { id: true } } },
+  })
+  if (!category) return []
+
+  const categoryIds = [categoryId, ...category.children.map((c) => c.id)]
+  const destinations = await prisma.destination.findMany({
+    where: { published: true, categoryId: { in: categoryIds } },
+    orderBy: { name: 'asc' },
+  })
+  return destinations.map(mapDestination)
+}
+
+/** All destinations under a subcategory */
+export async function getDestinationsBySubcategory(subcategoryId: string) {
+  const destinations = await prisma.destination.findMany({
+    where: { published: true, categoryId: subcategoryId },
+    orderBy: { name: 'asc' },
+  })
+  return destinations.map(mapDestination)
+}
+
 export async function getFeaturedDestinations(limit = 8) {
   const destinations = await prisma.destination.findMany({
     where: { published: true, featured: true },
