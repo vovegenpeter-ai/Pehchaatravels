@@ -25,11 +25,15 @@ export default function HotelForm({ hotelId = null }) {
   useEffect(() => {
     let cancelled = false
     async function load() {
-      try {
-        const cats = await fetchJson('/api/admin/categories')
-        if (cancelled) return
-        setCategories(cats)
-        if (hotelId) {
+      /* Load each resource independently — a failure in one never blocks the others */
+      const catsResult = await Promise.allSettled([
+        fetchJson('/api/admin/categories'),
+      ])
+      if (cancelled) return
+      if (catsResult[0].status === 'fulfilled') setCategories(catsResult[0].value)
+
+      if (hotelId) {
+        try {
           const h = await fetchJson(`/api/admin/hotels/${hotelId}`)
           if (cancelled) return
           setForm({
@@ -53,9 +57,9 @@ export default function HotelForm({ hotelId = null }) {
             featured: h.featured,
             categoryId: h.categoryId || '',
           })
+        } catch (e) {
+          if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load hotel')
         }
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load hotel')
       }
     }
     load()

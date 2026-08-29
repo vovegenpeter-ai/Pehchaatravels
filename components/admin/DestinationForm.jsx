@@ -24,16 +24,19 @@ export default function DestinationForm({ destinationId = null }) {
   useEffect(() => {
     let cancelled = false
     async function load() {
-      try {
-        const cats = await fetchJson('/api/admin/categories')
-        const t = await fetchJson('/api/admin/tours')
-        const h = await fetchJson('/api/admin/hotels')
-        if (cancelled) return
-        setCategories(cats)
-        setTours(t)
-        setHotels(h)
+      /* Load each resource independently — a failure in one never blocks the others */
+      const [cats, t, h] = await Promise.allSettled([
+        fetchJson('/api/admin/categories'),
+        fetchJson('/api/admin/tours'),
+        fetchJson('/api/admin/hotels'),
+      ])
+      if (cancelled) return
+      if (cats.status === 'fulfilled') setCategories(cats.value)
+      if (t.status === 'fulfilled') setTours(t.value)
+      if (h.status === 'fulfilled') setHotels(h.value)
 
-        if (destinationId) {
+      if (destinationId) {
+        try {
           const d = await fetchJson(`/api/admin/destinations/${destinationId}`)
           if (cancelled) return
           setForm({
@@ -49,9 +52,9 @@ export default function DestinationForm({ destinationId = null }) {
             tourIds: d.tourIds || [],
             hotelIds: d.hotelIds || [],
           })
+        } catch (e) {
+          if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load destination')
         }
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load destination')
       }
     }
     load()
