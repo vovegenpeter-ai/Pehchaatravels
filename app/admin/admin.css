@@ -608,7 +608,7 @@ a.admin-pagination__btn:hover {
   }
 }
 
-/* ── Rich Text Editor (TinyMCE) ── */
+/* ── Rich Text Editor (Custom contentEditable) ── */
 .rte {
   border: 1px solid var(--beige-dark);
   border-radius: var(--radius);
@@ -616,19 +616,92 @@ a.admin-pagination__btn:hover {
   background: #fff;
 }
 
-/* TinyMCE container override */
-.rte .tox-tinymce {
-  border: none !important;
-  border-radius: var(--radius) !important;
-}
-.rte .tox .tox-toolbar-overlord {
-  background: #f8fafb !important;
-}
-.rte .tox .tox-toolbar__primary {
-  background: #f8fafb !important;
+.rte-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding: 0.45rem 0.6rem;
+  background: #f8fafb;
+  border-bottom: 1px solid var(--beige-dark);
 }
 
-/* Error banner */
+.rte-toolbar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 30px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.rte-toolbar__btn:hover { background: #e8ecef; }
+.rte-toolbar__btn--active { background: var(--green); color: #fff; }
+.rte-toolbar__btn--active:hover { background: #1a5e4f; }
+
+.rte-toolbar__sep {
+  width: 1px;
+  height: 20px;
+  background: var(--beige-dark);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+.rte-toolbar__select {
+  height: 30px;
+  padding: 0 0.5rem;
+  border: 1px solid var(--beige-dark);
+  border-radius: 4px;
+  background: #fff;
+  font-size: 0.82rem;
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+}
+.rte-toolbar__select:focus { border-color: var(--green); }
+
+.rte-editor {
+  min-height: 250px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* Placeholder */
+.rte-editor:empty::before {
+  content: attr(data-placeholder);
+  color: #adb5bd;
+  pointer-events: none;
+}
+
+/* Content styles */
+.rte-editor h1, .rte-editor h2, .rte-editor h3,
+.rte-editor h4, .rte-editor h5, .rte-editor h6 {
+  color: var(--green);
+  margin: 1rem 0 0.5rem;
+}
+.rte-editor p { margin: 0 0 0.75rem; }
+.rte-editor ul, .rte-editor ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+.rte-editor a { color: var(--green); text-decoration: underline; }
+.rte-editor img { max-width: 100%; height: auto; border-radius: 6px; margin: 0.75rem 0; display: block; }
+.rte-editor code {
+  background: #f1f5f9;
+  border-radius: 3px;
+  padding: 0.15em 0.35em;
+  font-size: 0.88em;
+}
+.rte-editor blockquote {
+  border-left: 3px solid var(--green);
+  margin: 0.75rem 0;
+  padding: 0.5rem 1rem;
+  background: #f8fafb;
+  font-style: italic;
+}
+
 .rte-error {
   background: #fdecea;
   color: #c0392b;
