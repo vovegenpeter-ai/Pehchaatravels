@@ -43,5 +43,8 @@ next-env.d.ts
 # local tooling / preview artifacts
 /.freebuff/
 
+# TinyMCE (loaded from CDN, not self-hosted)
+/public/tinymce
+
 .vercel
 .env*
