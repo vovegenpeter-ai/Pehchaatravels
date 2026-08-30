@@ -35,9 +35,9 @@ export default async function AdminCategoriesPage() {
               {categories.map((cat) => (
                 <tr key={cat.id}>
                   <td>
-                    <span className="places-tree__name">{cat.name}</span>
+                    <div className="places-tree__name">{cat.name}</div>
                     {cat.description && (
-                      <span className="places-tree__desc">{cat.description}</span>
+                      <div className="places-tree__desc" style={{ marginTop: '0.25rem', fontSize: '0.85rem', color: '#64748b' }}>{cat.description}</div>
                     )}
                   </td>
                   <td><span className="badge badge--outline">{cat.type}</span></td>
