@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import TourCard from '@/components/TourCard'
 import PlacesAndHotelsSection from '@/components/PlacesAndHotelsSection'
-import { getFeaturedTours, getFeaturedDestinations, getFeaturedHotels } from '@/lib/db'
+import { getFeaturedTours, getFeaturedDestinations, getFeaturedHotels, getDestinationCategories } from '@/lib/db'
 import { HERO_IMAGE, TRIP_IMAGE, defaultTours, popularPlaces, defaultHotels } from '@/lib/initialData'
 
 export const revalidate = 300
@@ -11,11 +11,16 @@ export default async function HomePage() {
   let places = []
   let hotels = []
 
-  const [dbTours, dbPlaces, dbHotels] = await Promise.allSettled([
+  let categories = []
+
+  const [dbTours, dbPlaces, dbHotels, dbCategories] = await Promise.allSettled([
     getFeaturedTours(3),
     getFeaturedDestinations(4),
     getFeaturedHotels(4),
+    getDestinationCategories(),
   ])
+
+  categories = dbCategories.status === 'fulfilled' ? dbCategories.value : []
 
   tours = dbTours.status === 'fulfilled' && dbTours.value?.length >= 3
     ? dbTours.value.slice(0, 3)
@@ -76,7 +81,43 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 3. Popular Places & Hotels Section */}
+      {/* 3. Places Categories Section */}
+      {categories.length > 0 && (
+        <section className="home-places-section">
+          <div className="container">
+            <div className="best-tours-header">
+              <div className="best-tours-header__text">
+                <h2 className="best-tours-header__title">Explore Pakistan&apos;s Destinations</h2>
+                <p className="best-tours-header__subtitle">Browse categories to discover hidden gems across the country.</p>
+              </div>
+              <Link href="/places" className="best-tours-header__link">
+                View All Places <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+            <div className="home-categories-grid">
+              {categories.map((cat) => (
+                <Link key={cat.id} href={`/places/${cat.slug}`} className="home-category-card">
+                  <div className="home-category-card__image">
+                    <img src={cat.image || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&q=80'} alt={cat.name} loading="lazy" />
+                    <div className="home-category-card__badge">
+                      {cat.destinationCount} {cat.destinationCount === 1 ? 'place' : 'places'}
+                    </div>
+                  </div>
+                  <div className="home-category-card__body">
+                    <h3 className="home-category-card__name">{cat.name}</h3>
+                    {cat.description && (
+                      <p className="home-category-card__desc">{cat.description}</p>
+                    )}
+                    <span className="home-category-card__cta">Explore →</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 4. Featured Hotels Section */}
       <PlacesAndHotelsSection places={places} hotels={hotels} />
 
       {/* 4. Make Your Own Trip Promotional Banner */}
