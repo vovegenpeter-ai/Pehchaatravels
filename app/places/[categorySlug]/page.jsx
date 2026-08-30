@@ -29,11 +29,6 @@ export default async function CategoryPage({ params }) {
         style={{ backgroundImage: `url(${category.image || HERO_IMAGE})` }}
       >
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <div className="places-hero__breadcrumb">
-            <Link href="/places">Places</Link>
-            <span>/</span>
-            <span>{category.name}</span>
-          </div>
           <div className="places-hero__content">
             <h1 className="places-hero__title">{category.name}</h1>
             {category.description && (

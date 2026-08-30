@@ -32,12 +32,7 @@ export default async function DestinationDetailPage({ params }) {
       >
         <div className="place-detail-hero__overlay">
           <div className="container">
-            <div className="place-detail-hero__breadcrumb">
-              <Link href="/places">Places</Link>
-              <span>/</span>
-              <span>{destination.name}</span>
-            </div>
-            <h1 className="place-detail-hero__title">{destination.name}</h1>
+              <h1 className="place-detail-hero__title">{destination.name}</h1>
             {destination.shortDescription && (
               <p className="place-detail-hero__subtitle">{destination.shortDescription}</p>
             )}
