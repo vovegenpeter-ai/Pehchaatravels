@@ -12,6 +12,8 @@ export default function AdminDestinationsPage() {
   const [search, setSearch] = useState('')
   const [filterCategory, setFilterCategory] = useState('')
   const [expandedCategories, setExpandedCategories] = useState({})
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 10
 
   useEffect(() => {
     let cancelled = false
@@ -59,6 +61,18 @@ export default function AdminDestinationsPage() {
     return Object.values(catMap)
   }, [destinations, categories, search, filterCategory])
 
+  // Reset page when search/filter changes
+  const [prevSearch, setPrevSearch] = useState('')
+  const [prevFilter, setPrevFilter] = useState('')
+  if (search !== prevSearch || filterCategory !== prevFilter) {
+    setPage(1)
+    setPrevSearch(search)
+    setPrevFilter(filterCategory)
+  }
+
+  const totalPages = Math.ceil(tree.length / PAGE_SIZE)
+  const paginatedTree = tree.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
   const toggleCategory = (id) => setExpandedCategories((p) => ({ ...p, [id]: !p[id] }))
 
   return (
@@ -105,7 +119,7 @@ export default function AdminDestinationsPage() {
             <Link href="/admin/destinations/new" className="btn btn--primary" style={{ marginTop: '0.75rem' }}>Add your first place</Link>
           </div>
         ) : (
-          tree.map((cat) => {
+          paginatedTree.map((cat) => {
             const isExpanded = expandedCategories[cat.id] !== false
             return (
               <div key={cat.id} className="tree-category">
@@ -154,6 +168,36 @@ export default function AdminDestinationsPage() {
           })
         )}
       </div>
+
+      {/* Pagination */}
+      {!loading && totalPages > 1 && (
+        <div className="admin-pagination__row">
+          <span className="admin-pagination__info">
+            {tree.length} categories · Page {page} of {totalPages}
+          </span>
+          <div className="admin-pagination">
+            {page > 1 && (
+              <button className="admin-pagination__btn" onClick={() => { setPage(page - 1); window.scrollTo({ top: 0, behavior: 'smooth' }) }}>
+                ← Prev
+              </button>
+            )}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                className={`admin-pagination__btn ${p === page ? 'admin-pagination__btn--active' : ''}`}
+                onClick={() => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+              >
+                {p}
+              </button>
+            ))}
+            {page < totalPages && (
+              <button className="admin-pagination__btn" onClick={() => { setPage(page + 1); window.scrollTo({ top: 0, behavior: 'smooth' }) }}>
+                Next →
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Stats */}
       {!loading && destinations.length > 0 && (
