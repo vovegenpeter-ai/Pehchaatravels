@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
+import ImageUploadField from '@/components/admin/ImageUploadField'
 
-const emptyForm = { name: '', slug: '', description: '', type: 'TOUR', published: true }
+const emptyForm = { name: '', slug: '', description: '', type: 'TOUR', published: true, image: '' }
 
 export default function CategoryForm({ categoryId = null, prefillType = null }) {
   const router = useRouter()
@@ -77,6 +78,7 @@ export default function CategoryForm({ categoryId = null, prefillType = null }) 
             <option value="ACTIVITY">Activities</option>
           </select>
         </div>
+        <ImageUploadField label="Category Image" name="image" value={form.image || ''} onChange={handleChange} />
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
       </div>
       <button type="submit" className="btn btn--primary btn--lg" disabled={loading} style={{ marginTop: '1.5rem' }}>

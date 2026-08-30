@@ -36,11 +36,9 @@ model Category {
   description  String?
   type         CategoryType
   published    Boolean       @default(true)
-  parentId     String?
+  image        String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  parent       Category?     @relation("CategoryTree", fields: [parentId], references: [id])
-  children     Category[]    @relation("CategoryTree")
   destinations Destination[]
   hotels       Hotel[]
   tours        Tour[]
