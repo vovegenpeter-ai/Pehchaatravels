@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
 const imageField = z.string().min(1).refine(
-  (v) => v.startsWith('http') || v.startsWith('/'),
-  'Must be a valid URL or upload path',
+  (v) => v.startsWith('http') || v.startsWith('/') || v.startsWith('data:image'),
+  'Must be a valid URL, upload path, or uploaded image',
 )
 
 export const tourSchema = z.object({
