@@ -9,18 +9,6 @@ export const metadata = {
   description: 'Discover Pakistan\'s most breathtaking destinations — from the peaks of Gilgit-Baltistan to the shores of Sindh.',
 }
 
-/* Category images — high-quality, relevant images for each region */
-const categoryImages = {
-  'kashmir': 'https://images.unsplash.com/photo-1597074866923-dc0589150a32?w=800&q=80',
-  'khyber-pakhtunkhwa': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
-  'kpk': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
-  'gilgit-baltistan': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80',
-  'punjab': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80',
-  'sindh': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80',
-  'balochistan': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80',
-  'popular-destinations': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80',
-}
-
 const fallbackImage = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80'
 
 export default async function PlacesPage() {
@@ -71,7 +59,7 @@ export default async function PlacesPage() {
           <div className="places-intro__text">
             <h2 className="places-intro__title">Explore by Region</h2>
             <p className="places-intro__subtitle">
-              Choose a region to discover its subcategories and hidden gems — each offering 
+              Choose a category to discover destinations and hidden gems — each offering 
               unique landscapes, culture, and unforgettable travel experiences.
             </p>
           </div>
@@ -88,7 +76,7 @@ export default async function PlacesPage() {
           ) : (
             <div className="places-categories__grid">
               {categories.map((category) => {
-                const img = categoryImages[category.slug] || fallbackImage
+                const img = category.image || fallbackImage
                 return (
                   <Link
                     key={category.id}
@@ -105,20 +93,6 @@ export default async function PlacesPage() {
                       <h3 className="places-category-card__name">{category.name}</h3>
                       {category.description && (
                         <p className="places-category-card__desc">{category.description}</p>
-                      )}
-                      {category.children.length > 0 && (
-                        <div className="places-category-card__subs">
-                          {category.children.slice(0, 3).map((sub) => (
-                            <span key={sub.id} className="places-category-card__sub-tag">
-                              {sub.name}
-                            </span>
-                          ))}
-                          {category.children.length > 3 && (
-                            <span className="places-category-card__sub-tag places-category-card__sub-tag--more">
-                              +{category.children.length - 3} more
-                            </span>
-                          )}
-                        </div>
                       )}
                       <span className="places-category-card__cta">
                         Explore {category.name} →
