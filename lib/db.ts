@@ -43,11 +43,29 @@ export async function getRelatedHotels(currentId: string, limit = 3) {
   return hotels.map(mapHotel)
 }
 
-export async function getRelatedDestinations(currentId: string, limit = 4) {
+export async function getRelatedDestinations(currentId: string, limit = 4, categoryId?: string | null) {
+  /* First try to find destinations in the same category */
+  if (categoryId) {
+    const sameCategory = await prisma.destination.findMany({
+      where: { published: true, id: { not: currentId }, categoryId },
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    })
+    if (sameCategory.length >= limit) return sameCategory.map(mapDestination)
+    /* Supplement with other destinations if not enough */
+    const remaining = limit - sameCategory.length
+    const others = await prisma.destination.findMany({
+      where: { published: true, id: { not: currentId }, categoryId: { not: categoryId } },
+      take: remaining,
+      orderBy: { createdAt: 'desc' },
+    })
+    return [...sameCategory, ...others].map(mapDestination)
+  }
+  /* No category — return any published destinations */
   const destinations = await prisma.destination.findMany({
     where: { published: true, id: { not: currentId } },
     take: limit,
-    orderBy: { name: 'asc' },
+    orderBy: { createdAt: 'desc' },
   })
   return destinations.map(mapDestination)
 }

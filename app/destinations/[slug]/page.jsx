@@ -21,7 +21,7 @@ export default async function DestinationDetailPage({ params }) {
   const destination = await getDestinationBySlug(slug)
   if (!destination) notFound()
 
-  const related = await getRelatedDestinations(destination.id, 4)
+  const related = await getRelatedDestinations(destination.id, 4, destination.categoryId)
 
   return (
     <>
@@ -171,9 +171,9 @@ export default async function DestinationDetailPage({ params }) {
         <section className="section place-detail-related">
           <div className="container">
             <div className="places-section-header">
-              <h2 className="places-section-header__title">Other Destinations</h2>
+              <h2 className="places-section-header__title">Related Places</h2>
               <p className="places-section-header__subtitle">
-                Discover more amazing places across Pakistan
+                Explore more places in the same category
               </p>
             </div>
             <div className="grid grid--4">
