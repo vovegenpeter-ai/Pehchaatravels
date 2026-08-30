@@ -15,17 +15,11 @@ const emptyForm = {
 export default function DestinationForm({ destinationId = null }) {
   const router = useRouter()
   const [form, setForm] = useState(emptyForm)
-  const [categoriesTree, setCategoriesTree] = useState([])
-  const [parentId, setParentId] = useState('')
+  const [categories, setCategories] = useState([])
   const [tours, setTours] = useState([])
   const [hotels, setHotels] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-
-  /* Derived: subcategories of the selected parent */
-  const subcategories = parentId
-    ? categoriesTree.find((c) => c.id === parentId)?.children || []
-    : []
 
   useEffect(() => {
     let cancelled = false
@@ -36,7 +30,7 @@ export default function DestinationForm({ destinationId = null }) {
         fetchJson('/api/admin/hotels'),
       ])
       if (cancelled) return
-      if (cats.status === 'fulfilled') setCategoriesTree(cats.value)
+      if (cats.status === 'fulfilled') setCategories(cats.value)
       if (t.status === 'fulfilled') setTours(t.value)
       if (h.status === 'fulfilled') setHotels(h.value)
 
@@ -44,19 +38,6 @@ export default function DestinationForm({ destinationId = null }) {
         try {
           const d = await fetchJson(`/api/admin/destinations/${destinationId}`)
           if (cancelled) return
-          const catId = d.categoryId || ''
-          /* Determine parentId: check if catId is a child of any parent */
-          const catsData = cats.status === 'fulfilled' ? cats.value : []
-          let foundParentId = ''
-          if (catId) {
-            for (const parent of catsData) {
-              if (parent.children?.some((child) => child.id === catId)) {
-                foundParentId = parent.id
-                break
-              }
-            }
-          }
-          setParentId(foundParentId)
           setForm({
             name: d.name,
             slug: d.slug,
@@ -66,7 +47,7 @@ export default function DestinationForm({ destinationId = null }) {
             image: d.image,
             published: d.published,
             featured: d.featured,
-            categoryId: catId,
+            categoryId: d.categoryId || '',
             tourIds: d.tourIds || [],
             hotelIds: d.hotelIds || [],
           })
@@ -90,19 +71,6 @@ export default function DestinationForm({ destinationId = null }) {
     })
   }
 
-  const handleParentChange = (e) => {
-    const newParentId = e.target.value
-    setParentId(newParentId)
-    /* When parent changes, reset subcategory to the parent itself */
-    setForm((prev) => ({ ...prev, categoryId: newParentId }))
-  }
-
-  const handleSubcategoryChange = (e) => {
-    const subId = e.target.value
-    /* If a subcategory is selected, use it; otherwise fall back to parent */
-    setForm((prev) => ({ ...prev, categoryId: subId || parentId }))
-  }
-
   const toggleRelation = (field, id) => {
     setForm((prev) => ({
       ...prev,
@@ -116,7 +84,6 @@ export default function DestinationForm({ destinationId = null }) {
     e.preventDefault()
     setError('')
 
-    // Client-side validation for descriptions
     if (form.shortDescription.length < 10) {
       setError('Short Description must be at least 10 characters long')
       return
@@ -165,7 +132,7 @@ export default function DestinationForm({ destinationId = null }) {
         <div className="form-group"><label>Name</label><input name="name" required value={form.name} onChange={handleChange} /></div>
         <div className="form-group"><label>Slug</label><input name="slug" required value={form.slug} onChange={handleChange} placeholder="hunza" /></div>
         <div className="form-group"><label>Location</label><input name="location" required value={form.location} onChange={handleChange} /></div>
-        
+
         {/* Short Description */}
         <div className="form-group form-group--full">
           <label>
@@ -196,27 +163,13 @@ export default function DestinationForm({ destinationId = null }) {
         <ImageUploadField label="Destination Image" name="image" value={form.image} onChange={handleChange} />
         <div className="form-group">
           <label>Category</label>
-          <select value={parentId} onChange={handleParentChange}>
+          <select name="categoryId" value={form.categoryId} onChange={handleChange}>
             <option value="">None</option>
-            {categoriesTree.map((c) => (
+            {categories.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
         </div>
-        {parentId && subcategories.length > 0 && (
-          <div className="form-group">
-            <label>Subcategory</label>
-            <select
-              value={form.categoryId === parentId ? '' : form.categoryId}
-              onChange={handleSubcategoryChange}
-            >
-              <option value="">None (use parent category)</option>
-              {subcategories.map((sub) => (
-                <option key={sub.id} value={sub.id}>{sub.name}</option>
-              ))}
-            </select>
-          </div>
-        )}
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
         <label className="checkbox-label"><input name="featured" type="checkbox" checked={form.featured} onChange={handleChange} /> Featured</label>
       </div>

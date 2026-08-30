@@ -12,7 +12,6 @@ export default function AdminDestinationsPage() {
   const [search, setSearch] = useState('')
   const [filterCategory, setFilterCategory] = useState('')
   const [expandedCategories, setExpandedCategories] = useState({})
-  const [expandedLocations, setExpandedLocations] = useState({})
 
   useEffect(() => {
     let cancelled = false
@@ -25,7 +24,7 @@ export default function AdminDestinationsPage() {
         if (cancelled) return
         if (d.status === 'fulfilled') setDestinations(d.value)
         if (c.status === 'fulfilled') {
-          const destCats = c.value.filter((cat) => cat.type === 'DESTINATION' && !cat.parentId)
+          const destCats = c.value.filter((cat) => cat.type === 'DESTINATION')
           setCategories(destCats)
         }
       } finally {
@@ -36,7 +35,7 @@ export default function AdminDestinationsPage() {
     return () => { cancelled = true }
   }, [])
 
-  /* Group destinations: Category → Subcategory → Places */
+  /* Group destinations by category */
   const tree = useMemo(() => {
     let filtered = destinations
     if (search) {
@@ -48,43 +47,23 @@ export default function AdminDestinationsPage() {
       )
     }
     if (filterCategory) {
-      /* Filter by category or any of its subcategories */
-      const catIds = categories
-        .filter((c) => c.id === filterCategory || c.parentId === filterCategory)
-        .map((c) => c.id)
-      filtered = filtered.filter((d) => catIds.includes(d.categoryId))
+      filtered = filtered.filter((d) => d.categoryId === filterCategory)
     }
 
     const catMap = {}
     filtered.forEach((d) => {
       const catId = d.categoryId || 'uncategorized'
-      if (!catMap[catId]) catMap[catId] = { id: catId, name: d.category?.name || 'Uncategorized', subcategories: {} }
-
-      /* Check if this destination points to a subcategory (has a parentId) */
-      const cat = categories.find((c) => c.id === catId)
-      if (cat && cat.parentId) {
-        /* This is a subcategory — group under parent */
-        const parentId = cat.parentId
-        if (!catMap[parentId]) catMap[parentId] = { id: parentId, name: '', subcategories: {} }
-        if (!catMap[parentId].subcategories[catId]) catMap[parentId].subcategories[catId] = { name: cat.name, places: [] }
-        catMap[parentId].subcategories[catId].places.push(d)
-        if (!catMap[parentId].name) catMap[parentId].name = categories.find((c) => c.id === parentId)?.name || 'Unknown'
-      } else {
-        /* Directly under category — group by location as pseudo-subcategory */
-        const loc = d.location || 'Other'
-        if (!catMap[catId].subcategories[loc]) catMap[catId].subcategories[loc] = { name: loc, places: [] }
-        catMap[catId].subcategories[loc].places.push(d)
-      }
+      if (!catMap[catId]) catMap[catId] = { id: catId, name: d.category?.name || 'Uncategorized', places: [] }
+      catMap[catId].places.push(d)
     })
     return Object.values(catMap)
   }, [destinations, categories, search, filterCategory])
 
   const toggleCategory = (id) => setExpandedCategories((p) => ({ ...p, [id]: !p[id] }))
-  const toggleLocation = (key) => setExpandedLocations((p) => ({ ...p, [key]: !p[key] }))
 
   return (
     <>
-      {/* ── Header ── */}
+      {/* Header */}
       <div className="places-header">
         <div>
           <h1 className="places-title">Places Management</h1>
@@ -115,7 +94,7 @@ export default function AdminDestinationsPage() {
         </div>
       </div>
 
-      {/* ── Tree View ── */}
+      {/* Tree View */}
       <div className="places-tree">
         {loading ? (
           <div className="places-empty">Loading places...</div>
@@ -128,7 +107,6 @@ export default function AdminDestinationsPage() {
         ) : (
           tree.map((cat) => {
             const isExpanded = expandedCategories[cat.id] !== false
-            const subKeys = Object.keys(cat.subcategories)
             return (
               <div key={cat.id} className="tree-category">
                 {/* Category row */}
@@ -137,57 +115,38 @@ export default function AdminDestinationsPage() {
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                   <span className="tree-category__name">{cat.name}</span>
                   <span className="badge badge--outline">CATEGORY</span>
-                  <span className="tree-category__count">{Object.values(cat.subcategories).reduce((n, s) => n + s.places.length, 0)} places</span>
+                  <span className="tree-category__count">{cat.places.length} places</span>
                 </div>
 
-                {/* Subcategories & Places */}
+                {/* Places */}
                 {isExpanded && (
                   <div className="tree-category__children">
-                    {subKeys.map((subKey) => {
-                      const locExpanded = expandedLocations[`${cat.id}-${subKey}`] !== false
-                      const sub = cat.subcategories[subKey]
-                      return (
-                        <div key={subKey} className="tree-location">
-                          <div className="tree-location__header" onClick={() => toggleLocation(`${cat.id}-${subKey}`)}>
-                            <span className="tree-chevron">{locExpanded ? '▾' : '▸'}</span>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-                            <span className="tree-location__name">{sub.name}</span>
-                            <span className="tree-location__count">{sub.places.length}</span>
-                          </div>
-
-                          {locExpanded && (
-                            <div className="tree-location__children">
-                              {sub.places.map((d) => (
-                                <div key={d.id} className="tree-place">
-                                  <div className="tree-place__thumb">
-                                    {d.image ? (
-                                      <img src={d.image} alt={d.name} />
-                                    ) : (
-                                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                                    )}
-                                  </div>
-                                  <div className="tree-place__info">
-                                    <div className="tree-place__name">{d.name}</div>
-                                    <div className="tree-place__desc">{d.shortDescription || d.description || 'No description'}</div>
-                                  </div>
-                                  <div className="tree-place__badges">
-                                    {d.featured && <span className="badge badge--green">Featured</span>}
-                                    {!d.published && <span className="badge badge--yellow">Draft</span>}
-                                  </div>
-                                  <div className="tree-place__actions">
-                                    <Link href={`/admin/destinations/${d.id}`} className="btn btn--outline btn--sm">Edit</Link>
-                                    <DeleteButton
-                                      endpoint={`/api/admin/destinations/${d.id}`}
-                                      confirmText={`Delete "${d.name}"? This cannot be undone.`}
-                                    />
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
+                    {cat.places.map((d) => (
+                      <div key={d.id} className="tree-place">
+                        <div className="tree-place__thumb">
+                          {d.image ? (
+                            <img src={d.image} alt={d.name} />
+                          ) : (
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                           )}
                         </div>
-                      )
-                    })}
+                        <div className="tree-place__info">
+                          <div className="tree-place__name">{d.name}</div>
+                          <div className="tree-place__desc">{d.shortDescription || d.description || 'No description'}</div>
+                        </div>
+                        <div className="tree-place__badges">
+                          {d.featured && <span className="badge badge--green">Featured</span>}
+                          {!d.published && <span className="badge badge--yellow">Draft</span>}
+                        </div>
+                        <div className="tree-place__actions">
+                          <Link href={`/admin/destinations/${d.id}`} className="btn btn--outline btn--sm">Edit</Link>
+                          <DeleteButton
+                            endpoint={`/api/admin/destinations/${d.id}`}
+                            confirmText={`Delete "${d.name}"? This cannot be undone.`}
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -196,7 +155,7 @@ export default function AdminDestinationsPage() {
         )}
       </div>
 
-      {/* ── Stats ── */}
+      {/* Stats */}
       {!loading && destinations.length > 0 && (
         <div className="places-stats">
           <span>{destinations.length} total places</span>

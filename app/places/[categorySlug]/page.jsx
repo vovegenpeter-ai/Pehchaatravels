@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import PlaceCard from '@/components/PlaceCard'
 import { getCategoryBySlug } from '@/lib/db'
 import { HERO_IMAGE } from '@/lib/initialData'
 
@@ -25,7 +26,7 @@ export default async function CategoryPage({ params }) {
       {/* Hero Section */}
       <section
         className="places-hero places-hero--category"
-        style={{ backgroundImage: `url(${HERO_IMAGE})` }}
+        style={{ backgroundImage: `url(${category.image || HERO_IMAGE})` }}
       >
         <div className="places-hero__overlay">
           <div className="container">
@@ -41,12 +42,6 @@ export default async function CategoryPage({ params }) {
               )}
               <div className="places-hero__stats">
                 <div className="places-hero__stat">
-                  <span className="places-hero__stat-num">{category.children.length}</span>
-                  <span className="places-hero__stat-label">
-                    {category.children.length === 1 ? 'Subcategory' : 'Subcategories'}
-                  </span>
-                </div>
-                <div className="places-hero__stat">
                   <span className="places-hero__stat-num">{category.destinationCount}</span>
                   <span className="places-hero__stat-label">
                     {category.destinationCount === 1 ? 'Destination' : 'Destinations'}
@@ -58,42 +53,29 @@ export default async function CategoryPage({ params }) {
         </div>
       </section>
 
-      {/* Subcategories Section */}
-      <section className="section places-subcategories">
+      {/* Destinations Section */}
+      <section className="section places-destinations">
         <div className="container">
           <div className="places-section-header">
             <h2 className="places-section-header__title">
-              Explore {category.name}
+              Destinations in {category.name}
             </h2>
             <p className="places-section-header__subtitle">
-              Choose a subcategory to discover destinations within {category.name}
+              {category.destinations.length > 0
+                ? `Discover ${category.destinations.length} amazing ${category.destinations.length === 1 ? 'place' : 'places'} in ${category.name}`
+                : `No destinations available in ${category.name} yet`
+              }
             </p>
           </div>
-          {category.children.length > 0 ? (
-            <div className="places-subcategories__grid">
-              {category.children.map((sub) => (
-                <Link
-                  key={sub.id}
-                  href={`/places/${category.slug}/${sub.slug}`}
-                  className="places-subcategory-card places-subcategory-card--link"
-                >
-                  <div className="places-subcategory-card__icon">📂</div>
-                  <h3 className="places-subcategory-card__name">{sub.name}</h3>
-                  <p className="places-subcategory-card__count">
-                    {sub.destinationCount} {sub.destinationCount === 1 ? 'destination' : 'destinations'}
-                  </p>
-                  {sub.description && (
-                    <p className="places-subcategory-card__desc">{sub.description}</p>
-                  )}
-                  <span className="places-subcategory-card__cta">
-                    Explore {sub.name} →
-                  </span>
-                </Link>
+          {category.destinations.length > 0 ? (
+            <div className="grid grid--3">
+              {category.destinations.map((place) => (
+                <PlaceCard key={place.id} place={place} />
               ))}
             </div>
           ) : (
             <div className="places-empty">
-              <p>No subcategories available in {category.name} yet.</p>
+              <p>No destinations available in this category yet. Check back soon!</p>
               <Link href="/places" className="btn btn--primary">
                 Browse All Places
               </Link>
