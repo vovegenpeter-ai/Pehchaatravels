@@ -25,30 +25,20 @@ export default async function CategoryPage({ params }) {
     <>
       {/* Hero Section */}
       <section
-        className="places-hero places-hero--category"
+        className="places-hero places-hero--category places-hero--no-overlay"
         style={{ backgroundImage: `url(${category.image || HERO_IMAGE})` }}
       >
-        <div className="places-hero__overlay">
-          <div className="container">
-            <div className="places-hero__breadcrumb">
-              <Link href="/places">Places</Link>
-              <span>/</span>
-              <span>{category.name}</span>
-            </div>
-            <div className="places-hero__content">
-              <h1 className="places-hero__title">{category.name}</h1>
-              {category.description && (
-                <p className="places-hero__subtitle">{category.description}</p>
-              )}
-              <div className="places-hero__stats">
-                <div className="places-hero__stat">
-                  <span className="places-hero__stat-num">{category.destinationCount}</span>
-                  <span className="places-hero__stat-label">
-                    {category.destinationCount === 1 ? 'Destination' : 'Destinations'}
-                  </span>
-                </div>
-              </div>
-            </div>
+        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+          <div className="places-hero__breadcrumb">
+            <Link href="/places">Places</Link>
+            <span>/</span>
+            <span>{category.name}</span>
+          </div>
+          <div className="places-hero__content">
+            <h1 className="places-hero__title">{category.name}</h1>
+            {category.description && (
+              <p className="places-hero__subtitle">{category.description}</p>
+            )}
           </div>
         </div>
       </section>

@@ -4260,6 +4260,22 @@ ul { list-style: none; }
   min-height: 400px;
 }
 
+.places-hero--no-overlay {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 3rem;
+  background-color: #0f172a;
+}
+
+.places-hero--no-overlay .places-hero__title,
+.places-hero--no-overlay .places-hero__subtitle,
+.places-hero--no-overlay .places-hero__breadcrumb,
+.places-hero--no-overlay .places-hero__breadcrumb a,
+.places-hero--no-overlay .places-hero__breadcrumb span {
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
 .places-hero--category .places-hero {
   min-height: 400px;
 }
