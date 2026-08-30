@@ -32,22 +32,7 @@ export default async function PlacesPage() {
                 From the towering peaks of the Karakoram to the serene valleys of Kashmir — 
                 explore diverse landscapes, rich culture, and unforgettable adventures across Pakistan.
               </p>
-              <div className="places-hero__stats">
-                <div className="places-hero__stat">
-                  <span className="places-hero__stat-num">{categories.length}+</span>
-                  <span className="places-hero__stat-label">Regions</span>
-                </div>
-                <div className="places-hero__stat">
-                  <span className="places-hero__stat-num">
-                    {categories.reduce((sum, c) => sum + c.destinationCount, 0)}+
-                  </span>
-                  <span className="places-hero__stat-label">Destinations</span>
-                </div>
-                <div className="places-hero__stat">
-                  <span className="places-hero__stat-num">6</span>
-                  <span className="places-hero__stat-label">Provinces</span>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>
