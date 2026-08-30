@@ -177,27 +177,37 @@ export default function DestinationForm({ destinationId = null }) {
       <div className="admin-relations" style={{ marginTop: '2rem' }}>
         <h3>Related Tours</h3>
         <div className="admin-checkbox-grid">
-          {tours.map((t) => (
-            <label key={t.id} className="checkbox-label">
-              <input type="checkbox" checked={form.tourIds.includes(t.id)} onChange={() => toggleRelation('tourIds', t.id)} />
-              {t.name}
-            </label>
-          ))}
+          {tours
+            .filter((t) => !form.categoryId || t.categoryId === form.categoryId)
+            .map((t) => (
+              <label key={t.id} className="checkbox-label">
+                <input type="checkbox" checked={form.tourIds.includes(t.id)} onChange={() => toggleRelation('tourIds', t.id)} />
+                {t.name}
+              </label>
+            ))}
+          {tours.filter((t) => !form.categoryId || t.categoryId === form.categoryId).length === 0 && (
+            <p style={{ color: '#64748b', fontSize: '0.875rem' }}>No tours found for this category.</p>
+          )}
         </div>
 
         <h3 style={{ marginTop: '1.5rem' }}>Related Hotels</h3>
         <div className="admin-checkbox-grid">
-          {hotels.map((h) => (
-            <label key={h.id} className="checkbox-label">
-              <input type="checkbox" checked={form.hotelIds.includes(h.id)} onChange={() => toggleRelation('hotelIds', h.id)} />
-              {h.name}
-            </label>
-          ))}
+          {hotels
+            .filter((h) => !form.categoryId || h.categoryId === form.categoryId)
+            .map((h) => (
+              <label key={h.id} className="checkbox-label">
+                <input type="checkbox" checked={form.hotelIds.includes(h.id)} onChange={() => toggleRelation('hotelIds', h.id)} />
+                {h.name}
+              </label>
+            ))}
+          {hotels.filter((h) => !form.categoryId || h.categoryId === form.categoryId).length === 0 && (
+            <p style={{ color: '#64748b', fontSize: '0.875rem' }}>No hotels found for this category.</p>
+          )}
         </div>
       </div>
 
       <button type="submit" className="btn btn--primary btn--lg" disabled={loading} style={{ marginTop: '1.5rem' }}>
-        {loading ? 'Saving...' : destinationId ? 'Update Destination' : 'Create Destination'}
+        {loading ? 'Saving...' : destinationId ? 'Update Explore Places' : 'Add Explore Places'}
       </button>
     </form>
   )
