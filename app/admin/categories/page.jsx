@@ -12,7 +12,7 @@ export default async function AdminCategoriesPage({ searchParams }) {
 
   const [categories, total] = await Promise.all([
     prisma.category.findMany({
-      orderBy: { name: 'asc' },
+      orderBy: { createdAt: 'desc' },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
     }),

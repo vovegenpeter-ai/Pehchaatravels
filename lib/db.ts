@@ -125,7 +125,7 @@ export async function getPublishedDestinations() {
 export async function getDestinationCategories() {
   const categories = await prisma.category.findMany({
     where: { published: true },
-    orderBy: { name: 'asc' },
+    orderBy: { createdAt: 'desc' },
     include: {
       _count: { select: { destinations: { where: { published: true } } } },
     },
@@ -209,7 +209,7 @@ export async function getDestinationBySlug(slug: string) {
 export async function getPublishedCategories(type?: string) {
   return prisma.category.findMany({
     where: { published: true, ...(type ? { type: type as never } : {}) },
-    orderBy: { name: 'asc' },
+    orderBy: { createdAt: 'desc' },
   })
 }
 
