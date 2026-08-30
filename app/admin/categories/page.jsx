@@ -26,7 +26,7 @@ export default async function AdminCategoriesPage() {
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Type</th>
+                <th>Description</th>
                 <th>Status</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
@@ -34,13 +34,8 @@ export default async function AdminCategoriesPage() {
             <tbody>
               {categories.map((cat) => (
                 <tr key={cat.id}>
-                  <td>
-                    <div className="places-tree__name">{cat.name}</div>
-                    {cat.description && (
-                      <div className="places-tree__desc" style={{ marginTop: '0.25rem', fontSize: '0.85rem', color: '#64748b' }}>{cat.description}</div>
-                    )}
-                  </td>
-                  <td><span className="badge badge--outline">{cat.type}</span></td>
+                  <td><span className="places-tree__name">{cat.name}</span></td>
+                  <td><span className="places-tree__desc" style={{ fontSize: '0.85rem', color: '#64748b' }}>{cat.description || '—'}</span></td>
                   <td>
                     {cat.published
                       ? <span className="badge badge--green">Published</span>
