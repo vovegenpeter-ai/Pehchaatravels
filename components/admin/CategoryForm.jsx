@@ -6,14 +6,11 @@ import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 import ImageUploadField from '@/components/admin/ImageUploadField'
 
-const emptyForm = { name: '', slug: '', description: '', type: 'TOUR', published: true, image: '' }
+const emptyForm = { name: '', slug: '', description: '', type: 'DESTINATION', published: true, image: '' }
 
-export default function CategoryForm({ categoryId = null, prefillType = null }) {
+export default function CategoryForm({ categoryId = null }) {
   const router = useRouter()
-  const [form, setForm] = useState(() => ({
-    ...emptyForm,
-    ...(prefillType ? { type: prefillType } : {}),
-  }))
+  const [form, setForm] = useState(emptyForm)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -70,14 +67,7 @@ export default function CategoryForm({ categoryId = null, prefillType = null }) 
         <div className="form-group"><label>Name</label><input name="name" required value={form.name} onChange={handleChange} /></div>
         <div className="form-group"><label>Slug</label><input name="slug" required value={form.slug} onChange={handleChange} /></div>
         <div className="form-group form-group--full"><label>Description</label><textarea name="description" rows={3} value={form.description || ''} onChange={handleChange} /></div>
-        <div className="form-group"><label>Type</label>
-          <select name="type" value={form.type} onChange={handleChange}>
-            <option value="TOUR">Tours</option>
-            <option value="HOTEL">Hotels</option>
-            <option value="DESTINATION">Destinations</option>
-            <option value="ACTIVITY">Activities</option>
-          </select>
-        </div>
+        <input type="hidden" name="type" value={form.type} />
         <ImageUploadField label="Category Image" name="image" value={form.image || ''} onChange={handleChange} />
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
       </div>

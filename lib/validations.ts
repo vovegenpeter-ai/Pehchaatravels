@@ -71,7 +71,7 @@ export const categorySchema = z.object({
   description: z.string().optional(),
   type: z.enum(['TOUR', 'HOTEL', 'DESTINATION', 'ACTIVITY']),
   published: z.boolean().default(true),
-  image: z.string().optional().or(z.literal('')),
+  image: z.string().optional().nullable().or(z.literal('')),
 })
 
 export const destinationSchema = z.object({
