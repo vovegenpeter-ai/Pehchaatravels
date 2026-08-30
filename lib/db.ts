@@ -124,7 +124,7 @@ export async function getPublishedDestinations() {
 /** All DESTINATION categories with destination counts */
 export async function getDestinationCategories() {
   const categories = await prisma.category.findMany({
-    where: { type: 'DESTINATION', published: true },
+    where: { published: true },
     orderBy: { name: 'asc' },
     include: {
       _count: { select: { destinations: { where: { published: true } } } },
@@ -143,7 +143,7 @@ export async function getDestinationCategories() {
 /** Category by slug */
 export async function getCategoryBySlug(slug: string) {
   const category = await prisma.category.findFirst({
-    where: { slug, type: 'DESTINATION', published: true },
+    where: { slug, published: true },
     include: {
       _count: { select: { destinations: { where: { published: true } } } },
     },
