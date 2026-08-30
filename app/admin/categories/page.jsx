@@ -12,7 +12,7 @@ export default async function AdminCategoriesPage() {
   return (
     <>
       <div className="admin-header">
-        <h1>Manage Categories</h1>
+        <h1>Places Category</h1>
         <Link href="/admin/categories/new" className="btn btn--primary">Add Category</Link>
       </div>
 
