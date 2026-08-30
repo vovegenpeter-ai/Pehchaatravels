@@ -10,7 +10,7 @@ const links = [
   { href: '/admin/categories', label: 'Places Category' },
   { href: '/admin/contact-queries', label: 'Contact Queries' },
   { href: '/admin/trip-requests', label: 'Trip Requests' },
-  { href: '/admin/destinations', label: 'Destinations' },
+  { href: '/admin/destinations', label: 'Explore Places' },
   { href: '/admin/home', label: 'Home Page' },
   { href: '/admin/hotels', label: 'Hotels' },
   { href: '/admin/newsletter', label: 'Newsletter' },

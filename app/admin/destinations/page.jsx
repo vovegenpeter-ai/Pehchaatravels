@@ -66,7 +66,7 @@ export default function AdminDestinationsPage() {
       {/* Header */}
       <div className="places-header">
         <div>
-          <h1 className="places-title">Places Management</h1>
+          <h1 className="places-title">Explore Places</h1>
           <p className="places-subtitle">Organize and manage destinations across Pakistan.</p>
         </div>
         <div className="places-header-actions">
