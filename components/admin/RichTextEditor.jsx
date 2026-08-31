@@ -2,12 +2,15 @@
 
 import { useRef, useCallback, useState, useEffect } from 'react'
 
-/* ─── Formatting helpers ─── */
-const exec = (cmd, val) => document.execCommand(cmd, false, val || null)
-
-function ToolbarBtn({ active, onClick, title, children }) {
+/* ─── Small sub-components ─── */
+function ToolbarBtn({ active, onClick, title, children, className = '' }) {
   return (
-    <button type="button" className={`rte-toolbar__btn${active ? ' rte-toolbar__btn--active' : ''}`} onClick={onClick} title={title}>
+    <button
+      type="button"
+      className={`rte-toolbar__btn${active ? ' rte-toolbar__btn--active' : ''} ${className}`}
+      onClick={onClick}
+      title={title}
+    >
       {children}
     </button>
   )
@@ -17,25 +20,58 @@ function Sep() {
   return <span className="rte-toolbar__sep" />
 }
 
-function Select({ value, onChange, title, options }) {
+function Select({ value, onChange, title, options, className = '' }) {
   return (
-    <select className="rte-toolbar__select" value={value} onChange={(e) => onChange(e.target.value)} title={title}>
-      {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+    <select
+      className={`rte-toolbar__select ${className}`}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      title={title}
+    >
+      {options.map((o) => (
+        <option key={o.value} value={o.value}>{o.label}</option>
+      ))}
     </select>
+  )
+}
+
+function ColorButton({ color, onChange, title, icon }) {
+  const inputRef = useRef(null)
+  return (
+    <button
+      type="button"
+      className="rte-toolbar__btn rte-toolbar__color-btn"
+      title={title}
+      onClick={() => inputRef.current?.click()}
+    >
+      {icon}
+      <span className="rte-toolbar__color-bar" style={{ backgroundColor: color || '#000' }} />
+      <input
+        ref={inputRef}
+        type="color"
+        value={color || '#000000'}
+        onChange={(e) => onChange(e.target.value)}
+        style={{ position: 'absolute', width: 0, height: 0, opacity: 0, pointerEvents: 'none' }}
+      />
+    </button>
   )
 }
 
 export default function RichTextEditor({ value = '', onChange, placeholder = 'Write something...' }) {
   const editorRef = useRef(null)
   const [activeBlock, setActiveBlock] = useState('p')
-  const [activeFont, setActiveFont] = useState('')
+  const [activeFont, setActiveFont] = useState('Arial')
   const [activeAlign, setActiveAlign] = useState('left')
   const [bold, setBold] = useState(false)
   const [italic, setItalic] = useState(false)
   const [underline, setUnderline] = useState(false)
   const [ol, setOl] = useState(false)
   const [ul, setUl] = useState(false)
-  const [fontSize, setFontSize] = useState(16)
+  const [taskList, setTaskList] = useState(false)
+  const [fontSize, setFontSize] = useState(14)
+  const [textColor, setTextColor] = useState('#000000')
+  const [highlightColor, setHighlightColor] = useState('#FFFF00')
+  const [strike, setStrike] = useState(false)
   const fileRef = useRef(null)
   const ignoreNextInput = useRef(false)
 
@@ -63,11 +99,24 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     }
   }, [onChange])
 
+  /* ── Detect font size from current selection ── */
+  const detectFontSize = useCallback(() => {
+    const sel = window.getSelection()
+    if (sel && sel.rangeCount > 0) {
+      const node = sel.anchorNode?.nodeType === 3 ? sel.anchorNode.parentElement : sel.anchorNode
+      if (node && editorRef.current?.contains(node)) {
+        const computed = window.getComputedStyle(node).fontSize
+        if (computed) setFontSize(parseInt(computed, 10) || 14)
+      }
+    }
+  }, [])
+
   /* ── Update toolbar active states ── */
   const refreshToolbar = useCallback(() => {
     setBold(document.queryCommandState('bold'))
     setItalic(document.queryCommandState('italic'))
     setUnderline(document.queryCommandState('underline'))
+    setStrike(document.queryCommandState('strikeThrough'))
     setOl(document.queryCommandState('insertOrderedList'))
     setUl(document.queryCommandState('insertUnorderedList'))
 
@@ -75,7 +124,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     setActiveBlock(block || 'p')
 
     const font = document.queryCommandValue('fontName').replace(/['"]/g, '')
-    setActiveFont(font)
+    if (font) setActiveFont(font)
 
     const align = document.queryCommandValue('justifyCenter') ? 'center'
       : document.queryCommandValue('justifyRight') ? 'right'
@@ -83,16 +132,8 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
       : 'left'
     setActiveAlign(align)
 
-    // Detect current font size from selection
-    const sel = window.getSelection()
-    if (sel && sel.rangeCount > 0) {
-      const node = sel.anchorNode?.nodeType === 3 ? sel.anchorNode.parentElement : sel.anchorNode
-      if (node && editorRef.current?.contains(node)) {
-        const computed = window.getComputedStyle(node).fontSize
-        if (computed) setFontSize(parseInt(computed, 10) || 16)
-      }
-    }
-  }, [])
+    detectFontSize()
+  }, [detectFontSize])
 
   /* ── Format block ── */
   const formatBlock = useCallback((tag) => {
@@ -106,7 +147,6 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
   const setFont = useCallback((font) => {
     editorRef.current?.focus()
     if (font) document.execCommand('fontName', false, font)
-    else document.execCommand('removeFormat', false, null)
     refreshToolbar()
     emitChange()
   }, [refreshToolbar, emitChange])
@@ -127,71 +167,122 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     emitChange()
   }, [refreshToolbar, emitChange])
 
-  /* ── Font size increase/decrease ── */
-  const changeFontSize = useCallback((delta) => {
+  /* ── Font size: set to specific value ── */
+  const setFontSizeValue = useCallback((size) => {
     editorRef.current?.focus()
     const sel = window.getSelection()
     if (!sel || sel.rangeCount === 0) return
+    const newSize = Math.max(8, Math.min(96, size))
 
-    const range = sel.getRangeAt(0)
-    const node = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer
-
-    // Find the nearest sized element within the editor
-    let target = node
-    let currentSize = 16
-    while (target && editorRef.current?.contains(target) && target !== editorRef.current) {
-      const computed = window.getComputedStyle(target).fontSize
-      if (computed) {
-        currentSize = parseInt(computed, 10) || 16
-        break
-      }
-      target = target.parentElement
-    }
-
-    const newSize = Math.max(10, Math.min(72, currentSize + delta))
-
-    // If there's a selection spanning text, wrap it
     if (!sel.isCollapsed) {
-      // Check if selection is entirely within a single span with the same size
-      const anchorParent = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer
-      const focusParent = range.endContainer.nodeType === 3 ? range.endContainer.parentElement : range.endContainer
-
-      if (anchorParent === focusParent && anchorParent?.tagName === 'SPAN' && anchorParent.style.fontSize) {
-        anchorParent.style.fontSize = newSize + 'px'
-      } else {
-        const span = document.createElement('span')
-        span.style.fontSize = newSize + 'px'
-        try {
-          range.surroundContents(span)
-        } catch {
-          // If range crosses element boundaries, extract and wrap
-          const fragment = range.extractContents()
-          span.appendChild(fragment)
-          range.insertNode(span)
-        }
-      }
-    } else {
-      // No selection — insert a zero-width space with the new size
       const span = document.createElement('span')
       span.style.fontSize = newSize + 'px'
-      span.innerHTML = '\u200B' // zero-width space
-      range.insertNode(span)
-      // Move cursor after the inserted span
-      range.setStartAfter(span)
-      range.collapse(true)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      const range = sel.getRangeAt(0)
+      try {
+        range.surroundContents(span)
+      } catch {
+        const fragment = range.extractContents()
+        span.appendChild(fragment)
+        range.insertNode(span)
+      }
     }
-
     setFontSize(newSize)
     emitChange()
   }, [emitChange])
 
+  /* ── Font size increase/decrease ── */
+  const changeFontSize = useCallback((delta) => {
+    const newSize = Math.max(8, Math.min(96, fontSize + delta))
+    setFontSizeValue(newSize)
+  }, [fontSize, setFontSizeValue])
+
+  /* ── Text color ── */
+  const applyTextColor = useCallback((color) => {
+    editorRef.current?.focus()
+    document.execCommand('foreColor', false, color)
+    setTextColor(color)
+    emitChange()
+  }, [emitChange])
+
+  /* ── Highlight color ── */
+  const applyHighlight = useCallback((color) => {
+    editorRef.current?.focus()
+    document.execCommand('hiliteColor', false, color)
+    setHighlightColor(color)
+    emitChange()
+  }, [emitChange])
+
+  /* ── Line spacing ── */
+  const setLineSpacing = useCallback((val) => {
+    editorRef.current?.focus()
+    document.execCommand('lineHeight', false, val)
+    emitChange()
+  }, [emitChange])
+
+  /* ── Indent / Outdent ── */
+  const doIndent = useCallback(() => {
+    editorRef.current?.focus()
+    document.execCommand('indent', false, null)
+    emitChange()
+  }, [emitChange])
+
+  const doOutdent = useCallback(() => {
+    editorRef.current?.focus()
+    document.execCommand('outdent', false, null)
+    emitChange()
+  }, [emitChange])
+
+  /* ── Task list (checkbox list) ── */
+  const toggleTaskList = useCallback(() => {
+    editorRef.current?.focus()
+    const sel = window.getSelection()
+    if (!sel || sel.rangeCount === 0) return
+
+    // Find the current list item or paragraph
+    let node = sel.anchorNode
+    while (node && node !== editorRef.current) {
+      if (node.tagName === 'LI') break
+      if (node.tagName === 'P' || node.tagName === 'DIV') break
+      node = node.parentElement
+    }
+
+    if (taskList) {
+      // Remove task list: convert LI back to plain text
+      document.execCommand('insertUnorderedList', false, null)
+      setTaskList(false)
+    } else {
+      // Create a task list with checkboxes
+      document.execCommand('insertUnorderedList', false, null)
+      // Add checkbox to current list item
+      const listNode = node?.tagName === 'LI' ? node : editorRef.current?.querySelector('li:last-child')
+      if (listNode && !listNode.querySelector('input[type="checkbox"]')) {
+        const checkbox = document.createElement('input')
+        checkbox.type = 'checkbox'
+        checkbox.style.marginRight = '0.5rem'
+        checkbox.style.cursor = 'pointer'
+        checkbox.disabled = true // display only
+        listNode.prepend(checkbox)
+        listNode.style.listStyle = 'none'
+        listNode.style.marginLeft = '-1.5rem'
+      }
+      setTaskList(true)
+    }
+    emitChange()
+  }, [taskList, emitChange])
+
   /* ── Link ── */
   const addLink = useCallback(() => {
     editorRef.current?.focus()
-    const url = window.prompt('Enter URL:')
-    if (url) document.execCommand('createLink', false, url)
+    const sel = window.getSelection()
+    const selectedText = sel?.toString() || ''
+    const url = window.prompt('Enter URL:', 'https://')
+    if (url) {
+      if (selectedText) {
+        document.execCommand('createLink', false, url)
+      } else {
+        document.execCommand('insertHTML', false, `<a href="${url}" target="_blank">${url}</a>`)
+      }
+    }
     emitChange()
   }, [emitChange])
 
@@ -216,30 +307,39 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     if (fileRef.current) fileRef.current.value = ''
   }, [emitChange])
 
-  /* ── Handle paste: strip formatting, keep plain text + images ── */
+  /* ── Handle paste: clean paste ── */
   const handlePaste = useCallback((e) => {
     e.preventDefault()
-    const text = e.clipboardData.getData('text/html') || e.clipboardData.getData('text/plain')
-    document.execCommand('insertHTML', false, text)
+    const html = e.clipboardData.getData('text/html')
+    const text = e.clipboardData.getData('text/plain')
+    if (html) {
+      // Clean the pasted HTML - remove scripts and styles
+      const cleaned = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      document.execCommand('insertHTML', false, cleaned)
+    } else {
+      document.execCommand('insertText', false, text)
+    }
     emitChange()
   }, [emitChange])
 
   return (
     <div className="rte">
       <div className="rte-toolbar">
-        {/* ── Block format ── */}
+        {/* ── Block format (Normal text / Headings) ── */}
         <Select
           value={activeBlock}
           onChange={formatBlock}
           title="Text style"
           options={[
-            { value: 'p', label: 'Normal' },
+            { value: 'p', label: 'Normal text' },
             { value: 'h1', label: 'Heading 1' },
             { value: 'h2', label: 'Heading 2' },
             { value: 'h3', label: 'Heading 3' },
             { value: 'h4', label: 'Heading 4' },
             { value: 'h5', label: 'Heading 5' },
             { value: 'h6', label: 'Heading 6' },
+            { value: 'blockquote', label: 'Quote' },
           ]}
         />
 
@@ -248,74 +348,165 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
           value={activeFont}
           onChange={setFont}
           title="Font family"
+          className="rte-toolbar__select--font"
           options={[
-            { value: '', label: 'Default' },
-            { value: 'sans-serif', label: 'Sans Serif' },
-            { value: 'serif', label: 'Serif' },
-            { value: 'monospace', label: 'Monospace' },
-            { value: 'cursive', label: 'Cursive' },
+            { value: 'Arial', label: 'Arial' },
+            { value: 'Arial Black', label: 'Arial Black' },
+            { value: 'Times New Roman', label: 'Times New Roman' },
+            { value: 'Courier New', label: 'Courier New' },
+            { value: 'Verdana', label: 'Verdana' },
+            { value: 'Georgia', label: 'Georgia' },
+            { value: 'Trebuchet MS', label: 'Trebuchet MS' },
+            { value: 'Comic Sans MS', label: 'Comic Sans MS' },
+            { value: 'Impact', label: 'Impact' },
+            { value: 'Lucida Console', label: 'Lucida Console' },
+            { value: 'Tahoma', label: 'Tahoma' },
+            { value: 'Palatino Linotype', label: 'Palatino' },
+            { value: 'Segoe UI', label: 'Segoe UI' },
           ]}
         />
 
         <Sep />
 
-        {/* ── Font size ── */}
-        <ToolbarBtn onClick={() => changeFontSize(-2)} title="Decrease font size">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><text x="2" y="17" fontSize="15" fill="currentColor" stroke="none" fontWeight="600" fontFamily="sans-serif">A</text><path d="M17 18l4-4M21 18l-4-4" /></svg>
+        {/* ── Font size: - [size] + ── */}
+        <div className="rte-toolbar__fontsize">
+          <button type="button" className="rte-toolbar__fontsize-btn" onClick={() => changeFontSize(-1)} title="Decrease font size">−</button>
+          <span className="rte-toolbar__fontsize-val">{fontSize}</span>
+          <button type="button" className="rte-toolbar__fontsize-btn" onClick={() => changeFontSize(1)} title="Increase font size">+</button>
+        </div>
+
+        <Sep />
+
+        {/* ── Bold / Italic / Underline / Strikethrough ── */}
+        <ToolbarBtn active={bold} onClick={() => doCmd('bold')} title="Bold (Ctrl+B)">
+          <strong>B</strong>
         </ToolbarBtn>
-        <ToolbarBtn onClick={() => changeFontSize(2)} title="Increase font size">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><text x="1" y="17" fontSize="16" fill="currentColor" stroke="none" fontWeight="700" fontFamily="sans-serif">A</text><path d="M17 14l4 4M21 14l-4 4" /></svg>
+        <ToolbarBtn active={italic} onClick={() => doCmd('italic')} title="Italic (Ctrl+I)">
+          <em>I</em>
+        </ToolbarBtn>
+        <ToolbarBtn active={underline} onClick={() => doCmd('underline')} title="Underline (Ctrl+U)">
+          <span style={{ textDecoration: 'underline' }}>U</span>
+        </ToolbarBtn>
+        <ToolbarBtn active={strike} onClick={() => doCmd('strikeThrough')} title="Strikethrough">
+          <span style={{ textDecoration: 'line-through' }}>S</span>
         </ToolbarBtn>
 
         <Sep />
 
-        {/* ── Text formatting ── */}
-        <ToolbarBtn active={bold} onClick={() => doCmd('bold')} title="Bold"><strong>B</strong></ToolbarBtn>
-        <ToolbarBtn active={italic} onClick={() => doCmd('italic')} title="Italic"><em>I</em></ToolbarBtn>
-        <ToolbarBtn active={underline} onClick={() => doCmd('underline')} title="Underline"><span style={{ textDecoration: 'underline' }}>U</span></ToolbarBtn>
+        {/* ── Text color ── */}
+        <ColorButton
+          color={textColor}
+          onChange={applyTextColor}
+          title="Text color"
+          icon={
+            <span style={{ fontWeight: 700, fontSize: '14px', lineHeight: 1 }}>A</span>
+          }
+        />
+
+        {/* ── Highlight color ── */}
+        <ColorButton
+          color={highlightColor}
+          onChange={applyHighlight}
+          title="Highlight color"
+          icon={
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+          }
+        />
 
         <Sep />
 
-        {/* ── Lists ── */}
-        <ToolbarBtn active={ol} onClick={() => doCmd('insertOrderedList')} title="Ordered list">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><text x="2" y="8" fontSize="8" fill="currentColor" stroke="none" fontFamily="sans-serif">1</text><text x="2" y="14" fontSize="8" fill="currentColor" stroke="none" fontFamily="sans-serif">2</text><text x="2" y="20" fontSize="8" fill="currentColor" stroke="none" fontFamily="sans-serif">3</text></svg>
-        </ToolbarBtn>
-        <ToolbarBtn active={ul} onClick={() => doCmd('insertUnorderedList')} title="Bullet list">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
-        </ToolbarBtn>
-
-        <Sep />
-
+        {/* ── Link ── */}
         <ToolbarBtn onClick={addLink} title="Insert link">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
         </ToolbarBtn>
 
-        <ToolbarBtn onClick={() => doCmd('removeFormat')} title="Clear formatting">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3H7l5 5"/><path d="M7 21h10"/><path d="M9.5 13.5L14 18"/><path d="M14 13.5L9.5 18"/></svg>
-        </ToolbarBtn>
-
+        {/* ── Image ── */}
         <ToolbarBtn onClick={() => fileRef.current?.click()} title="Insert image">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
+          </svg>
         </ToolbarBtn>
         <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImage} style={{ display: 'none' }} />
+
+        {/* ── Clear formatting ── */}
+        <ToolbarBtn onClick={() => doCmd('removeFormat')} title="Clear formatting">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M17 3H7l5 5" /><path d="M7 21h10" /><path d="M9.5 13.5L14 18" /><path d="M14 13.5L9.5 18" />
+          </svg>
+        </ToolbarBtn>
 
         <Sep />
 
         {/* ── Alignment ── */}
-        <ToolbarBtn active={activeAlign === 'left'} onClick={() => doAlign('justifyLeft')} title="Align left">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
+        <Select
+          value={activeAlign}
+          onChange={(val) => {
+            const map = { left: 'justifyLeft', center: 'justifyCenter', right: 'justifyRight', justify: 'justifyFull' }
+            doAlign(map[val] || 'justifyLeft')
+          }}
+          title="Text alignment"
+          options={[
+            { value: 'left', label: '⫷ Left' },
+            { value: 'center', label: '☰ Center' },
+            { value: 'right', label: '⫸ Right' },
+            { value: 'justify', label: '☰ Justify' },
+          ]}
+        />
+
+        <Sep />
+
+        {/* ── Indent / Outdent ── */}
+        <ToolbarBtn onClick={doIndent} title="Increase indent">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="3" y1="6" x2="21" y2="6" /><line x1="9" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+            <polyline points="3 10 7 12 3 14" />
+          </svg>
         </ToolbarBtn>
-        <ToolbarBtn active={activeAlign === 'center'} onClick={() => doAlign('justifyCenter')} title="Align center">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+        <ToolbarBtn onClick={doOutdent} title="Decrease indent">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="3" y1="6" x2="21" y2="6" /><line x1="9" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+            <polyline points="7 10 3 12 7 14" />
+          </svg>
         </ToolbarBtn>
-        <ToolbarBtn active={activeAlign === 'right'} onClick={() => doAlign('justifyRight')} title="Align right">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="6" y1="18" x2="21" y2="18"/></svg>
+
+        <Sep />
+
+        {/* ── Ordered list / Unordered list / Task list ── */}
+        <ToolbarBtn active={ol} onClick={() => doCmd('insertOrderedList')} title="Numbered list">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="10" y1="6" x2="21" y2="6" /><line x1="10" y1="12" x2="21" y2="12" /><line x1="10" y1="18" x2="21" y2="18" />
+            <text x="2" y="8" fontSize="8" fill="currentColor" stroke="none" fontFamily="sans-serif">1</text>
+            <text x="2" y="14" fontSize="8" fill="currentColor" stroke="none" fontFamily="sans-serif">2</text>
+            <text x="2" y="20" fontSize="8" fill="currentColor" stroke="none" fontFamily="sans-serif">3</text>
+          </svg>
         </ToolbarBtn>
-        <ToolbarBtn active={activeAlign === 'justify'} onClick={() => doAlign('justifyFull')} title="Justify">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <ToolbarBtn active={ul} onClick={() => doCmd('insertUnorderedList')} title="Bullet list">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="9" y1="6" x2="21" y2="6" /><line x1="9" y1="12" x2="21" y2="12" /><line x1="9" y1="18" x2="21" y2="18" />
+            <circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none" />
+            <circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none" />
+            <circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none" />
+          </svg>
+        </ToolbarBtn>
+        <ToolbarBtn active={taskList} onClick={toggleTaskList} title="Task list">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="6" height="6" rx="1" />
+            <path d="M5 7l1.5 1.5L9 5" strokeWidth="1.5" />
+            <line x1="13" y1="6" x2="21" y2="6" />
+            <rect x="3" y="14" width="6" height="6" rx="1" />
+            <line x1="13" y1="17" x2="21" y2="17" />
+          </svg>
         </ToolbarBtn>
       </div>
 
+      {/* ── Editor area ── */}
       <div
         ref={editorRef}
         className="rte-editor"
@@ -330,7 +521,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
         onMouseUp={refreshToolbar}
         onBlur={refreshToolbar}
         onPaste={handlePaste}
-        style={{ minHeight: 250, padding: '1rem', outline: 'none', fontSize: '0.95rem', lineHeight: 1.7 }}
+        style={{ minHeight: 250, padding: '1rem', outline: 'none', fontSize: '14px', lineHeight: 1.7 }}
       />
     </div>
   )

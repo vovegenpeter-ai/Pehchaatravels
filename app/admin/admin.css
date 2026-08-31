@@ -686,6 +686,68 @@ a.admin-pagination__btn:hover {
 .rte-toolbar__btn--active { background: var(--green); color: #fff; }
 .rte-toolbar__btn--active:hover { background: #1a5e4f; }
 
+/* Color buttons (text color, highlight) */
+.rte-toolbar__color-btn {
+  position: relative;
+  flex-direction: column;
+  gap: 0;
+  width: 28px;
+  padding: 2px 0;
+}
+.rte-toolbar__color-bar {
+  display: block;
+  width: 16px;
+  height: 3px;
+  border-radius: 1px;
+  margin-top: 1px;
+}
+
+/* Font size control: − [14] + */
+.rte-toolbar__fontsize {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--beige-dark);
+  border-radius: 4px;
+  overflow: hidden;
+  height: 30px;
+  background: #fff;
+}
+.rte-toolbar__fontsize-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.rte-toolbar__fontsize-btn:hover { background: #e8ecef; }
+.rte-toolbar__fontsize-val {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 100%;
+  padding: 0 4px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
+  border-left: 1px solid var(--beige-dark);
+  border-right: 1px solid var(--beige-dark);
+  background: #fff;
+  user-select: none;
+}
+
+/* Font family select — wider */
+.rte-toolbar__select--font {
+  min-width: 110px;
+}
+
 .rte-toolbar__sep {
   width: 1px;
   height: 20px;
