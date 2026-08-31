@@ -4912,6 +4912,23 @@ ul { list-style: none; }
     min-height: 320px;
   }
 
+  /* Mobile: center hero image and push text lower */
+  .places-hero--no-overlay {
+    background-position: center 30%;
+    padding-bottom: 1.5rem;
+    min-height: 340px;
+  }
+  .places-hero--no-overlay::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 55%;
+    background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
   .places-categories__grid {
     grid-template-columns: 1fr;
     gap: 1.25rem;
@@ -4978,6 +4995,16 @@ ul { list-style: none; }
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
+  }
+
+  /* Very small mobile: tighten hero */
+  .places-hero--no-overlay {
+    min-height: 300px;
+    padding-bottom: 1rem;
+    background-position: center 25%;
+  }
+  .places-hero--no-overlay::after {
+    height: 50%;
   }
 }
 
