@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 import ImageUploadField from '@/components/admin/ImageUploadField'
+import RichTextEditor from '@/components/admin/RichTextEditor'
 
 const emptyForm = {
   name: '',
@@ -105,12 +106,10 @@ export default function CategoryForm({ categoryId = null }) {
               (Displayed below the Hero Section on the frontend)
             </small>
           </label>
-          <textarea
-            name="longDescription"
-            rows={5}
-            placeholder="Detailed description shown on the category page..."
+          <RichTextEditor
             value={form.longDescription || ''}
-            onChange={handleChange}
+            onChange={(html) => setForm((prev) => ({ ...prev, longDescription: html }))}
+            placeholder="Detailed description shown on the category page..."
           />
         </div>
 
