@@ -35,6 +35,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
   const [underline, setUnderline] = useState(false)
   const [ol, setOl] = useState(false)
   const [ul, setUl] = useState(false)
+  const [fontSize, setFontSize] = useState(16)
   const fileRef = useRef(null)
   const ignoreNextInput = useRef(false)
 
@@ -81,6 +82,16 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
       : document.queryCommandValue('justifyFull') ? 'justify'
       : 'left'
     setActiveAlign(align)
+
+    // Detect current font size from selection
+    const sel = window.getSelection()
+    if (sel && sel.rangeCount > 0) {
+      const node = sel.anchorNode?.nodeType === 3 ? sel.anchorNode.parentElement : sel.anchorNode
+      if (node && editorRef.current?.contains(node)) {
+        const computed = window.getComputedStyle(node).fontSize
+        if (computed) setFontSize(parseInt(computed, 10) || 16)
+      }
+    }
   }, [])
 
   /* ── Format block ── */
@@ -115,6 +126,66 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     refreshToolbar()
     emitChange()
   }, [refreshToolbar, emitChange])
+
+  /* ── Font size increase/decrease ── */
+  const changeFontSize = useCallback((delta) => {
+    editorRef.current?.focus()
+    const sel = window.getSelection()
+    if (!sel || sel.rangeCount === 0) return
+
+    const range = sel.getRangeAt(0)
+    const node = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer
+
+    // Find the nearest sized element within the editor
+    let target = node
+    let currentSize = 16
+    while (target && editorRef.current?.contains(target) && target !== editorRef.current) {
+      const computed = window.getComputedStyle(target).fontSize
+      if (computed) {
+        currentSize = parseInt(computed, 10) || 16
+        break
+      }
+      target = target.parentElement
+    }
+
+    const newSize = Math.max(10, Math.min(72, currentSize + delta))
+
+    // If there's a selection spanning text, wrap it
+    if (!sel.isCollapsed) {
+      // Check if selection is entirely within a single span with the same size
+      const anchorParent = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer
+      const focusParent = range.endContainer.nodeType === 3 ? range.endContainer.parentElement : range.endContainer
+
+      if (anchorParent === focusParent && anchorParent?.tagName === 'SPAN' && anchorParent.style.fontSize) {
+        anchorParent.style.fontSize = newSize + 'px'
+      } else {
+        const span = document.createElement('span')
+        span.style.fontSize = newSize + 'px'
+        try {
+          range.surroundContents(span)
+        } catch {
+          // If range crosses element boundaries, extract and wrap
+          const fragment = range.extractContents()
+          span.appendChild(fragment)
+          range.insertNode(span)
+        }
+      }
+    } else {
+      // No selection — insert a zero-width space with the new size
+      const span = document.createElement('span')
+      span.style.fontSize = newSize + 'px'
+      span.innerHTML = '\u200B' // zero-width space
+      range.insertNode(span)
+      // Move cursor after the inserted span
+      range.setStartAfter(span)
+      range.collapse(true)
+      sel.removeAllRanges()
+      sel.addRange(range)
+    }
+
+    setFontSize(newSize)
+    emitChange()
+  }, [emitChange])
 
   /* ── Link ── */
   const addLink = useCallback(() => {
@@ -185,6 +256,16 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
             { value: 'cursive', label: 'Cursive' },
           ]}
         />
+
+        <Sep />
+
+        {/* ── Font size ── */}
+        <ToolbarBtn onClick={() => changeFontSize(-2)} title="Decrease font size">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><text x="2" y="17" fontSize="15" fill="currentColor" stroke="none" fontWeight="600" fontFamily="sans-serif">A</text><path d="M17 18l4-4M21 18l-4-4" /></svg>
+        </ToolbarBtn>
+        <ToolbarBtn onClick={() => changeFontSize(2)} title="Increase font size">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><text x="1" y="17" fontSize="16" fill="currentColor" stroke="none" fontWeight="700" fontFamily="sans-serif">A</text><path d="M17 14l4 4M21 14l-4 4" /></svg>
+        </ToolbarBtn>
 
         <Sep />
 
