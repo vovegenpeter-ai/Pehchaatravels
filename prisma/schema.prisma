@@ -222,6 +222,7 @@ model User {
   phone           String                @unique
   passwordHash    String
   avatar          String?
+  blocked         Boolean             @default(false)
   createdAt       DateTime              @default(now())
   resetTokens     UserPasswordResetToken[]
   reviews         Review[]
