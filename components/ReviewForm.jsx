@@ -52,7 +52,7 @@ export default function ReviewForm({ tourId, orderId, onSuccess }) {
 
   if (success) {
     return (
-      <div style={{ padding: '1.5rem', background: '#d1fae5', borderRadius: '12px', textAlign: 'center' }}>
+      <div className="review-form__success">
         <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>✓</div>
         <h3 style={{ color: '#065f46', marginBottom: '0.5rem' }}>Thank You!</h3>
         <p style={{ color: '#047857' }}>{success}</p>
@@ -61,18 +61,16 @@ export default function ReviewForm({ tourId, orderId, onSuccess }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-      <h3 style={{ marginBottom: '1rem', color: '#1a4d3e' }}>Write a Review</h3>
+    <form onSubmit={handleSubmit} className="review-form">
+      <h3 className="review-form__title">Write a Review</h3>
 
       {error && (
-        <div style={{ padding: '0.75rem', background: '#fee2e2', color: '#991b1b', borderRadius: '8px', marginBottom: '1rem', fontSize: '14px' }}>
-          {error}
-        </div>
+        <div className="review-form__error">{error}</div>
       )}
 
       {/* Star Rating */}
-      <div style={{ marginBottom: '1rem' }}>
-        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '14px' }}>Rating *</label>
+      <div className="review-form__field">
+        <label className="review-form__label">Rating *</label>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <StarInput value={rating} onChange={setRating} size="2rem" />
           {rating > 0 && (
@@ -81,14 +79,14 @@ export default function ReviewForm({ tourId, orderId, onSuccess }) {
             </span>
           )}
         </div>
-        <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '0.25rem' }}>
+        <p className="review-form__hint">
           Click left side of star for half (e.g., 3.5) or right side for full (e.g., 4.0)
         </p>
       </div>
 
       {/* Comment */}
-      <div style={{ marginBottom: '1rem' }}>
-        <label htmlFor="review-comment" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '14px' }}>Your Review *</label>
+      <div className="review-form__field">
+        <label htmlFor="review-comment" className="review-form__label">Your Review *</label>
         <textarea
           id="review-comment"
           value={comment}
@@ -98,9 +96,9 @@ export default function ReviewForm({ tourId, orderId, onSuccess }) {
           minLength={10}
           maxLength={2000}
           required
-          style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '14px', resize: 'vertical' }}
+          className="review-form__textarea"
         />
-        <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '0.25rem' }}>
+        <p className="review-form__hint">
           {comment.length}/2000 characters (minimum 10)
         </p>
       </div>
@@ -108,16 +106,7 @@ export default function ReviewForm({ tourId, orderId, onSuccess }) {
       <button
         type="submit"
         disabled={submitting || rating === 0 || comment.length < 10}
-        style={{
-          padding: '0.75rem 1.5rem',
-          background: '#1a4d3e',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '8px',
-          fontWeight: 600,
-          cursor: submitting ? 'not-allowed' : 'pointer',
-          opacity: submitting || rating === 0 || comment.length < 10 ? 0.6 : 1,
-        }}
+        className="review-form__submit"
       >
         {submitting ? 'Submitting...' : 'Submit Review'}
       </button>

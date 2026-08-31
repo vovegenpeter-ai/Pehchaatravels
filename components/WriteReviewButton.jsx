@@ -31,23 +31,21 @@ export default function WriteReviewButton({ tourId }) {
     return null
   }
 
-  // Not logged in - show sign in prompt
+  // Not logged in — show sign-in prompt with button
   if (!isLoggedIn) {
     return (
-      <div style={{
-        padding: '1rem',
-        background: '#f3f4f6',
-        color: '#374151',
-        borderRadius: '8px',
-        textAlign: 'center',
-        fontWeight: 500,
-      }}>
-        <a href="/sign-in" style={{ color: '#1a4d3e', fontWeight: 700, textDecoration: 'underline' }}>Sign in</a> to write a review.
+      <div className="review-signin-prompt">
+        <p className="review-signin-prompt__text">
+          Sign in to share your experience and help other travelers.
+        </p>
+        <a href="/sign-in" className="review-signin-prompt__btn">
+          Sign In to Write a Review
+        </a>
       </div>
     )
   }
 
-  // Already reviewed - status shown in banner at top
+  // Already reviewed — status shown in banner at top
   if (eligibility && !eligibility.eligible && eligibility.reason === 'Review already submitted') {
     return null
   }
@@ -62,17 +60,7 @@ export default function WriteReviewButton({ tourId }) {
     <button
       type="button"
       onClick={() => setShowForm(true)}
-      style={{
-        width: '100%',
-        padding: '0.75rem 1.5rem',
-        background: '#1a4d3e',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '8px',
-        fontWeight: 600,
-        cursor: 'pointer',
-        fontSize: '14px',
-      }}
+      className="review-write-btn"
     >
       Write a Review
     </button>

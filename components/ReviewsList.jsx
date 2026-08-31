@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { StarDisplay, StarInput } from './HalfStarRating'
 import { useAuth } from '@/lib/AuthContext'
+import ConfirmDialog from '@/components/admin/ConfirmDialog'
 
 export default function ReviewsList({ tourId }) {
   const [reviews, setReviews] = useState([])
@@ -19,6 +20,7 @@ export default function ReviewsList({ tourId }) {
   const [deletingId, setDeletingId] = useState(null)
   const [successMsg, setSuccessMsg] = useState('')
   const [editError, setEditError] = useState('')
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null)
 
   const fetchReviews = async () => {
     setLoading(true)
@@ -84,7 +86,6 @@ export default function ReviewsList({ tourId }) {
   }
 
   const deleteReview = async (id) => {
-    if (!confirm('Are you sure you want to delete this review?')) return
     setDeletingId(id)
     setEditError('')
     try {
@@ -106,28 +107,28 @@ export default function ReviewsList({ tourId }) {
   return (
     <div>
       {/* Rating Summary */}
-      <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+      <div className="review-summary">
         {/* Average Rating */}
-        <div style={{ textAlign: 'center', minWidth: '150px' }}>
-          <div style={{ fontSize: '3rem', fontWeight: 700, color: '#1a4d3e' }}>{summary.averageRating}</div>
+        <div className="review-summary__avg">
+          <div className="review-summary__avg-number">{summary.averageRating}</div>
           <div style={{ marginTop: '0.25rem' }}><StarDisplay rating={summary.averageRating} size="1.25rem" /></div>
-          <div style={{ color: '#6b7280', fontSize: '14px', marginTop: '0.25rem' }}>
+          <div className="review-summary__avg-label">
             Based on {summary.totalReviews} review{summary.totalReviews !== 1 ? 's' : ''}
           </div>
         </div>
 
         {/* Rating Distribution */}
-        <div style={{ flex: 1, minWidth: '200px' }}>
+        <div className="review-summary__bars">
           {[5, 4, 3, 2, 1].map((star) => {
             const count = summary.ratingDistribution[star] || 0
             const percentage = summary.totalReviews > 0 ? (count / summary.totalReviews) * 100 : 0
             return (
-              <div key={star} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                <span style={{ width: '50px', fontSize: '14px', color: '#6b7280' }}>{star} Star</span>
-                <div style={{ flex: 1, height: '8px', background: '#e5e7eb', borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${percentage}%`, height: '100%', background: '#f59e0b', borderRadius: '4px' }} />
+              <div key={star} className="review-summary__bar-row">
+                <span className="review-summary__bar-label">{star} Star</span>
+                <div className="review-summary__bar-track">
+                  <div className="review-summary__bar-fill" style={{ width: `${percentage}%` }} />
                 </div>
-                <span style={{ width: '40px', fontSize: '12px', color: '#6b7280', textAlign: 'right' }}>{Math.round(percentage)}%</span>
+                <span className="review-summary__bar-pct">{Math.round(percentage)}%</span>
               </div>
             )
           })}
@@ -135,11 +136,10 @@ export default function ReviewsList({ tourId }) {
       </div>
 
       {/* Sort and Filter */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+      <div className="review-toolbar">
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '14px' }}
         >
           <option value="recent">Most Recent</option>
           <option value="highest">Highest Rating</option>
@@ -148,7 +148,6 @@ export default function ReviewsList({ tourId }) {
         <select
           value={filterRating}
           onChange={(e) => setFilterRating(e.target.value)}
-          style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '14px' }}
         >
           <option value="">All Ratings</option>
           <option value="5">5 Stars</option>
@@ -161,107 +160,64 @@ export default function ReviewsList({ tourId }) {
 
       {/* Success/Error Messages */}
       {successMsg && (
-        <div style={{
-          padding: '0.75rem 1rem',
-          borderRadius: '8px',
-          background: '#d1fae5',
-          color: '#065f46',
-          fontWeight: 600,
-          fontSize: '14px',
-          marginBottom: '1rem',
-        }}>
+        <div className="review-alert review-alert--success">
           ✅ {successMsg}
         </div>
       )}
       {editError && (
-        <div style={{
-          padding: '0.75rem 1rem',
-          borderRadius: '8px',
-          background: '#fee2e2',
-          color: '#991b1b',
-          fontWeight: 600,
-          fontSize: '14px',
-          marginBottom: '1rem',
-        }}>
+        <div className="review-alert review-alert--error">
           ❌ {editError}
         </div>
       )}
 
       {/* Reviews List */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>Loading reviews...</div>
+        <div className="review-empty">Loading reviews...</div>
       ) : reviews.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
+        <div className="review-empty">
           No reviews found. Be the first to review this tour!
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="review-list">
           {reviews.map((review) => {
             const isOwner = currentUser && currentUser.id === review.user.id
             const isEditing = editingId === review.id
 
             return (
-              <div key={review.id} style={{ padding: '1.25rem', background: '#f9fafb', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div key={review.id} className="review-card">
+                <div className="review-card__header">
+                  <div className="review-card__user">
                     {review.user.avatar ? (
-                      <img src={review.user.avatar} alt={review.user.fullName} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                      <img src={review.user.avatar} alt={review.user.fullName} className="review-card__avatar" />
                     ) : (
-                      <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#1a4d3e', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '14px' }}>
+                      <div className="review-card__avatar-placeholder">
                         {review.user.fullName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
                       </div>
                     )}
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                        <span style={{ fontWeight: 600 }}>{review.user.fullName}</span>
-                        <span style={{
-                          fontSize: '10px',
-                          padding: '1px 6px',
-                          borderRadius: '10px',
-                          background: '#d1fae5',
-                          color: '#065f46',
-                          fontWeight: 600,
-                        }}>
-                          ✓ Verified Customer
-                        </span>
+                        <span className="review-card__name">{review.user.fullName}</span>
+                        <span className="review-card__badge">✓ Verified Customer</span>
                       </div>
-                      <div style={{ fontSize: '12px', color: '#6b7280' }}>{formatDate(review.createdAt)}</div>
+                      <div className="review-card__date">{formatDate(review.createdAt)}</div>
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div className="review-card__actions">
                     {isOwner && !isEditing && (
                       <>
                         <button
                           type="button"
                           onClick={() => startEditing(review)}
-                          style={{
-                            padding: '4px 10px',
-                            fontSize: '12px',
-                            background: '#fff',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            color: '#374151',
-                            fontWeight: 500,
-                          }}
+                          className="review-card__edit-btn"
                         >
                           Edit
                         </button>
                         <button
                           type="button"
-                          onClick={() => deleteReview(review.id)}
+                          onClick={() => setConfirmDeleteId(review.id)}
                           disabled={deletingId === review.id}
-                          style={{
-                            padding: '4px 10px',
-                            fontSize: '12px',
-                            background: '#fff',
-                            border: '1px solid #fca5a5',
-                            borderRadius: '6px',
-                            cursor: deletingId === review.id ? 'not-allowed' : 'pointer',
-                            color: '#dc2626',
-                            fontWeight: 500,
-                            opacity: deletingId === review.id ? 0.6 : 1,
-                          }}>
+                          className="review-card__delete-btn"
+                        >
                           {deletingId === review.id ? '...' : 'Delete'}
                         </button>
                       </>
@@ -270,9 +226,9 @@ export default function ReviewsList({ tourId }) {
                 </div>
 
                 {isEditing ? (
-                  <div style={{ marginTop: '0.5rem' }}>
-                    <div style={{ marginBottom: '0.75rem' }}>
-                      <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600, fontSize: '13px' }}>Rating</label>
+                  <div className="review-edit">
+                    <div className="review-form__field">
+                      <label className="review-form__label">Rating</label>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <StarInput value={editRating} onChange={setEditRating} size="1.5rem" />
                         {editRating > 0 && (
@@ -280,48 +236,32 @@ export default function ReviewsList({ tourId }) {
                         )}
                       </div>
                     </div>
-                    <div style={{ marginBottom: '0.75rem' }}>
+                    <div className="review-form__field">
                       <textarea
                         value={editComment}
                         onChange={(e) => setEditComment(e.target.value)}
                         rows={3}
                         minLength={10}
                         maxLength={2000}
-                        style={{ width: '100%', padding: '0.5rem', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '14px', resize: 'vertical' }}
+                        className="review-edit__input"
                       />
-                      <p style={{ fontSize: '11px', color: '#6b7280', marginTop: '0.25rem' }}>{editComment.length}/2000 characters</p>
+                      <p className="review-form__hint">{editComment.length}/2000 characters</p>
                     </div>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <div className="review-edit__row">
                       <button
                         type="button"
                         onClick={() => saveEdit(review.id)}
                         disabled={saving || editRating === 0 || editComment.length < 10}
-                        style={{
-                          padding: '6px 14px',
-                          fontSize: '13px',
-                          background: '#1a4d3e',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: saving ? 'not-allowed' : 'pointer',
-                          fontWeight: 600,
-                          opacity: saving || editRating === 0 || editComment.length < 10 ? 0.6 : 1,
-                        }}>
+                        className="review-edit__save"
+                      >
                         {saving ? 'Saving...' : 'Save Changes'}
                       </button>
                       <button
                         type="button"
                         onClick={cancelEditing}
                         disabled={saving}
-                        style={{
-                          padding: '6px 14px',
-                          fontSize: '13px',
-                          background: '#fff',
-                          color: '#374151',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                        }}>
+                        className="review-edit__cancel"
+                      >
                         Cancel
                       </button>
                     </div>
@@ -331,11 +271,11 @@ export default function ReviewsList({ tourId }) {
                     <div style={{ marginBottom: '0.5rem' }}>
                       <StarDisplay rating={review.rating} size="1rem" showValue />
                     </div>
-                    <p style={{ color: '#374151', lineHeight: 1.6, margin: 0 }}>{review.comment}</p>
+                    <p className="review-card__comment">{review.comment}</p>
                     {review.images && review.images.length > 0 && (
-                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+                      <div className="review-card__images">
                         {review.images.map((img, idx) => (
-                          <img key={idx} src={img} alt={`Review image ${idx + 1}`} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }} />
+                          <img key={idx} src={img} alt={`Review image ${idx + 1}`} className="review-card__image" />
                         ))}
                       </div>
                     )}
@@ -346,6 +286,20 @@ export default function ReviewsList({ tourId }) {
           })}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={!!confirmDeleteId}
+        title="Delete Review"
+        message="Are you sure you want to delete this review? This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => {
+          const id = confirmDeleteId
+          setConfirmDeleteId(null)
+          deleteReview(id)
+        }}
+        onCancel={() => setConfirmDeleteId(null)}
+      />
     </div>
   )
 }
