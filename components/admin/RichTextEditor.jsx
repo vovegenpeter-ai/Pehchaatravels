@@ -175,16 +175,36 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     const newSize = Math.max(8, Math.min(96, size))
 
     if (!sel.isCollapsed) {
+      // Text selected — wrap it in a span with the new size
+      const range = sel.getRangeAt(0)
       const span = document.createElement('span')
       span.style.fontSize = newSize + 'px'
-      const range = sel.getRangeAt(0)
       try {
         range.surroundContents(span)
       } catch {
+        // Crosses element boundaries — extract and wrap
         const fragment = range.extractContents()
         span.appendChild(fragment)
         range.insertNode(span)
       }
+      sel.removeAllRanges()
+      const newRange = document.createRange()
+      newRange.selectNodeContents(span)
+      sel.addRange(newRange)
+    } else {
+      // No selection — insert a span at cursor so next typed text has this size
+      const span = document.createElement('span')
+      span.style.fontSize = newSize + 'px'
+      span.innerHTML = '\u200B'
+      const range = sel.getRangeAt(0)
+      range.deleteContents()
+      range.insertNode(span)
+      // Move cursor after the zero-width space, inside the span
+      const newRange = document.createRange()
+      newRange.setStart(span.firstChild, 1)
+      newRange.collapse(true)
+      sel.removeAllRanges()
+      sel.addRange(newRange)
     }
     setFontSize(newSize)
     emitChange()
