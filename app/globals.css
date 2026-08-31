@@ -4263,7 +4263,7 @@ ul { list-style: none; }
 .places-hero--no-overlay {
   display: flex;
   align-items: flex-end;
-  padding-bottom: 3rem;
+  padding-bottom: 2rem;
   background-color: #0f172a;
 }
 

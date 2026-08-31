@@ -76,8 +76,8 @@ export default async function PlacesPage() {
                     </div>
                     <div className="places-category-card__body">
                       <h3 className="places-category-card__name">{category.name}</h3>
-                      {(category.shortDescription || category.description) && (
-                        <p className="places-category-card__desc">{category.shortDescription || category.description}</p>
+                      {category.description && (
+                        <p className="places-category-card__desc">{category.description}</p>
                       )}
                       <span className="places-category-card__cta">
                         Explore {category.name} →

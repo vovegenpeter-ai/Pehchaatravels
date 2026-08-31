@@ -31,9 +31,6 @@ export default async function CategoryPage({ params }) {
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <div className="places-hero__content">
             <h1 className="places-hero__title">{category.name}</h1>
-            {(category.shortDescription || category.description) && (
-              <p className="places-hero__subtitle">{category.shortDescription || category.description}</p>
-            )}
           </div>
         </div>
       </section>
