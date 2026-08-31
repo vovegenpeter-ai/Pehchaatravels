@@ -85,25 +85,9 @@ export default function CategoryForm({ categoryId = null }) {
 
         <div className="form-group form-group--full">
           <label>
-            Short Description
+            Description
             <small style={{ fontWeight: 400, color: '#6b7280', marginLeft: '0.5rem' }}>
-              (Displayed in the Hero Section on the frontend)
-            </small>
-          </label>
-          <textarea
-            name="shortDescription"
-            rows={2}
-            placeholder="Brief summary shown in the hero section..."
-            value={form.shortDescription || ''}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="form-group form-group--full">
-          <label>
-            Long Description
-            <small style={{ fontWeight: 400, color: '#6b7280', marginLeft: '0.5rem' }}>
-              (Displayed below the Hero Section on the frontend)
+              (Displayed on the frontend category page)
             </small>
           </label>
           <RichTextEditor
