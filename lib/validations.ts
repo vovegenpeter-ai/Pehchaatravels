@@ -68,7 +68,9 @@ export const hotelSchema = z.object({
 export const categorySchema = z.object({
   name: z.string().min(2),
   slug: z.string().min(2).regex(/^[a-z0-9-]+$/),
-  description: z.string().optional(),
+  description: z.string().optional().nullable().or(z.literal('')),
+  shortDescription: z.string().optional().nullable().or(z.literal('')),
+  longDescription: z.string().optional().nullable().or(z.literal('')),
   type: z.enum(['TOUR', 'HOTEL', 'DESTINATION', 'ACTIVITY']),
   published: z.boolean().default(true),
   image: z.string().optional().nullable().or(z.literal('')),

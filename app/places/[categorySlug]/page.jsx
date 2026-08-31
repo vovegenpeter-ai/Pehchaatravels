@@ -12,7 +12,7 @@ export async function generateMetadata({ params }) {
   if (!category) return { title: 'Category Not Found — Pehchaan Travels' }
   return {
     title: `${category.name} — Pehchaan Travels`,
-    description: category.description || `Explore destinations in ${category.name}, Pakistan`,
+    description: category.shortDescription || category.description || `Explore destinations in ${category.name}, Pakistan`,
   }
 }
 
@@ -31,12 +31,24 @@ export default async function CategoryPage({ params }) {
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <div className="places-hero__content">
             <h1 className="places-hero__title">{category.name}</h1>
-            {category.description && (
-              <p className="places-hero__subtitle">{category.description}</p>
+            {(category.shortDescription || category.description) && (
+              <p className="places-hero__subtitle">{category.shortDescription || category.description}</p>
             )}
           </div>
         </div>
       </section>
+
+      {/* Long Description Section */}
+      {category.longDescription && (
+        <section className="section" style={{ background: '#fff' }}>
+          <div className="container" style={{ maxWidth: '800px' }}>
+            <div
+              className="tour-description"
+              dangerouslySetInnerHTML={{ __html: category.longDescription }}
+            />
+          </div>
+        </section>
+      )}
 
       {/* Destinations Section */}
       <section className="section places-destinations">

@@ -6,7 +6,16 @@ import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 import ImageUploadField from '@/components/admin/ImageUploadField'
 
-const emptyForm = { name: '', slug: '', description: '', type: 'DESTINATION', published: true, image: '' }
+const emptyForm = {
+  name: '',
+  slug: '',
+  description: '',
+  shortDescription: '',
+  longDescription: '',
+  type: 'DESTINATION',
+  published: true,
+  image: '',
+}
 
 export default function CategoryForm({ categoryId = null }) {
   const router = useRouter()
@@ -64,12 +73,52 @@ export default function CategoryForm({ categoryId = null }) {
     <form onSubmit={handleSubmit} className="admin-form">
       {error && <div className="error-banner">{error}</div>}
       <div className="admin-form-grid">
-        <div className="form-group"><label>Name</label><input name="name" required value={form.name} onChange={handleChange} /></div>
-        <div className="form-group"><label>Slug</label><input name="slug" required value={form.slug} onChange={handleChange} /></div>
-        <div className="form-group form-group--full"><label>Description</label><textarea name="description" rows={3} value={form.description || ''} onChange={handleChange} /></div>
+        <div className="form-group">
+          <label>Name</label>
+          <input name="name" required value={form.name} onChange={handleChange} />
+        </div>
+        <div className="form-group">
+          <label>Slug</label>
+          <input name="slug" required value={form.slug} onChange={handleChange} />
+        </div>
+
+        <div className="form-group form-group--full">
+          <label>
+            Short Description
+            <small style={{ fontWeight: 400, color: '#6b7280', marginLeft: '0.5rem' }}>
+              (Displayed in the Hero Section on the frontend)
+            </small>
+          </label>
+          <textarea
+            name="shortDescription"
+            rows={2}
+            placeholder="Brief summary shown in the hero section..."
+            value={form.shortDescription || ''}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="form-group form-group--full">
+          <label>
+            Long Description
+            <small style={{ fontWeight: 400, color: '#6b7280', marginLeft: '0.5rem' }}>
+              (Displayed below the Hero Section on the frontend)
+            </small>
+          </label>
+          <textarea
+            name="longDescription"
+            rows={5}
+            placeholder="Detailed description shown on the category page..."
+            value={form.longDescription || ''}
+            onChange={handleChange}
+          />
+        </div>
+
         <input type="hidden" name="type" value={form.type} />
         <ImageUploadField label="Category Image" name="image" value={form.image || ''} onChange={handleChange} />
-        <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
+        <label className="checkbox-label">
+          <input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published
+        </label>
       </div>
       <button type="submit" className="btn btn--primary btn--lg" disabled={loading} style={{ marginTop: '1.5rem' }}>
         {loading ? 'Saving...' : categoryId ? 'Update Category' : 'Create Category'}

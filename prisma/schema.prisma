@@ -30,18 +30,20 @@ model PasswordResetToken {
 }
 
 model Category {
-  id           String        @id @default(cuid())
-  name         String
-  slug         String        @unique
-  description  String?
-  type         CategoryType
-  published    Boolean       @default(true)
-  image        String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  destinations Destination[]
-  hotels       Hotel[]
-  tours        Tour[]
+  id               String        @id @default(cuid())
+  name             String
+  slug             String        @unique
+  description      String?
+  shortDescription String?
+  longDescription  String?
+  type             CategoryType
+  published        Boolean       @default(true)
+  image            String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  destinations     Destination[]
+  hotels           Hotel[]
+  tours            Tour[]
 }
 
 model Tour {

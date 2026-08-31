@@ -153,6 +153,8 @@ export async function getDestinationCategories() {
     slug: c.slug,
     name: c.name,
     description: c.description,
+    shortDescription: c.shortDescription,
+    longDescription: c.longDescription,
     image: c.image,
     destinationCount: c._count.destinations,
   }))
@@ -176,6 +178,8 @@ export async function getCategoryBySlug(slug: string) {
     slug: category.slug,
     name: category.name,
     description: category.description,
+    shortDescription: category.shortDescription,
+    longDescription: category.longDescription,
     image: category.image,
     destinationCount: category._count.destinations,
     destinations: destinations.map(mapDestination),
