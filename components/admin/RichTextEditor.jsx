@@ -92,6 +92,18 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     }
   }, [value])
 
+  /* ── MutationObserver: catch image deletions and other DOM changes ── */
+  useEffect(() => {
+    const el = editorRef.current
+    if (!el) return
+    const observer = new MutationObserver(() => {
+      if (ignoreNextInput.current) { ignoreNextInput.current = false; return }
+      emitChange()
+    })
+    observer.observe(el, { childList: true, subtree: true, characterData: true })
+    return () => observer.disconnect()
+  }, [emitChange])
+
   /* ── Report content changes ── */
   const emitChange = useCallback(() => {
     if (editorRef.current) {
@@ -536,6 +548,21 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
         onInput={() => {
           if (ignoreNextInput.current) { ignoreNextInput.current = false; return }
           emitChange()
+        }}
+        onKeyDown={(e) => {
+          // Catch Delete/Backspace when an image is selected
+          if (e.key === 'Delete' || e.key === 'Backspace') {
+            const sel = window.getSelection()
+            if (sel && sel.rangeCount > 0) {
+              const range = sel.getRangeAt(0)
+              let node = range.startContainer
+              if (node.nodeType === 3) node = node.parentElement
+              // Check if an image is selected or the cursor is next to one
+              if (node?.tagName === 'IMG') {
+                setTimeout(() => emitChange(), 10)
+              }
+            }
+          }
         }}
         onKeyUp={refreshToolbar}
         onMouseUp={refreshToolbar}
