@@ -66,7 +66,7 @@ export async function sendBookingConfirmationEmail({
   const logoUrl = `${baseUrl}/logo.png`
 
   // White version of the logo for dark email headers
-  const whiteLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80"><g fill="none"><polygon points="15,70 45,20 75,70" fill="white"/><polygon points="40,70 70,30 100,70" fill="white" opacity="0.85"/><path d="M85 28 L105 18 L95 30 L110 35 L85 28Z" fill="white" opacity="0.9"/><path d="M110 35 L130 25 L120 40 L135 42 L110 35Z" fill="white" opacity="0.7"/><text x="115" y="38" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">PEHCHAAN</text><text x="115" y="62" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">TRAVELS</text></g></svg>'
+  const whiteLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80"><g fill="none"><polygon points="15,70 45,20 75,70" fill="#1a4d3e"/><polygon points="40,70 70,30 100,70" fill="#1a4d3e" opacity="0.85"/><path d="M85 28 L105 18 L95 30 L110 35 L85 28Z" fill="#1a4d3e" opacity="0.9"/><path d="M110 35 L130 25 L120 40 L135 42 L110 35Z" fill="#1a4d3e" opacity="0.7"/><text x="115" y="38" fill="#1a4d3e" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">PEHCHAAN</text><text x="115" y="62" fill="#1a4d3e" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">TRAVELS</text></g></svg>'
   const emailLogoDataUri = `data:image/svg+xml;base64,${Buffer.from(whiteLogoSvg).toString('base64')}`
 
   const tourListHtml = tourNames.map((t) => `<li style="padding: 4px 0; color: #4a5568;">${t}</li>`).join('')
@@ -87,7 +87,7 @@ export async function sendBookingConfirmationEmail({
         <table role="presentation" width="100%" style="max-width: 560px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
           <!-- Header -->
           <tr>
-            <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
+            <td style="background-color: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #e5e7eb;">
               <img src="${emailLogoDataUri}" alt="Pehchaan Travels" style="height: 60px; width: auto; display: block; margin: 0 auto;" />
             </td>
           </tr>
@@ -239,7 +239,7 @@ export async function sendPasswordResetEmail({ to, name, resetUrl }: SendPasswor
   const logoUrl = `${baseUrl}/logo.png`
 
   // White version of the logo for dark email headers
-  const whiteLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80"><g fill="none"><polygon points="15,70 45,20 75,70" fill="white"/><polygon points="40,70 70,30 100,70" fill="white" opacity="0.85"/><path d="M85 28 L105 18 L95 30 L110 35 L85 28Z" fill="white" opacity="0.9"/><path d="M110 35 L130 25 L120 40 L135 42 L110 35Z" fill="white" opacity="0.7"/><text x="115" y="38" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">PEHCHAAN</text><text x="115" y="62" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">TRAVELS</text></g></svg>'
+  const whiteLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80"><g fill="none"><polygon points="15,70 45,20 75,70" fill="#1a4d3e"/><polygon points="40,70 70,30 100,70" fill="#1a4d3e" opacity="0.85"/><path d="M85 28 L105 18 L95 30 L110 35 L85 28Z" fill="#1a4d3e" opacity="0.9"/><path d="M110 35 L130 25 L120 40 L135 42 L110 35Z" fill="#1a4d3e" opacity="0.7"/><text x="115" y="38" fill="#1a4d3e" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">PEHCHAAN</text><text x="115" y="62" fill="#1a4d3e" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">TRAVELS</text></g></svg>'
   const emailLogoDataUri = `data:image/svg+xml;base64,${Buffer.from(whiteLogoSvg).toString('base64')}`
 
   const html = `
@@ -257,7 +257,7 @@ export async function sendPasswordResetEmail({ to, name, resetUrl }: SendPasswor
         <table role="presentation" width="100%" style="max-width: 560px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
           <!-- Header -->
           <tr>
-            <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
+            <td style="background-color: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #e5e7eb;">
               <img src="${emailLogoDataUri}" alt="Pehchaan Travels" style="height: 60px; width: auto; display: block; margin: 0 auto;" />
             </td>
           </tr>
@@ -368,7 +368,7 @@ export async function sendWelcomeEmail({ to, name }: SendWelcomeEmailParams) {
   const logoUrl = `${baseUrl}/logo.png`
 
   // White version of the logo for dark email headers
-  const whiteLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80"><g fill="none"><polygon points="15,70 45,20 75,70" fill="white"/><polygon points="40,70 70,30 100,70" fill="white" opacity="0.85"/><path d="M85 28 L105 18 L95 30 L110 35 L85 28Z" fill="white" opacity="0.9"/><path d="M110 35 L130 25 L120 40 L135 42 L110 35Z" fill="white" opacity="0.7"/><text x="115" y="38" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">PEHCHAAN</text><text x="115" y="62" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">TRAVELS</text></g></svg>'
+  const whiteLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80"><g fill="none"><polygon points="15,70 45,20 75,70" fill="#1a4d3e"/><polygon points="40,70 70,30 100,70" fill="#1a4d3e" opacity="0.85"/><path d="M85 28 L105 18 L95 30 L110 35 L85 28Z" fill="#1a4d3e" opacity="0.9"/><path d="M110 35 L130 25 L120 40 L135 42 L110 35Z" fill="#1a4d3e" opacity="0.7"/><text x="115" y="38" fill="#1a4d3e" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">PEHCHAAN</text><text x="115" y="62" fill="#1a4d3e" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">TRAVELS</text></g></svg>'
   const emailLogoDataUri = `data:image/svg+xml;base64,${Buffer.from(whiteLogoSvg).toString('base64')}`
 
   const html = `
@@ -386,17 +386,14 @@ export async function sendWelcomeEmail({ to, name }: SendWelcomeEmailParams) {
         <table role="presentation" width="100%" style="max-width: 560px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
           <!-- Header -->
           <tr>
-            <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
+            <td style="background-color: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #e5e7eb;">
               <img src="${emailLogoDataUri}" alt="Pehchaan Travels" style="height: 60px; width: auto; display: block; margin: 0 auto;" />
             </td>
           </tr>
           <!-- Body -->
           <tr>
             <td style="padding: 36px 32px;">
-              <div style="text-align: center; margin-bottom: 24px;">
-                <div style="display: inline-block; background-color: #e6fffa; color: #1a4d3e; font-size: 40px; width: 64px; height: 64px; line-height: 64px; border-radius: 50%;">👋</div>
-              </div>
-              <h2 style="margin: 0 0 16px 0; color: #1e3a5f; font-size: 22px; font-weight: 600; text-align: center;">
+              <h2 style="margin: 0 0 16px 0; color: #1a4d3e; font-size: 22px; font-weight: 600; text-align: center;">
                 Welcome to Pehchaan Travels!
               </h2>
               <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #4a5568;">
@@ -545,7 +542,7 @@ export async function sendNewsletterEmail({
   const unsubscribeUrl = `${baseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(unsubscribeEmail)}`
 
   // White version of the logo for dark email headers
-  const whiteLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80"><g fill="none"><polygon points="15,70 45,20 75,70" fill="white"/><polygon points="40,70 70,30 100,70" fill="white" opacity="0.85"/><path d="M85 28 L105 18 L95 30 L110 35 L85 28Z" fill="white" opacity="0.9"/><path d="M110 35 L130 25 L120 40 L135 42 L110 35Z" fill="white" opacity="0.7"/><text x="115" y="38" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">PEHCHAAN</text><text x="115" y="62" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">TRAVELS</text></g></svg>'
+  const whiteLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80"><g fill="none"><polygon points="15,70 45,20 75,70" fill="#1a4d3e"/><polygon points="40,70 70,30 100,70" fill="#1a4d3e" opacity="0.85"/><path d="M85 28 L105 18 L95 30 L110 35 L85 28Z" fill="#1a4d3e" opacity="0.9"/><path d="M110 35 L130 25 L120 40 L135 42 L110 35Z" fill="#1a4d3e" opacity="0.7"/><text x="115" y="38" fill="#1a4d3e" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">PEHCHAAN</text><text x="115" y="62" fill="#1a4d3e" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">TRAVELS</text></g></svg>'
   const emailLogoDataUri = `data:image/svg+xml;base64,${Buffer.from(whiteLogoSvg).toString('base64')}`
 
   const imageHtml = image ? `<img src="${image}" alt="" style="width: 100%; max-width: 560px; height: auto; border-radius: 8px; margin-bottom: 24px;" />` : ''
@@ -577,7 +574,7 @@ export async function sendNewsletterEmail({
         <table role="presentation" width="100%" style="max-width: 560px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
           <!-- Header -->
           <tr>
-            <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
+            <td style="background-color: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #e5e7eb;">
               <img src="${emailLogoDataUri}" alt="Pehchaan Travels" style="height: 60px; width: auto; display: block; margin: 0 auto;" />
             </td>
           </tr>
