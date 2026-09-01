@@ -86,7 +86,7 @@ export async function sendBookingConfirmationEmail({
           <!-- Header -->
           <tr>
             <td style="background-color: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #e5e7eb;">
-              <div style="font-family: Arial, Helvetica, sans-serif; font-size: 26px; font-weight: 700; color: #1a4d3e; letter-spacing: 1px; text-align: center; line-height: 1.2;">&#9992; PEHCHAAN<br/>TRAVELS</div>
+              <img src="${logoUrl}" alt="Pehchaan Travels" style="height: 60px; width: auto; display: block; margin: 0 auto;" />
             </td>
           </tr>
           <!-- Body -->
@@ -254,7 +254,7 @@ export async function sendPasswordResetEmail({ to, name, resetUrl }: SendPasswor
           <!-- Header -->
           <tr>
             <td style="background-color: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #e5e7eb;">
-              <div style="font-family: Arial, Helvetica, sans-serif; font-size: 26px; font-weight: 700; color: #1a4d3e; letter-spacing: 1px; text-align: center; line-height: 1.2;">&#9992; PEHCHAAN<br/>TRAVELS</div>
+              <img src="${logoUrl}" alt="Pehchaan Travels" style="height: 60px; width: auto; display: block; margin: 0 auto;" />
             </td>
           </tr>
           <!-- Body -->
@@ -381,7 +381,7 @@ export async function sendWelcomeEmail({ to, name }: SendWelcomeEmailParams) {
           <!-- Header -->
           <tr>
             <td style="background-color: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #e5e7eb;">
-              <div style="font-family: Arial, Helvetica, sans-serif; font-size: 26px; font-weight: 700; color: #1a4d3e; letter-spacing: 1px; text-align: center; line-height: 1.2;">&#9992; PEHCHAAN<br/>TRAVELS</div>
+              <img src="${logoUrl}" alt="Pehchaan Travels" style="height: 60px; width: auto; display: block; margin: 0 auto;" />
             </td>
           </tr>
           <!-- Body -->
@@ -567,7 +567,7 @@ export async function sendNewsletterEmail({
           <!-- Header -->
           <tr>
             <td style="background-color: #ffffff; padding: 28px 32px; text-align: center; border-bottom: 2px solid #e5e7eb;">
-              <div style="font-family: Arial, Helvetica, sans-serif; font-size: 26px; font-weight: 700; color: #1a4d3e; letter-spacing: 1px; text-align: center; line-height: 1.2;">&#9992; PEHCHAAN<br/>TRAVELS</div>
+              <img src="${logoUrl}" alt="Pehchaan Travels" style="height: 60px; width: auto; display: block; margin: 0 auto;" />
             </td>
           </tr>
           <!-- Body -->
