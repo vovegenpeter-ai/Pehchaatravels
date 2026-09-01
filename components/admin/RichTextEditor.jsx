@@ -92,18 +92,6 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     }
   }, [value])
 
-  /* ── MutationObserver: catch image deletions and other DOM changes ── */
-  useEffect(() => {
-    const el = editorRef.current
-    if (!el) return
-    const observer = new MutationObserver(() => {
-      if (ignoreNextInput.current) { ignoreNextInput.current = false; return }
-      emitChange()
-    })
-    observer.observe(el, { childList: true, subtree: true, characterData: true })
-    return () => observer.disconnect()
-  }, [emitChange])
-
   /* ── Report content changes ── */
   const emitChange = useCallback(() => {
     if (editorRef.current) {
@@ -559,12 +547,18 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
               if (node.nodeType === 3) node = node.parentElement
               // Check if an image is selected or the cursor is next to one
               if (node?.tagName === 'IMG') {
-                setTimeout(() => emitChange(), 10)
+                setTimeout(() => emitChange(), 50)
               }
             }
           }
         }}
-        onKeyUp={refreshToolbar}
+        onKeyUp={(e) => {
+          refreshToolbar()
+          // Also catch deletions on key up
+          if (e.key === 'Delete' || e.key === 'Backspace' || e.key === 'Enter') {
+            setTimeout(() => emitChange(), 10)
+          }
+        }}
         onMouseUp={refreshToolbar}
         onBlur={refreshToolbar}
         onPaste={handlePaste}
