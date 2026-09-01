@@ -65,7 +65,6 @@ async function main() {
       slug: 'neelum-valley',
       type: 'DESTINATION',
       description: 'A lush green valley with turquoise rivers and picturesque villages',
-      parentId: kashmir.id,
     },
   })
   console.log('  ✅ Neelum Valley')
@@ -78,7 +77,6 @@ async function main() {
       slug: 'leepa-valley',
       type: 'DESTINATION',
       description: 'Hidden gem with terraced fields and traditional wooden houses',
-      parentId: kashmir.id,
     },
   })
   console.log('  ✅ Leepa Valley')
@@ -91,7 +89,6 @@ async function main() {
       slug: 'muzaffarabad',
       type: 'DESTINATION',
       description: 'Capital of Azad Kashmir at the confluence of two rivers',
-      parentId: kashmir.id,
     },
   })
   console.log('  ✅ Muzaffarabad')
@@ -106,7 +103,6 @@ async function main() {
       slug: 'swat',
       type: 'DESTINATION',
       description: 'The Switzerland of Pakistan — alpine meadows and crystal-clear lakes',
-      parentId: kpk.id,
     },
   })
   console.log('  ✅ Swat Valley')
@@ -119,7 +115,6 @@ async function main() {
       slug: 'chitral',
       type: 'DESTINATION',
       description: 'Remote valleys, Kalash culture, and the stunning Tirich Mir peak',
-      parentId: kpk.id,
     },
   })
   console.log('  ✅ Chitral')
@@ -134,7 +129,6 @@ async function main() {
       slug: 'hunza',
       type: 'DESTINATION',
       description: 'Fairy-tale valley with ancient forts, turquoise lakes, and warm hospitality',
-      parentId: gilgitBaltistan.id,
     },
   })
   console.log('  ✅ Hunza Valley')
@@ -147,7 +141,6 @@ async function main() {
       slug: 'skardu',
       type: 'DESTINATION',
       description: 'Gateway to K2 — cold desert, Shangrila Resort, and mighty Karakoram peaks',
-      parentId: gilgitBaltistan.id,
     },
   })
   console.log('  ✅ Skardu')
@@ -160,7 +153,6 @@ async function main() {
       slug: 'deosai',
       type: 'DESTINATION',
       description: 'Second highest plateau in the world — wildflowers, marmots, and golden bears',
-      parentId: gilgitBaltistan.id,
     },
   })
   console.log('  ✅ Deosai Plains')

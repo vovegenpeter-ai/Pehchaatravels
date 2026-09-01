@@ -100,7 +100,6 @@ async function main() {
       slug: 'neelum-valley',
       type: 'DESTINATION',
       description: 'A lush green valley with turquoise rivers and picturesque villages',
-      parentId: kashmir.id,
     },
   })
 
@@ -112,7 +111,6 @@ async function main() {
       slug: 'leepa-valley',
       type: 'DESTINATION',
       description: 'Hidden gem with terraced fields and traditional wooden houses',
-      parentId: kashmir.id,
     },
   })
 
@@ -124,7 +122,6 @@ async function main() {
       slug: 'muzaffarabad',
       type: 'DESTINATION',
       description: 'Capital of Azad Kashmir at the confluence of two rivers',
-      parentId: kashmir.id,
     },
   })
 
@@ -137,7 +134,6 @@ async function main() {
       slug: 'swat',
       type: 'DESTINATION',
       description: 'The Switzerland of Pakistan — alpine meadows and crystal-clear lakes',
-      parentId: kpk.id,
     },
   })
 
@@ -149,7 +145,6 @@ async function main() {
       slug: 'chitral',
       type: 'DESTINATION',
       description: 'Remote valleys, Kalash culture, and the stunning Tirich Mir peak',
-      parentId: kpk.id,
     },
   })
 
@@ -162,7 +157,6 @@ async function main() {
       slug: 'hunza',
       type: 'DESTINATION',
       description: 'Fairy-tale valley with ancient forts, turquoise lakes, and warm hospitality',
-      parentId: gilgitBaltistan.id,
     },
   })
 
@@ -174,7 +168,6 @@ async function main() {
       slug: 'skardu',
       type: 'DESTINATION',
       description: 'Gateway to K2 — cold desert, Shangrila Resort, and mighty Karakoram peaks',
-      parentId: gilgitBaltistan.id,
     },
   })
 
@@ -186,7 +179,6 @@ async function main() {
       slug: 'deosai',
       type: 'DESTINATION',
       description: 'Second highest plateau in the world — wildflowers, marmots, and golden bears',
-      parentId: gilgitBaltistan.id,
     },
   })
 
