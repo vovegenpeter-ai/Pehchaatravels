@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { fetchJson } from '@/lib/fetchJson'
+import { PASSU_CONES_IMAGE } from '@/lib/initialData'
 
 export default function ResetPasswordForm() {
   const router = useRouter()
@@ -59,8 +60,9 @@ export default function ResetPasswordForm() {
   }
 
   return (
-    <section className="auth-section">
-      <div className="container">
+    <section className="auth-split" style={{ backgroundImage: `url(${PASSU_CONES_IMAGE})` }}>
+      <div className="auth-split__image" />
+      <div className="auth-split__card">
         <div className="auth-card">
           <h1>Reset Password</h1>
           <p className="auth-card__subtitle">Enter your new password below.</p>

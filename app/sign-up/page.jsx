@@ -7,8 +7,9 @@ export const metadata = {
 
 export default function SignUpPage() {
   return (
-    <section className="auth-hero" style={{ backgroundImage: `url(${HERO_IMAGE})` }}>
-      <div className="auth-hero__overlay">
+    <section className="auth-split" style={{ backgroundImage: `url(${HERO_IMAGE})` }}>
+      <div className="auth-split__image" />
+      <div className="auth-split__card">
         <SignUpForm />
       </div>
     </section>
