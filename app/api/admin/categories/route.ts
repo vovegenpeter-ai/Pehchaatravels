@@ -3,8 +3,12 @@ import { prisma } from '@/lib/prisma'
 import { categorySchema, formatZodError } from '@/lib/validations'
 
 export async function GET() {
-  const categories = await prisma.category.findMany({
-    orderBy: [{ orderNumber: 'asc' }, { createdAt: 'desc' }],
+  const categories = await prisma.category.findMany()
+  categories.sort((a, b) => {
+    const aOrder = a.orderNumber ?? 0
+    const bOrder = b.orderNumber ?? 0
+    if (aOrder !== bOrder) return aOrder - bOrder
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   })
   return NextResponse.json(categories)
 }

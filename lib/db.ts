@@ -143,12 +143,11 @@ export async function getPublishedDestinations() {
 export async function getDestinationCategories() {
   const categories = await prisma.category.findMany({
     where: { published: true },
-    orderBy: [{ orderNumber: 'asc' }, { createdAt: 'desc' }],
     include: {
       _count: { select: { destinations: { where: { published: true } } } },
     },
   })
-  return categories.map((c) => ({
+  const mapped = categories.map((c) => ({
     id: c.id,
     slug: c.slug,
     name: c.name,
@@ -156,9 +155,16 @@ export async function getDestinationCategories() {
     shortDescription: c.shortDescription,
     longDescription: c.longDescription,
     image: c.image,
-    orderNumber: c.orderNumber,
+    orderNumber: c.orderNumber ?? 0,
     destinationCount: c._count.destinations,
+    createdAt: c.createdAt,
   }))
+  // Sort by orderNumber ascending, then newest first
+  mapped.sort((a, b) => {
+    if (a.orderNumber !== b.orderNumber) return a.orderNumber - b.orderNumber
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  })
+  return mapped
 }
 
 /** Category by slug */

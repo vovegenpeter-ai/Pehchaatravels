@@ -10,14 +10,22 @@ export default async function AdminCategoriesPage({ searchParams }) {
   const params = await searchParams
   const page = Math.max(1, parseInt(params?.page || '1', 10))
 
-  const [categories, total] = await Promise.all([
+  const [allCategories, total] = await Promise.all([
     prisma.category.findMany({
-      orderBy: [{ orderNumber: 'asc' }, { createdAt: 'desc' }],
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
+      orderBy: { createdAt: 'desc' },
     }),
     prisma.category.count(),
   ])
+
+  // Sort by orderNumber ascending, then newest first
+  allCategories.sort((a, b) => {
+    const aOrder = a.orderNumber ?? 0
+    const bOrder = b.orderNumber ?? 0
+    if (aOrder !== bOrder) return aOrder - bOrder
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  })
+
+  const categories = allCategories.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
