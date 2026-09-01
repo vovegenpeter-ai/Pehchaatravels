@@ -65,6 +65,10 @@ export async function sendBookingConfirmationEmail({
   const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://pehchaantravels.vercel.app').replace(/\/$/, '')
   const logoUrl = `${baseUrl}/logo.png`
 
+  // White version of the logo for dark email headers
+  const whiteLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80"><g fill="none"><polygon points="15,70 45,20 75,70" fill="white"/><polygon points="40,70 70,30 100,70" fill="white" opacity="0.85"/><path d="M85 28 L105 18 L95 30 L110 35 L85 28Z" fill="white" opacity="0.9"/><path d="M110 35 L130 25 L120 40 L135 42 L110 35Z" fill="white" opacity="0.7"/><text x="115" y="38" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">PEHCHAAN</text><text x="115" y="62" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">TRAVELS</text></g></svg>'
+  const emailLogoDataUri = `data:image/svg+xml;base64,${Buffer.from(whiteLogoSvg).toString('base64')}`
+
   const tourListHtml = tourNames.map((t) => `<li style="padding: 4px 0; color: #4a5568;">${t}</li>`).join('')
   const tourListText = tourNames.map((t) => `  • ${t}`).join('\n')
 
@@ -84,7 +88,7 @@ export async function sendBookingConfirmationEmail({
           <!-- Header -->
           <tr>
             <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
-              <div style="color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: 0.5px; font-family: 'Segoe UI', Arial, sans-serif;">✈ Pehchaan Travels</div>
+              <img src="${emailLogoDataUri}" alt="Pehchaan Travels" style="height: 60px; width: auto; display: block; margin: 0 auto;" />
             </td>
           </tr>
           <!-- Body -->
@@ -234,6 +238,10 @@ export async function sendPasswordResetEmail({ to, name, resetUrl }: SendPasswor
   const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://pehchaantravels.vercel.app').replace(/\/$/, '')
   const logoUrl = `${baseUrl}/logo.png`
 
+  // White version of the logo for dark email headers
+  const whiteLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80"><g fill="none"><polygon points="15,70 45,20 75,70" fill="white"/><polygon points="40,70 70,30 100,70" fill="white" opacity="0.85"/><path d="M85 28 L105 18 L95 30 L110 35 L85 28Z" fill="white" opacity="0.9"/><path d="M110 35 L130 25 L120 40 L135 42 L110 35Z" fill="white" opacity="0.7"/><text x="115" y="38" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">PEHCHAAN</text><text x="115" y="62" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">TRAVELS</text></g></svg>'
+  const emailLogoDataUri = `data:image/svg+xml;base64,${Buffer.from(whiteLogoSvg).toString('base64')}`
+
   const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -250,7 +258,7 @@ export async function sendPasswordResetEmail({ to, name, resetUrl }: SendPasswor
           <!-- Header -->
           <tr>
             <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
-              <div style="color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: 0.5px; font-family: 'Segoe UI', Arial, sans-serif;">✈ Pehchaan Travels</div>
+              <img src="${emailLogoDataUri}" alt="Pehchaan Travels" style="height: 60px; width: auto; display: block; margin: 0 auto;" />
             </td>
           </tr>
           <!-- Body -->
@@ -359,6 +367,10 @@ export async function sendWelcomeEmail({ to, name }: SendWelcomeEmailParams) {
   const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://pehchaantravels.vercel.app').replace(/\/$/, '')
   const logoUrl = `${baseUrl}/logo.png`
 
+  // White version of the logo for dark email headers
+  const whiteLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80"><g fill="none"><polygon points="15,70 45,20 75,70" fill="white"/><polygon points="40,70 70,30 100,70" fill="white" opacity="0.85"/><path d="M85 28 L105 18 L95 30 L110 35 L85 28Z" fill="white" opacity="0.9"/><path d="M110 35 L130 25 L120 40 L135 42 L110 35Z" fill="white" opacity="0.7"/><text x="115" y="38" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">PEHCHAAN</text><text x="115" y="62" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">TRAVELS</text></g></svg>'
+  const emailLogoDataUri = `data:image/svg+xml;base64,${Buffer.from(whiteLogoSvg).toString('base64')}`
+
   const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -375,7 +387,7 @@ export async function sendWelcomeEmail({ to, name }: SendWelcomeEmailParams) {
           <!-- Header -->
           <tr>
             <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
-              <div style="color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: 0.5px; font-family: 'Segoe UI', Arial, sans-serif;">✈ Pehchaan Travels</div>
+              <img src="${emailLogoDataUri}" alt="Pehchaan Travels" style="height: 60px; width: auto; display: block; margin: 0 auto;" />
             </td>
           </tr>
           <!-- Body -->
@@ -532,6 +544,10 @@ export async function sendNewsletterEmail({
   const logoUrl = `${baseUrl}/logo.png`
   const unsubscribeUrl = `${baseUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(unsubscribeEmail)}`
 
+  // White version of the logo for dark email headers
+  const whiteLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80"><g fill="none"><polygon points="15,70 45,20 75,70" fill="white"/><polygon points="40,70 70,30 100,70" fill="white" opacity="0.85"/><path d="M85 28 L105 18 L95 30 L110 35 L85 28Z" fill="white" opacity="0.9"/><path d="M110 35 L130 25 L120 40 L135 42 L110 35Z" fill="white" opacity="0.7"/><text x="115" y="38" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">PEHCHAAN</text><text x="115" y="62" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">TRAVELS</text></g></svg>'
+  const emailLogoDataUri = `data:image/svg+xml;base64,${Buffer.from(whiteLogoSvg).toString('base64')}`
+
   const imageHtml = image ? `<img src="${image}" alt="" style="width: 100%; max-width: 560px; height: auto; border-radius: 8px; margin-bottom: 24px;" />` : ''
 
   const ctaHtml = ctaText && ctaUrl ? `
@@ -562,7 +578,7 @@ export async function sendNewsletterEmail({
           <!-- Header -->
           <tr>
             <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
-              <div style="color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: 0.5px; font-family: 'Segoe UI', Arial, sans-serif;">✈ Pehchaan Travels</div>
+              <img src="${emailLogoDataUri}" alt="Pehchaan Travels" style="height: 60px; width: auto; display: block; margin: 0 auto;" />
             </td>
           </tr>
           <!-- Body -->
