@@ -84,7 +84,7 @@ export async function sendBookingConfirmationEmail({
           <!-- Header -->
           <tr>
             <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
-              <img src="${logoUrl}" alt="Pehchaan Travels" style="height: 50px; width: auto; filter: brightness(0) invert(1);" />
+              <div style="color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: 0.5px; font-family: 'Segoe UI', Arial, sans-serif;">✈ Pehchaan Travels</div>
             </td>
           </tr>
           <!-- Body -->
@@ -250,7 +250,7 @@ export async function sendPasswordResetEmail({ to, name, resetUrl }: SendPasswor
           <!-- Header -->
           <tr>
             <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
-              <img src="${logoUrl}" alt="Pehchaan Travels" style="height: 50px; width: auto; filter: brightness(0) invert(1);" />
+              <div style="color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: 0.5px; font-family: 'Segoe UI', Arial, sans-serif;">✈ Pehchaan Travels</div>
             </td>
           </tr>
           <!-- Body -->
@@ -375,7 +375,7 @@ export async function sendWelcomeEmail({ to, name }: SendWelcomeEmailParams) {
           <!-- Header -->
           <tr>
             <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
-              <img src="${logoUrl}" alt="Pehchaan Travels" style="height: 50px; width: auto; filter: brightness(0) invert(1);" />
+              <div style="color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: 0.5px; font-family: 'Segoe UI', Arial, sans-serif;">✈ Pehchaan Travels</div>
             </td>
           </tr>
           <!-- Body -->
@@ -562,7 +562,7 @@ export async function sendNewsletterEmail({
           <!-- Header -->
           <tr>
             <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
-              <img src="${logoUrl}" alt="Pehchaan Travels" style="height: 50px; width: auto; filter: brightness(0) invert(1);" />
+              <div style="color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: 0.5px; font-family: 'Segoe UI', Arial, sans-serif;">✈ Pehchaan Travels</div>
             </td>
           </tr>
           <!-- Body -->
