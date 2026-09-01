@@ -4,7 +4,7 @@ import { categorySchema, formatZodError } from '@/lib/validations'
 
 export async function GET() {
   const categories = await prisma.category.findMany({
-    orderBy: { createdAt: 'desc' },
+    orderBy: [{ orderNumber: 'asc' }, { createdAt: 'desc' }],
   })
   return NextResponse.json(categories)
 }

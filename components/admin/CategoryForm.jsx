@@ -16,6 +16,7 @@ const emptyForm = {
   type: 'DESTINATION',
   published: true,
   image: '',
+  orderNumber: 0,
 }
 
 export default function CategoryForm({ categoryId = null }) {
@@ -43,6 +44,7 @@ export default function CategoryForm({ categoryId = null }) {
     const { name, value, type, checked } = e.target
     let nextValue = value
     if (name === 'slug') nextValue = slugify(value)
+    if (name === 'orderNumber') nextValue = parseInt(value, 10) || 0
     setForm((prev) => {
       const updated = { ...prev, [name]: type === 'checkbox' ? checked : nextValue }
       if (name === 'name' && !updated.slug) updated.slug = slugify(value)
@@ -81,6 +83,21 @@ export default function CategoryForm({ categoryId = null }) {
         <div className="form-group">
           <label>Slug</label>
           <input name="slug" required value={form.slug} onChange={handleChange} />
+        </div>
+        <div className="form-group">
+          <label>
+            Order Number
+            <small style={{ fontWeight: 400, color: '#6b7280', marginLeft: '0.5rem' }}>
+              (Lower = shown first)
+            </small>
+          </label>
+          <input
+            name="orderNumber"
+            type="number"
+            value={form.orderNumber}
+            onChange={handleChange}
+            min={0}
+          />
         </div>
 
         <div className="form-group form-group--full">

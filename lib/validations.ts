@@ -74,6 +74,7 @@ export const categorySchema = z.object({
   type: z.enum(['TOUR', 'HOTEL', 'DESTINATION', 'ACTIVITY']),
   published: z.boolean().default(true),
   image: z.string().optional().nullable().or(z.literal('')),
+  orderNumber: z.number().int().default(0),
 })
 
 export const destinationSchema = z.object({

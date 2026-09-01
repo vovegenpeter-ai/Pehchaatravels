@@ -12,7 +12,7 @@ export default async function AdminCategoriesPage({ searchParams }) {
 
   const [categories, total] = await Promise.all([
     prisma.category.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ orderNumber: 'asc' }, { createdAt: 'desc' }],
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
     }),
@@ -37,6 +37,7 @@ export default async function AdminCategoriesPage({ searchParams }) {
           <table className="admin-table">
             <thead>
               <tr>
+                <th>Order</th>
                 <th>Name</th>
                 <th>Description</th>
                 <th>Status</th>
@@ -46,6 +47,7 @@ export default async function AdminCategoriesPage({ searchParams }) {
             <tbody>
               {categories.map((cat) => (
                 <tr key={cat.id}>
+                  <td><span className="badge badge--blue">{cat.orderNumber ?? 0}</span></td>
                   <td><span className="places-tree__name">{cat.name}</span></td>
                   <td><span className="places-tree__desc" style={{ fontSize: '0.85rem', color: '#64748b' }}>{cat.description || '—'}</span></td>
                   <td>
