@@ -338,6 +338,163 @@ This link is valid for 1 hour. If you did not request a password reset, you can 
   }
 }
 
+interface SendWelcomeEmailParams {
+  to: string
+  name: string
+}
+
+export async function sendWelcomeEmail({ to, name }: SendWelcomeEmailParams) {
+  const transporter = getMailTransporter()
+
+  if (!transporter) {
+    console.warn('[EMAIL WARNING] SMTP is not configured. Welcome email not sent for:', to)
+    return { sent: false, reason: 'SMTP is not configured in environment variables.' }
+  }
+
+  const fromAddress =
+    process.env.SMTP_FROM ||
+    process.env.EMAIL_FROM ||
+    `"Pehchaan Travels" <${process.env.SMTP_USER}>`
+
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://pehchaantravels.vercel.app').replace(/\/$/, '')
+  const logoUrl = `${baseUrl}/logo.png`
+
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Pehchaan Travels</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f5f0e8; color: #2d3748;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="min-width: 100%; background-color: #f5f0e8; padding: 40px 10px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width: 560px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #1a4d3e; padding: 28px 32px; text-align: center;">
+              <img src="${logoUrl}" alt="Pehchaan Travels" style="height: 50px; width: auto; filter: brightness(0) invert(1);" />
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding: 36px 32px;">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <div style="display: inline-block; background-color: #e6fffa; color: #1a4d3e; font-size: 40px; width: 64px; height: 64px; line-height: 64px; border-radius: 50%;">👋</div>
+              </div>
+              <h2 style="margin: 0 0 16px 0; color: #1e3a5f; font-size: 22px; font-weight: 600; text-align: center;">
+                Welcome to Pehchaan Travels!
+              </h2>
+              <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #4a5568;">
+                Hello <strong>${name || 'Traveler'}</strong>,
+              </p>
+              <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #4a5568;">
+                Thank you for creating an account with Pehchaan Travels! We're thrilled to have you join our community of travelers exploring the beauty of Pakistan.
+              </p>
+              <p style="margin: 0 0 24px 0; font-size: 15px; line-height: 1.6; color: #4a5568;">
+                Whether you're dreaming of the majestic peaks of Gilgit-Baltistan, the serene valleys of Kashmir, or the vibrant culture of Lahore — we're here to help you plan the perfect trip.
+              </p>
+              <!-- Features -->
+              <table role="presentation" width="100%" style="background-color: #f7fafc; border-radius: 8px; border: 1px solid #e2e8f0; margin: 0 0 24px 0;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <p style="margin: 0 0 12px 0; font-size: 15px; color: #1e3a5f; font-weight: 600;">Here's what you can do:</p>
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding: 6px 0; font-size: 14px; color: #4a5568;">🏔️ <strong>Browse Tours</strong> — Explore our curated tour packages across Pakistan</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 6px 0; font-size: 14px; color: #4a5568;">📍 <strong>Discover Places</strong> — Find hidden gems and popular destinations</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 6px 0; font-size: 14px; color: #4a5568;">🏨 <strong>Book Hotels</strong> — Reserve accommodations at the best rates</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 6px 0; font-size: 14px; color: #4a5568;">✈️ <strong>Custom Trips</strong> — Request a personalized travel itinerary</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              <!-- CTA Button -->
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 28px 0; text-align: center; width: 100%;">
+                <tr>
+                  <td align="center" style="border-radius: 8px; background-color: #1a4d3e;">
+                    <a href="${baseUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 14px 32px; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 8px; background-color: #1a4d3e;">
+                      Start Exploring
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 0 0 16px 0; font-size: 14px; line-height: 1.6; color: #718096;">
+                If you have any questions or need assistance planning your trip, feel free to reach out to us. We're always happy to help!
+              </p>
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+              <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #a0aec0;">
+                Happy travels!<br />
+                The Pehchaan Travels Team
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f7fafc; padding: 20px 32px; text-align: center; border-top: 1px solid #edf2f7;">
+              <p style="margin: 0; font-size: 12px; color: #a0aec0;">
+                © ${new Date().getFullYear()} Pehchaan Travels. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`
+
+  const text = `
+Hello ${name || 'Traveler'},
+
+Welcome to Pehchaan Travels!
+
+Thank you for creating an account. We're thrilled to have you join our community of travelers exploring the beauty of Pakistan.
+
+Here's what you can do:
+  • Browse Tours — Explore our curated tour packages
+  • Discover Places — Find hidden gems and popular destinations
+  • Book Hotels — Reserve accommodations at the best rates
+  • Custom Trips — Request a personalized travel itinerary
+
+Start exploring: ${baseUrl}
+
+If you have any questions, feel free to reach out to us. We're always happy to help!
+
+Happy travels!
+— Pehchaan Travels Team
+`
+
+  try {
+    const info = await transporter.sendMail({
+      from: fromAddress,
+      to,
+      subject: 'Welcome to Pehchaan Travels! 🎉',
+      text,
+      html,
+    })
+
+    console.log('[EMAIL SUCCESS] Welcome email sent to:', to, 'MessageId:', info.messageId)
+    return { sent: true, messageId: info.messageId }
+  } catch (error) {
+    console.error('[EMAIL ERROR] Failed to send welcome email:', error)
+    return {
+      sent: false,
+      reason: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
+
 interface SendNewsletterEmailParams {
   to: string
   subject: string
