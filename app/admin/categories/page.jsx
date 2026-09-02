@@ -17,10 +17,10 @@ export default async function AdminCategoriesPage({ searchParams }) {
     prisma.category.count(),
   ])
 
-  // Sort by orderNumber ascending, then newest first
+  // Sort: custom order (orderNumber > 0) first ascending, then unordered (0) by newest
   allCategories.sort((a, b) => {
-    const aOrder = a.orderNumber ?? 0
-    const bOrder = b.orderNumber ?? 0
+    const aOrder = (a.orderNumber ?? 0) > 0 ? a.orderNumber : Infinity
+    const bOrder = (b.orderNumber ?? 0) > 0 ? b.orderNumber : Infinity
     if (aOrder !== bOrder) return aOrder - bOrder
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   })

@@ -159,9 +159,11 @@ export async function getDestinationCategories() {
     destinationCount: c._count.destinations,
     createdAt: c.createdAt,
   }))
-  // Sort by orderNumber ascending, then newest first
+  // Sort: custom order (orderNumber > 0) first ascending, then unordered (0) by newest
   mapped.sort((a, b) => {
-    if (a.orderNumber !== b.orderNumber) return a.orderNumber - b.orderNumber
+    const aOrder = a.orderNumber > 0 ? a.orderNumber : Infinity
+    const bOrder = b.orderNumber > 0 ? b.orderNumber : Infinity
+    if (aOrder !== bOrder) return aOrder - bOrder
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   })
   return mapped
@@ -237,10 +239,17 @@ export async function getDestinationBySlug(slug: string) {
 }
 
 export async function getPublishedCategories(type?: string) {
-  return prisma.category.findMany({
+  const categories = await prisma.category.findMany({
     where: { published: true, ...(type ? { type: type as never } : {}) },
-    orderBy: [{ orderNumber: 'asc' }, { createdAt: 'desc' }],
   })
+  // Sort: custom order (orderNumber > 0) first ascending, then unordered (0) by newest
+  categories.sort((a, b) => {
+    const aOrder = (a.orderNumber ?? 0) > 0 ? a.orderNumber : Infinity
+    const bOrder = (b.orderNumber ?? 0) > 0 ? b.orderNumber : Infinity
+    if (aOrder !== bOrder) return aOrder - bOrder
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  })
+  return categories
 }
 
 export async function getFeaturedTestimonials(limit = 6) {

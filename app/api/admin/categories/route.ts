@@ -8,9 +8,10 @@ export async function GET(request: Request) {
 
   const where = type ? { type: type as never } : {}
   const categories = await prisma.category.findMany({ where })
+  // Sort: custom order (orderNumber > 0) first ascending, then unordered (0) by newest
   categories.sort((a, b) => {
-    const aOrder = a.orderNumber ?? 0
-    const bOrder = b.orderNumber ?? 0
+    const aOrder = (a.orderNumber ?? 0) > 0 ? a.orderNumber : Infinity
+    const bOrder = (b.orderNumber ?? 0) > 0 ? b.orderNumber : Infinity
     if (aOrder !== bOrder) return aOrder - bOrder
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   })
