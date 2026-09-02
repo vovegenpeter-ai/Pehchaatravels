@@ -27,7 +27,7 @@ export default function HotelForm({ hotelId = null }) {
     async function load() {
       /* Load each resource independently — a failure in one never blocks the others */
       const catsResult = await Promise.allSettled([
-        fetchJson('/api/admin/categories'),
+        fetchJson('/api/admin/categories?type=HOTEL'),
       ])
       if (cancelled) return
       if (catsResult[0].status === 'fulfilled') setCategories(catsResult[0].value)
@@ -181,7 +181,7 @@ export default function HotelForm({ hotelId = null }) {
         <div className="form-group"><label>Category</label>
           <select name="categoryId" value={form.categoryId} onChange={handleChange}>
             <option value="">None</option>
-            {categories.filter((c) => c.type === 'HOTEL').map((c) => (
+            {categories.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>

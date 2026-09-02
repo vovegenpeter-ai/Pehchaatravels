@@ -21,14 +21,11 @@ export default function AdminDestinationsPage() {
       try {
         const [d, c] = await Promise.allSettled([
           fetchJson('/api/admin/destinations'),
-          fetchJson('/api/admin/categories'),
+          fetchJson('/api/admin/categories?type=DESTINATION'),
         ])
         if (cancelled) return
         if (d.status === 'fulfilled') setDestinations(d.value)
-        if (c.status === 'fulfilled') {
-          const destCats = c.value.filter((cat) => cat.type === 'DESTINATION')
-          setCategories(destCats)
-        }
+        if (c.status === 'fulfilled') setCategories(c.value)
       } finally {
         if (!cancelled) setLoading(false)
       }

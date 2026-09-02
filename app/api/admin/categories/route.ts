@@ -2,8 +2,12 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { categorySchema, formatZodError } from '@/lib/validations'
 
-export async function GET() {
-  const categories = await prisma.category.findMany()
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const type = searchParams.get('type')
+
+  const where = type ? { type: type as never } : {}
+  const categories = await prisma.category.findMany({ where })
   categories.sort((a, b) => {
     const aOrder = a.orderNumber ?? 0
     const bOrder = b.orderNumber ?? 0

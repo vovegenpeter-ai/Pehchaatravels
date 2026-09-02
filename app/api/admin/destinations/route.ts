@@ -5,14 +5,23 @@ import { mapDestination } from '@/lib/mappers'
 
 export async function GET() {
   const destinations = await prisma.destination.findMany({
-    include: { tours: true, hotels: true, category: true },
+    include: {
+      category: { select: { id: true, name: true, slug: true } },
+      _count: { select: { tours: true, hotels: true } },
+    },
     orderBy: { name: 'asc' },
   })
   return NextResponse.json(destinations.map((d) => ({
-    ...mapDestination(d),
+    id: d.id,
+    slug: d.slug,
+    name: d.name,
+    shortDescription: d.shortDescription,
+    location: d.location,
+    image: d.image,
+    published: d.published,
+    featured: d.featured,
+    categoryId: d.categoryId,
     category: d.category,
-    tourIds: d.tours.map((t) => t.tourId),
-    hotelIds: d.hotels.map((h) => h.hotelId),
   })))
 }
 

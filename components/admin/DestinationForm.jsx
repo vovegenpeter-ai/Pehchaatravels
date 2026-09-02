@@ -25,7 +25,7 @@ export default function DestinationForm({ destinationId = null }) {
     let cancelled = false
     async function load() {
       const [cats, t, h] = await Promise.allSettled([
-        fetchJson('/api/admin/categories'),
+        fetchJson('/api/admin/categories?type=DESTINATION'),
         fetchJson('/api/admin/tours'),
         fetchJson('/api/admin/hotels'),
       ])
