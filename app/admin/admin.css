@@ -1291,3 +1291,137 @@ a.admin-pagination__btn:hover {
   .tree-place__desc { max-width: 100%; }
   .tree-place__actions { width: 100%; justify-content: flex-end; }
 }
+
+/* ── Multi-Image Upload ── */
+.multi-image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.multi-image-upload__add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.25rem;
+  border: 2px dashed var(--green);
+  border-radius: var(--radius);
+  color: var(--green);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  align-self: flex-start;
+}
+.multi-image-upload__add-btn:hover {
+  background: #f0fdf4;
+}
+
+.multi-image-upload__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.multi-image-upload__item {
+  position: relative;
+  width: 140px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 2px solid #e2e8f0;
+  transition: border-color 0.15s;
+}
+.multi-image-upload__item:hover {
+  border-color: var(--green);
+}
+
+.multi-image-upload__thumb {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
+}
+
+.multi-image-upload__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px;
+  background: #f8fafb;
+  border-top: 1px solid #e2e8f0;
+}
+
+.multi-image-upload__arrow {
+  width: 26px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.multi-image-upload__arrow:hover { background: #e8ecef; }
+.multi-image-upload__arrow:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.multi-image-upload__badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-light);
+  min-width: 18px;
+  text-align: center;
+}
+
+.multi-image-upload__remove {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #c0392b;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2px;
+  transition: background 0.15s;
+}
+.multi-image-upload__remove:hover { background: #fdecea; }
+
+/* Lightbox arrows (admin) */
+.lightbox-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.9);
+  color: #333;
+  font-size: 1.8rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  z-index: 2;
+}
+.lightbox-arrow:hover { background: #fff; }
+.lightbox-arrow--left { left: -56px; }
+.lightbox-arrow--right { right: -56px; }
+
+.lightbox-counter {
+  text-align: center;
+  color: rgba(255,255,255,0.8);
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+}

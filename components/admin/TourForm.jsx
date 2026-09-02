@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
-import ImageUploadField from '@/components/admin/ImageUploadField'
+import MultiImageUpload from '@/components/admin/MultiImageUpload'
 import ItineraryBuilder from '@/components/admin/ItineraryBuilder'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import { fetchJson } from '@/lib/fetchJson'
@@ -12,7 +12,7 @@ import { slugify } from '@/lib/slugify'
 const emptyForm = {
   name: '', slug: '', shortDescription: '', fullDescription: '', destination: '',
   location: '', price: '', duration: '', days: '', startDate: '', startTime: '',
-  endDate: '', endTime: '', meetingPoint: '', bannerImage: '', extraImages: '',
+  endDate: '', endTime: '', meetingPoint: '',  images: [],
   includedServices: '', excludedServices: '', maxGuests: '', rating: '4.5',
   published: true, featured: false, categoryId: '',
   itinerary: [],
@@ -45,7 +45,7 @@ export default function TourForm({ tourId = null }) {
             location: t.location || '', price: String(t.price), duration: t.duration,
             days: String(t.days), startDate: t.startDate || '', startTime: t.startTime || '',
             endDate: t.endDate || '', endTime: t.endTime || '', meetingPoint: t.meetingPoint || '',
-            bannerImage: t.bannerImage, extraImages: (t.images || []).filter((i) => i !== t.bannerImage).join('\n'),
+            images: t.images || [],
             includedServices: (t.includedServices || []).join('\n'),
             excludedServices: (t.excludedServices || []).join('\n'),
             maxGuests: t.maxGuests ? String(t.maxGuests) : '',
@@ -79,7 +79,6 @@ export default function TourForm({ tourId = null }) {
     setError('')
     setLoading(true)
     try {
-      const extraImages = form.extraImages.split('\n').map((s) => s.trim()).filter(Boolean)
       const payload = {
         name: form.name,
         slug: form.slug,
@@ -95,8 +94,8 @@ export default function TourForm({ tourId = null }) {
         endDate: form.endDate,
         endTime: form.endTime,
         meetingPoint: form.meetingPoint,
-        bannerImage: form.bannerImage,
-        images: [form.bannerImage, ...extraImages],
+        bannerImage: form.images[0] || '',
+        images: form.images,
         includedServices: form.includedServices.split('\n').map((s) => s.trim()).filter(Boolean),
         excludedServices: form.excludedServices.split('\n').map((s) => s.trim()).filter(Boolean),
         maxGuests: form.maxGuests ? Number(form.maxGuests) : undefined,
@@ -166,8 +165,11 @@ export default function TourForm({ tourId = null }) {
         <div className="form-group"><label>End Date</label><input name="endDate" value={form.endDate} onChange={handleChange} /></div>
         <div className="form-group"><label>End Time</label><input name="endTime" value={form.endTime} onChange={handleChange} /></div>
         <div className="form-group form-group--full"><label>Meeting Point</label><input name="meetingPoint" value={form.meetingPoint} onChange={handleChange} /></div>
-        <ImageUploadField label="Banner Image" name="bannerImage" value={form.bannerImage} onChange={handleChange} />
-        <div className="form-group form-group--full"><label>Additional Image URLs (one per line)</label><textarea name="extraImages" rows={3} value={form.extraImages} onChange={handleChange} /></div>
+        <MultiImageUpload
+          label="Tour Images"
+          value={form.images}
+          onChange={(imgs) => setForm((prev) => ({ ...prev, images: imgs }))}
+        />
         <div className="form-group"><label>Included Services (one per line)</label><textarea name="includedServices" rows={4} value={form.includedServices} onChange={handleChange} /></div>
         <div className="form-group"><label>Excluded Services (one per line)</label><textarea name="excludedServices" rows={4} value={form.excludedServices} onChange={handleChange} /></div>
         <div className="form-group"><label>Max Guests</label><input name="maxGuests" type="number" value={form.maxGuests} onChange={handleChange} /></div>

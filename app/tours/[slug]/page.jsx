@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import ImageGallery from '@/components/ImageGallery'
 import TourCard from '@/components/TourCard'
 import BookTourButton from '@/components/BookTourButton'
 import { SectionHeader } from '@/components/UI'
@@ -61,6 +62,9 @@ export default async function TourDetailPage({ params }) {
           </div>
         </div>
       </section>
+
+      {/* 1b. Photo Gallery */}
+      <ImageGallery images={tour.images || []} />
 
       {/* 2. Tour Information */}
       <section className="section section--beige tour-info-section">
