@@ -87,6 +87,7 @@ export const destinationSchema = z.object({
   image: imageField,
   published: z.boolean().default(true),
   featured: z.boolean().default(false),
+  orderNumber: z.number().int().default(0),
   categoryId: z.string().optional().nullable(),
   tourIds: z.array(z.string()).default([]),
   hotelIds: z.array(z.string()).default([]),

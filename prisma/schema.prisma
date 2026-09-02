@@ -138,6 +138,7 @@ model Destination {
   image            String
   published        Boolean            @default(true)
   featured         Boolean            @default(false)
+  orderNumber      Int                @default(0)
   categoryId       String?
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt

@@ -9,7 +9,13 @@ export async function GET() {
       category: { select: { id: true, name: true, slug: true } },
       _count: { select: { tours: true, hotels: true } },
     },
-    orderBy: { name: 'asc' },
+  })
+  // Sort: custom order first, then by newest
+  destinations.sort((a, b) => {
+    const aOrder = (a.orderNumber ?? 0) > 0 ? a.orderNumber : Infinity
+    const bOrder = (b.orderNumber ?? 0) > 0 ? b.orderNumber : Infinity
+    if (aOrder !== bOrder) return aOrder - bOrder
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   })
   return NextResponse.json(destinations.map((d) => ({
     id: d.id,
@@ -20,6 +26,7 @@ export async function GET() {
     image: d.image,
     published: d.published,
     featured: d.featured,
+    orderNumber: d.orderNumber ?? 0,
     categoryId: d.categoryId,
     category: d.category,
   })))

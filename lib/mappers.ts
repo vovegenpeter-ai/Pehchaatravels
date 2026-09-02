@@ -84,6 +84,7 @@ export function mapDestination(dest: Destination) {
     image: dest.image,
     published: dest.published,
     featured: dest.featured,
+    orderNumber: dest.orderNumber ?? 0,
     categoryId: dest.categoryId,
   }
 }

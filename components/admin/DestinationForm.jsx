@@ -9,7 +9,7 @@ import { slugify } from '@/lib/slugify'
 
 const emptyForm = {
   name: '', slug: '', shortDescription: '', fullDescription: '', location: '', image: '',
-  published: true, featured: false, categoryId: '', tourIds: [], hotelIds: [],
+  published: true, featured: false, orderNumber: 0, categoryId: '', tourIds: [], hotelIds: [],
 }
 
 export default function DestinationForm({ destinationId = null }) {
@@ -47,6 +47,7 @@ export default function DestinationForm({ destinationId = null }) {
             image: d.image,
             published: d.published,
             featured: d.featured,
+            orderNumber: d.orderNumber || 0,
             categoryId: d.categoryId || '',
             tourIds: d.tourIds || [],
             hotelIds: d.hotelIds || [],
@@ -64,6 +65,7 @@ export default function DestinationForm({ destinationId = null }) {
     const { name, value, type, checked } = e.target
     let nextValue = value
     if (name === 'slug') nextValue = slugify(value)
+    if (name === 'orderNumber') nextValue = parseInt(value, 10) || 0
     setForm((prev) => {
       const updated = { ...prev, [name]: type === 'checkbox' ? checked : nextValue }
       if (name === 'name' && !updated.slug) updated.slug = slugify(value)
@@ -105,6 +107,7 @@ export default function DestinationForm({ destinationId = null }) {
         image: form.image,
         published: form.published,
         featured: form.featured,
+        orderNumber: form.orderNumber,
         categoryId: form.categoryId || null,
         tourIds: form.tourIds,
         hotelIds: form.hotelIds,
@@ -171,6 +174,18 @@ export default function DestinationForm({ destinationId = null }) {
         </div>
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
         <label className="checkbox-label"><input name="featured" type="checkbox" checked={form.featured} onChange={handleChange} /> Featured</label>
+        <div className="form-group">
+          <label>Order Number</label>
+          <input
+            name="orderNumber"
+            type="number"
+            value={form.orderNumber}
+            onChange={handleChange}
+            min={0}
+            placeholder="0"
+          />
+          <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>Lower = shown first. 0 = no custom order.</p>
+        </div>
       </div>
 
       <div className="admin-relations" style={{ marginTop: '2rem' }}>

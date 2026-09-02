@@ -146,6 +146,7 @@ export default function AdminDestinationsPage() {
                           <div className="tree-place__desc">{d.shortDescription || d.description || 'No description'}</div>
                         </div>
                         <div className="tree-place__badges">
+                          {d.orderNumber > 0 && <span className="badge badge--blue">#{d.orderNumber}</span>}
                           {d.featured && <span className="badge badge--green">Featured</span>}
                           {!d.published && <span className="badge badge--yellow">Draft</span>}
                         </div>

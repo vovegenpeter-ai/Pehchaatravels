@@ -180,7 +180,13 @@ export async function getCategoryBySlug(slug: string) {
   if (!category) return null
   const destinations = await prisma.destination.findMany({
     where: { published: true, categoryId: category.id },
-    orderBy: { name: 'asc' },
+  })
+  // Sort: custom order first, then by newest
+  destinations.sort((a, b) => {
+    const aOrder = (a.orderNumber ?? 0) > 0 ? a.orderNumber : Infinity
+    const bOrder = (b.orderNumber ?? 0) > 0 ? b.orderNumber : Infinity
+    if (aOrder !== bOrder) return aOrder - bOrder
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   })
   return {
     id: category.id,
@@ -200,7 +206,13 @@ export async function getCategoryBySlug(slug: string) {
 export async function getDestinationsByCategory(categoryId: string) {
   const destinations = await prisma.destination.findMany({
     where: { published: true, categoryId },
-    orderBy: { name: 'asc' },
+  })
+  // Sort: custom order (orderNumber > 0) first ascending, then unordered (0) by newest
+  destinations.sort((a, b) => {
+    const aOrder = (a.orderNumber ?? 0) > 0 ? a.orderNumber : Infinity
+    const bOrder = (b.orderNumber ?? 0) > 0 ? b.orderNumber : Infinity
+    if (aOrder !== bOrder) return aOrder - bOrder
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   })
   return destinations.map(mapDestination)
 }
