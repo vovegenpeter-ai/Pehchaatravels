@@ -70,7 +70,6 @@ export default function CartPage() {
                     <div>
                       <h3 className="cart-item__name">{item.name}</h3>
                       <p className="cart-item__destination">📍 {item.destination}</p>
-                      <p className="cart-item__duration">⏱ {item.duration || `${item.days} Days`}</p>
                     </div>
                     <button
                       type="button"

@@ -58,7 +58,7 @@ export default async function TourDetailPage({ params }) {
             {tour.shortDescription && (
               <p className="tour-detail-hero__subtitle">{tour.shortDescription}</p>
             )}
-            <span className="tour-detail-hero__badge">{tour.duration || `${tour.days} Days`}</span>
+
           </div>
         </div>
       </section>
@@ -76,7 +76,6 @@ export default async function TourDetailPage({ params }) {
             <InfoItem label="Starting Time" value={tour.startTime || 'TBA'} icon="🕐" />
             <InfoItem label="Ending Date" value={tour.endDate || 'Contact for dates'} icon="📅" />
             <InfoItem label="Ending Time" value={tour.endTime || 'TBA'} icon="🕐" />
-            <InfoItem label="Duration" value={tour.duration || `${tour.days} Days`} icon="⏱" />
             <InfoItem label="Location" value={tour.destination} icon="📍" />
             <InfoItem label="Price" value={`PKR ${formatPrice(tour.price)}`} icon="💰" />
           </div>
@@ -163,7 +162,6 @@ export default async function TourDetailPage({ params }) {
             </div>
             <ul className="tour-detail-summary">
               <li><strong>Rating</strong><span>★ {tour.rating}</span></li>
-              <li><strong>Duration</strong><span>{tour.duration || `${tour.days} Days`}</span></li>
               <li><strong>Destination</strong><span>{tour.destination}</span></li>
             </ul>
             <BookTourButton tour={tour} />

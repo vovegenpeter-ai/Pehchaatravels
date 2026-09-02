@@ -22,7 +22,6 @@ export default function TourCard({ tour, dark }) {
     }, 300)
   }
 
-  const duration = tour.duration || `${tour.days} Days`
   const rating = tour.rating ? Number(tour.rating).toFixed(1) : '5.0'
   const displayPrice = tour.currency
     ? `${tour.currency}${formatPrice(tour.price)}`
@@ -52,7 +51,6 @@ export default function TourCard({ tour, dark }) {
           <h3 className="tour-card-ref__title">
             <Link href={tourUrl}>{tour.name}</Link>
           </h3>
-          <span className="tour-card-ref__duration">{duration}</span>
         </div>
 
         <p className="tour-card-ref__desc">{tour.description || tour.shortDescription}</p>

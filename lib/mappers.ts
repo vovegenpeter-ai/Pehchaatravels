@@ -17,8 +17,6 @@ export function mapTour(tour: TourWithRelations) {
     name: tour.name,
     destination: tour.destination,
     location: tour.location,
-    days: tour.days,
-    duration: tour.duration,
     description: tour.shortDescription,
     shortDescription: tour.shortDescription,
     fullDescription: tour.fullDescription,

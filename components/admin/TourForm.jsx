@@ -11,7 +11,7 @@ import { slugify } from '@/lib/slugify'
 
 const emptyForm = {
   name: '', slug: '', shortDescription: '', fullDescription: '', destination: '',
-  location: '', price: '', duration: '', days: '', startDate: '', startTime: '',
+  location: '', price: '', startDate: '', startTime: '',
   endDate: '', endTime: '', meetingPoint: '',  images: [],
   includedServices: '', excludedServices: '', maxGuests: '', rating: '4.5',
   published: true, featured: false,
@@ -34,8 +34,7 @@ export default function TourForm({ tourId = null }) {
           setForm({
             name: t.name, slug: t.slug, shortDescription: t.shortDescription,
             fullDescription: t.fullDescription, destination: t.destination,
-            location: t.location || '', price: String(t.price), duration: t.duration,
-            days: String(t.days), startDate: t.startDate || '', startTime: t.startTime || '',
+            location: t.location || '', price: String(t.price), startDate: t.startDate || '', startTime: t.startTime || '',
             endDate: t.endDate || '', endTime: t.endTime || '', meetingPoint: t.meetingPoint || '',
             images: t.images || [],
             includedServices: (t.includedServices || []).join('\n'),
@@ -78,8 +77,6 @@ export default function TourForm({ tourId = null }) {
         destination: form.destination,
         location: form.location || form.destination,
         price: Number(form.price),
-        duration: form.duration,
-        days: Number(form.days),
         startDate: form.startDate,
         startTime: form.startTime,
         endDate: form.endDate,
@@ -147,8 +144,6 @@ export default function TourForm({ tourId = null }) {
         <div className="form-group"><label>Destination</label><input name="destination" required value={form.destination} onChange={handleChange} /></div>
         <div className="form-group"><label>Location</label><input name="location" value={form.location} onChange={handleChange} /></div>
         <div className="form-group"><label>Price (PKR)</label><input name="price" type="number" required value={form.price} onChange={handleChange} /></div>
-        <div className="form-group"><label>Duration</label><input name="duration" required value={form.duration} onChange={handleChange} placeholder="7 Days / 6 Nights" /></div>
-        <div className="form-group"><label>Days</label><input name="days" type="number" required value={form.days} onChange={handleChange} /></div>
         <div className="form-group"><label>Rating</label><input name="rating" type="number" step="0.1" min="0" max="5" value={form.rating} onChange={handleChange} /></div>
         <div className="form-group"><label>Start Date</label><input name="startDate" value={form.startDate} onChange={handleChange} /></div>
         <div className="form-group"><label>Start Time</label><input name="startTime" value={form.startTime} onChange={handleChange} /></div>

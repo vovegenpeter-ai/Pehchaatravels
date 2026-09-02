@@ -227,7 +227,7 @@ export default function CheckoutPage() {
                     <div className="checkout-summary__item-info">
                       <span className="checkout-summary__item-name">{item.name}</span>
                       <span className="checkout-summary__item-meta">
-                        {item.duration || `${item.days} Days`} · Qty: {item.quantity}
+                        Qty: {item.quantity}
                       </span>
                     </div>
                     <span className="checkout-summary__item-price">
