@@ -1729,7 +1729,8 @@ ul { list-style: none; }
 .whatsapp-fab {
   position: fixed;
   bottom: 24px;
-  left: 24px;
+  right: 24px;
+  left: auto;
   z-index: 9999;
   width: 56px;
   height: 56px;
