@@ -83,7 +83,7 @@ export const destinationSchema = z.object({
   shortDescription: z.string().min(10, 'Short description must be at least 10 characters'),
   fullDescription: z.string().min(20, 'Long description must be at least 20 characters'),
   description: z.string().optional().or(z.literal('')),
-  location: z.string().min(2),
+  location: z.string().optional().default(''),
   image: imageField,
   published: z.boolean().default(true),
   featured: z.boolean().default(false),

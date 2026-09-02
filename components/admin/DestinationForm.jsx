@@ -131,7 +131,6 @@ export default function DestinationForm({ destinationId = null }) {
       <div className="admin-form-grid">
         <div className="form-group"><label>Name</label><input name="name" required value={form.name} onChange={handleChange} /></div>
         <div className="form-group"><label>Slug</label><input name="slug" required value={form.slug} onChange={handleChange} placeholder="hunza" /></div>
-        <div className="form-group"><label>Location</label><input name="location" required value={form.location} onChange={handleChange} /></div>
 
         {/* Short Description */}
         <div className="form-group form-group--full">
