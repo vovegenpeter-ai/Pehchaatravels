@@ -8,31 +8,25 @@ import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 
 const emptyForm = {
-  name: '', slug: '', shortDescription: '', fullDescription: '', location: '', image: '',
-  published: true, featured: false, orderNumber: 0, categoryId: '', tourIds: [], hotelIds: [],
+  name: '', slug: '', shortDescription: '', fullDescription: '', image: '',
+  published: true, featured: false, orderNumber: 0, categoryId: '',
 }
 
 export default function DestinationForm({ destinationId = null }) {
   const router = useRouter()
   const [form, setForm] = useState(emptyForm)
   const [categories, setCategories] = useState([])
-  const [tours, setTours] = useState([])
-  const [hotels, setHotels] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     let cancelled = false
     async function load() {
-      const [cats, t, h] = await Promise.allSettled([
+      const [cats] = await Promise.allSettled([
         fetchJson('/api/admin/categories?type=DESTINATION'),
-        fetchJson('/api/admin/tours'),
-        fetchJson('/api/admin/hotels'),
       ])
       if (cancelled) return
       if (cats.status === 'fulfilled') setCategories(cats.value)
-      if (t.status === 'fulfilled') setTours(t.value)
-      if (h.status === 'fulfilled') setHotels(h.value)
 
       if (destinationId) {
         try {
@@ -43,14 +37,12 @@ export default function DestinationForm({ destinationId = null }) {
             slug: d.slug,
             shortDescription: d.shortDescription || d.description || '',
             fullDescription: d.fullDescription || d.description || '',
-            location: d.location,
             image: d.image,
             published: d.published,
             featured: d.featured,
             orderNumber: d.orderNumber || 0,
             categoryId: d.categoryId || '',
-            tourIds: d.tourIds || [],
-            hotelIds: d.hotelIds || [],
+
           })
         } catch (e) {
           if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load destination')
@@ -71,15 +63,6 @@ export default function DestinationForm({ destinationId = null }) {
       if (name === 'name' && !updated.slug) updated.slug = slugify(value)
       return updated
     })
-  }
-
-  const toggleRelation = (field, id) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: prev[field].includes(id)
-        ? prev[field].filter((x) => x !== id)
-        : [...prev[field], id],
-    }))
   }
 
   const handleSubmit = async (e) => {
@@ -103,14 +86,12 @@ export default function DestinationForm({ destinationId = null }) {
         shortDescription: form.shortDescription,
         fullDescription: form.fullDescription,
         description: form.fullDescription || form.shortDescription,
-        location: form.location,
         image: form.image,
         published: form.published,
         featured: form.featured,
         orderNumber: form.orderNumber,
         categoryId: form.categoryId || null,
-        tourIds: form.tourIds,
-        hotelIds: form.hotelIds,
+
       }
 
       const url = destinationId ? `/api/admin/destinations/${destinationId}` : '/api/admin/destinations'
@@ -185,38 +166,6 @@ export default function DestinationForm({ destinationId = null }) {
             placeholder="0"
           />
           <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>Lower = shown first. 0 = no custom order.</p>
-        </div>
-      </div>
-
-      <div className="admin-relations" style={{ marginTop: '2rem' }}>
-        <h3>Related Tours</h3>
-        <div className="admin-checkbox-grid">
-          {tours
-            .filter((t) => !form.categoryId || t.categoryId === form.categoryId)
-            .map((t) => (
-              <label key={t.id} className="checkbox-label">
-                <input type="checkbox" checked={form.tourIds.includes(t.id)} onChange={() => toggleRelation('tourIds', t.id)} />
-                {t.name}
-              </label>
-            ))}
-          {tours.filter((t) => !form.categoryId || t.categoryId === form.categoryId).length === 0 && (
-            <p style={{ color: '#64748b', fontSize: '0.875rem' }}>No tours found for this category.</p>
-          )}
-        </div>
-
-        <h3 style={{ marginTop: '1.5rem' }}>Related Hotels</h3>
-        <div className="admin-checkbox-grid">
-          {hotels
-            .filter((h) => !form.categoryId || h.categoryId === form.categoryId)
-            .map((h) => (
-              <label key={h.id} className="checkbox-label">
-                <input type="checkbox" checked={form.hotelIds.includes(h.id)} onChange={() => toggleRelation('hotelIds', h.id)} />
-                {h.name}
-              </label>
-            ))}
-          {hotels.filter((h) => !form.categoryId || h.categoryId === form.categoryId).length === 0 && (
-            <p style={{ color: '#64748b', fontSize: '0.875rem' }}>No hotels found for this category.</p>
-          )}
         </div>
       </div>
 
