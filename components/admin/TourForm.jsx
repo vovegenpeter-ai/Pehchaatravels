@@ -14,27 +14,19 @@ const emptyForm = {
   location: '', price: '', duration: '', days: '', startDate: '', startTime: '',
   endDate: '', endTime: '', meetingPoint: '',  images: [],
   includedServices: '', excludedServices: '', maxGuests: '', rating: '4.5',
-  published: true, featured: false, categoryId: '',
+  published: true, featured: false,
   itinerary: [],
 }
 
 export default function TourForm({ tourId = null }) {
   const router = useRouter()
   const [form, setForm] = useState(emptyForm)
-  const [categories, setCategories] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     let cancelled = false
     async function load() {
-      /* Load each resource independently — a failure in one never blocks the others */
-      const catsResult = await Promise.allSettled([
-        fetchJson('/api/admin/categories?type=TOUR'),
-      ])
-      if (cancelled) return
-      if (catsResult[0].status === 'fulfilled') setCategories(catsResult[0].value)
-
       if (tourId) {
         try {
           const t = await fetchJson(`/api/admin/tours/${tourId}`)
@@ -50,7 +42,6 @@ export default function TourForm({ tourId = null }) {
             excludedServices: (t.excludedServices || []).join('\n'),
             maxGuests: t.maxGuests ? String(t.maxGuests) : '',
             rating: String(t.rating), published: t.published, featured: t.featured,
-            categoryId: t.categoryId || '',
             itinerary: Array.isArray(t.itinerary) ? t.itinerary : [],
           })
         } catch (e) {
@@ -103,7 +94,6 @@ export default function TourForm({ tourId = null }) {
         published: form.published,
         featured: form.featured,
 
-        categoryId: form.categoryId || null,
         itinerary: form.itinerary,
       }
 
@@ -173,14 +163,6 @@ export default function TourForm({ tourId = null }) {
         <div className="form-group"><label>Included Services (one per line)</label><textarea name="includedServices" rows={4} value={form.includedServices} onChange={handleChange} /></div>
         <div className="form-group"><label>Excluded Services (one per line)</label><textarea name="excludedServices" rows={4} value={form.excludedServices} onChange={handleChange} /></div>
         <div className="form-group"><label>Max Guests</label><input name="maxGuests" type="number" value={form.maxGuests} onChange={handleChange} /></div>
-        <div className="form-group"><label>Category</label>
-          <select name="categoryId" value={form.categoryId} onChange={handleChange}>
-            <option value="">None</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-        </div>
         <div className="form-group form-group--full">
           <label style={{ marginBottom: '0.75rem', display: 'block' }}>Itinerary</label>
           <ItineraryBuilder value={form.itinerary} onChange={(val) => setForm((prev) => ({ ...prev, itinerary: val }))} />
