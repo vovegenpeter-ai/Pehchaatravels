@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { fetchJson } from '@/lib/fetchJson'
+import { compressImage } from '@/lib/compressImage'
 
 export default function ImageUploadField({ label, value, onChange, name }) {
   const [uploading, setUploading] = useState(false)
@@ -14,8 +15,13 @@ export default function ImageUploadField({ label, value, onChange, name }) {
     setError('')
     setUploading(true)
     try {
+      // Compress image before uploading to keep payload small
+      let uploadFile = file
+      if (file.size > 300 * 1024) {
+        uploadFile = await compressImage(file)
+      }
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('file', uploadFile)
       const data = await fetchJson('/api/admin/upload', { method: 'POST', body: formData })
       onChange({ target: { name, value: data.url } })
     } catch (err) {

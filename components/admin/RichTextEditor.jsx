@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useCallback, useState, useEffect } from 'react'
+import { compressImage } from '@/lib/compressImage'
 
 /* ─── Small sub-components ─── */
 function ToolbarBtn({ active, onClick, title, children, className = '' }) {
@@ -357,18 +358,24 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     emitChange()
   }, [emitChange])
 
-  /* ── Image upload (base64) ── */
+  /* ── Image upload (compressed base64) ── */
   const handleImage = useCallback(async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
     if (!file.type.startsWith('image/')) { alert('Please upload a valid image file.'); return }
     if (file.size > 5 * 1024 * 1024) { alert('Image must be under 5 MB.'); return }
 
+    // Compress image before inserting to keep HTML size manageable
+    let uploadFile = file
+    if (file.size > 200 * 1024) {
+      uploadFile = await compressImage(file)
+    }
+
     const dataUrl = await new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onload = () => resolve(reader.result)
       reader.onerror = () => reject(new Error('Failed to read file'))
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(uploadFile)
     })
 
     editorRef.current?.focus()
