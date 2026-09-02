@@ -40,15 +40,18 @@ function EditorSelect({ editorRef, value, onChange, title, options, className = 
   const handleChange = useCallback((e) => {
     const newValue = e.target.value
 
-    /* Restore the saved selection so execCommand has a target */
-    if (savedRange.current) {
-      const sel = window.getSelection()
-      sel.removeAllRanges()
-      sel.addRange(savedRange.current)
-    }
-
+    /* Focus editor first, then restore selection */
     editorRef.current?.focus()
-    onChange(newValue)
+    if (savedRange.current) {
+      requestAnimationFrame(() => {
+        const sel = window.getSelection()
+        sel.removeAllRanges()
+        sel.addRange(savedRange.current)
+        onChange(newValue)
+      })
+    } else {
+      onChange(newValue)
+    }
   }, [editorRef, onChange])
 
   return (
@@ -131,6 +134,24 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     }
   }, [onChange])
 
+  /* ── Get the block-level element at the current cursor position ── */
+  const getCurrentBlock = useCallback(() => {
+    const sel = window.getSelection()
+    if (!sel || sel.rangeCount === 0 || !editorRef.current) return null
+    let node = sel.anchorNode
+    if (node && node.nodeType === 3) node = node.parentElement
+    while (node && node !== editorRef.current) {
+      const tag = node.tagName
+      if (tag === 'P' || tag === 'DIV' || tag === 'H1' || tag === 'H2' || tag === 'H3' ||
+          tag === 'H4' || tag === 'H5' || tag === 'H6' || tag === 'BLOCKQUOTE' || tag === 'LI' ||
+          tag === 'TD' || tag === 'TH') {
+        return node
+      }
+      node = node.parentElement
+    }
+    return null
+  }, [])
+
   /* ── Detect font size from current selection ── */
   const detectFontSize = useCallback(() => {
     const sel = window.getSelection()
@@ -158,14 +179,14 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     const font = document.queryCommandValue('fontName').replace(/['"]/g, '')
     if (font) setActiveFont(font)
 
-    const align = document.queryCommandValue('justifyCenter') ? 'center'
-      : document.queryCommandValue('justifyRight') ? 'right'
-      : document.queryCommandValue('justifyFull') ? 'justify'
-      : 'left'
-    setActiveAlign(align)
+    /* Detect alignment from the current block element's style */
+    const alignBlock = getCurrentBlock()
+    const blockAlign = alignBlock ? (alignBlock.style.textAlign || '') : ''
+    const align = blockAlign || (editorRef.current?.style.textAlign || '')
+    setActiveAlign(align || 'left')
 
     detectFontSize()
-  }, [detectFontSize])
+  }, [detectFontSize, getCurrentBlock])
 
   /* ── Format block ── */
   const formatBlock = useCallback((tag) => {
@@ -191,13 +212,19 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     emitChange()
   }, [refreshToolbar, emitChange])
 
-  /* ── Alignment ── */
-  const doAlign = useCallback((cmd) => {
+  /* ── Alignment — uses direct style.textAlign for reliability ── */
+  const doAlign = useCallback((alignValue) => {
     editorRef.current?.focus()
-    document.execCommand(cmd, false, null)
+    const block = getCurrentBlock()
+    if (block) {
+      block.style.textAlign = alignValue
+    } else {
+      /* Fallback: wrap content in a div with alignment */
+      editorRef.current.style.textAlign = alignValue
+    }
     refreshToolbar()
     emitChange()
-  }, [refreshToolbar, emitChange])
+  }, [getCurrentBlock, refreshToolbar, emitChange])
 
   /* ── Font size: set to specific value ── */
   const setFontSizeValue = useCallback((size) => {
@@ -492,10 +519,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
         <EditorSelect
           editorRef={editorRef}
           value={activeAlign}
-          onChange={(val) => {
-            const map = { left: 'justifyLeft', center: 'justifyCenter', right: 'justifyRight', justify: 'justifyFull' }
-            doAlign(map[val] || 'justifyLeft')
-          }}
+          onChange={(val) => doAlign(val)}
           title="Text alignment"
           options={[
             { value: 'left', label: '⫷ Left' },
