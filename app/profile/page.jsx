@@ -264,7 +264,7 @@ export default function ProfilePage() {
                     <input
                       ref={fileInputRef}
                       type="file"
-                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      accept="image/*"
                       onChange={handleAvatarChange}
                       style={{ display: 'none' }}
                     />
@@ -287,7 +287,7 @@ export default function ProfilePage() {
                         </button>
                       )}
                     </div>
-                    <p className="profile-avatar-upload__hint">JPG, PNG or WebP. Max 5MB. Will be resized to 200×200.</p>
+                    <p className="profile-avatar-upload__hint">All image formats supported. Max 5MB. Will be resized to 200×200.</p>
                   </div>
                 </div>
 

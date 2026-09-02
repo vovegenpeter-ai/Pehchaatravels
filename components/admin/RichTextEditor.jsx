@@ -310,8 +310,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
   const handleImage = useCallback(async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const allowed = ['image/jpeg', 'image/png', 'image/webp']
-    if (!allowed.includes(file.type)) { alert('Only JPG, PNG, WEBP allowed.'); return }
+    if (!file.type.startsWith('image/')) { alert('Please upload a valid image file.'); return }
     if (file.size > 5 * 1024 * 1024) { alert('Image must be under 5 MB.'); return }
 
     const dataUrl = await new Promise((resolve, reject) => {
@@ -453,7 +452,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
             <polyline points="21 15 16 10 5 21" />
           </svg>
         </ToolbarBtn>
-        <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImage} style={{ display: 'none' }} />
+        <input ref={fileRef} type="file" accept="image/*" onChange={handleImage} style={{ display: 'none' }} />
 
         {/* ── Clear formatting ── */}
         <ToolbarBtn onClick={() => doCmd('removeFormat')} title="Clear formatting">
