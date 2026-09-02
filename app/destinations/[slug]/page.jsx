@@ -53,7 +53,7 @@ export default async function DestinationDetailPage({ params }) {
       {/* Main Content */}
       <section className="section place-detail-content">
         <div className="container">
-          <div className="place-detail-layout">
+          <div className={`place-detail-layout${destination.tours?.length > 0 || destination.hotels?.length > 0 ? '' : ' place-detail-layout--full'}`}>
             {/* Left: Description */}
             <div className="place-detail-main">
               <div className="place-detail-section">
@@ -68,32 +68,8 @@ export default async function DestinationDetailPage({ params }) {
             </div>
 
             {/* Right: Sidebar */}
+            {(destination.tours?.length > 0 || destination.hotels?.length > 0) && (
             <aside className="place-detail-sidebar">
-              {/* Location Card */}
-              <div className="place-detail-card">
-                <h3 className="place-detail-card__title">📍 Location</h3>
-                <p className="place-detail-card__text">{destination.location}</p>
-              </div>
-
-              {/* Quick Facts */}
-              <div className="place-detail-card">
-                <h3 className="place-detail-card__title">ℹ️ Quick Facts</h3>
-                <ul className="place-detail-card__list">
-                  <li>
-                    <span className="place-detail-card__label">Status</span>
-                    <span className="place-detail-card__value">
-                      {destination.published ? '✅ Published' : '📝 Draft'}
-                    </span>
-                  </li>
-                  {destination.featured && (
-                    <li>
-                      <span className="place-detail-card__label">Featured</span>
-                      <span className="place-detail-card__value">⭐ Yes</span>
-                    </li>
-                  )}
-                </ul>
-              </div>
-
               {/* Related Tours CTA */}
               {destination.tours?.length > 0 && (
                 <div className="place-detail-card place-detail-card--green">
@@ -120,6 +96,7 @@ export default async function DestinationDetailPage({ params }) {
                 </div>
               )}
             </aside>
+            )}
           </div>
         </div>
       </section>
