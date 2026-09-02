@@ -1,4 +1,5 @@
 import LayoutShell from '@/components/LayoutShell'
+import ConditionalWhatsApp from '@/components/ConditionalWhatsApp'
 import SmoothScroll from '@/components/SmoothScroll'
 import { CartProvider } from '@/lib/CartContext'
 import { AuthProvider } from '@/lib/AuthContext'
@@ -44,6 +45,7 @@ export default async function RootLayout({ children }) {
           <AuthProvider initialUser={user}>
             <CartProvider>
               <LayoutShell>{children}</LayoutShell>
+              <ConditionalWhatsApp />
             </CartProvider>
           </AuthProvider>
         </SmoothScroll>
