@@ -9,6 +9,7 @@ function ToolbarBtn({ active, onClick, title, children, className = '' }) {
       type="button"
       className={`rte-toolbar__btn${active ? ' rte-toolbar__btn--active' : ''} ${className}`}
       onClick={onClick}
+      onMouseDown={(e) => e.preventDefault()}
       title={title}
     >
       {children}
@@ -20,12 +21,42 @@ function Sep() {
   return <span className="rte-toolbar__sep" />
 }
 
-function Select({ value, onChange, title, options, className = '' }) {
+/**
+ * Select wrapper that saves/restores editor selection on mousedown.
+ * This prevents the dropdown from stealing focus and losing the user's
+ * text selection inside the contentEditable editor.
+ */
+function EditorSelect({ editorRef, value, onChange, title, options, className = '' }) {
+  const savedRange = useRef(null)
+
+  const handleMouseDown = useCallback((e) => {
+    /* Save the current editor selection before the select steals focus */
+    const sel = window.getSelection()
+    if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.anchorNode)) {
+      savedRange.current = sel.getRangeAt(0).cloneRange()
+    }
+  }, [editorRef])
+
+  const handleChange = useCallback((e) => {
+    const newValue = e.target.value
+
+    /* Restore the saved selection so execCommand has a target */
+    if (savedRange.current) {
+      const sel = window.getSelection()
+      sel.removeAllRanges()
+      sel.addRange(savedRange.current)
+    }
+
+    editorRef.current?.focus()
+    onChange(newValue)
+  }, [editorRef, onChange])
+
   return (
     <select
       className={`rte-toolbar__select ${className}`}
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={handleChange}
+      onMouseDown={handleMouseDown}
       title={title}
     >
       {options.map((o) => (
@@ -42,6 +73,7 @@ function ColorButton({ color, onChange, title, icon }) {
       type="button"
       className="rte-toolbar__btn rte-toolbar__color-btn"
       title={title}
+      onMouseDown={(e) => e.preventDefault()}
       onClick={() => inputRef.current?.click()}
     >
       {icon}
@@ -175,14 +207,12 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     const newSize = Math.max(8, Math.min(96, size))
 
     if (!sel.isCollapsed) {
-      // Text selected — wrap it in a span with the new size
       const range = sel.getRangeAt(0)
       const span = document.createElement('span')
       span.style.fontSize = newSize + 'px'
       try {
         range.surroundContents(span)
       } catch {
-        // Crosses element boundaries — extract and wrap
         const fragment = range.extractContents()
         span.appendChild(fragment)
         range.insertNode(span)
@@ -192,14 +222,12 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
       newRange.selectNodeContents(span)
       sel.addRange(newRange)
     } else {
-      // No selection — insert a span at cursor so next typed text has this size
       const span = document.createElement('span')
       span.style.fontSize = newSize + 'px'
       span.innerHTML = '\u200B'
       const range = sel.getRangeAt(0)
       range.deleteContents()
       range.insertNode(span)
-      // Move cursor after the zero-width space, inside the span
       const newRange = document.createRange()
       newRange.setStart(span.firstChild, 1)
       newRange.collapse(true)
@@ -258,7 +286,6 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     const sel = window.getSelection()
     if (!sel || sel.rangeCount === 0) return
 
-    // Find the current list item or paragraph
     let node = sel.anchorNode
     while (node && node !== editorRef.current) {
       if (node.tagName === 'LI') break
@@ -267,20 +294,17 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     }
 
     if (taskList) {
-      // Remove task list: convert LI back to plain text
       document.execCommand('insertUnorderedList', false, null)
       setTaskList(false)
     } else {
-      // Create a task list with checkboxes
       document.execCommand('insertUnorderedList', false, null)
-      // Add checkbox to current list item
       const listNode = node?.tagName === 'LI' ? node : editorRef.current?.querySelector('li:last-child')
       if (listNode && !listNode.querySelector('input[type="checkbox"]')) {
         const checkbox = document.createElement('input')
         checkbox.type = 'checkbox'
         checkbox.style.marginRight = '0.5rem'
         checkbox.style.cursor = 'pointer'
-        checkbox.disabled = true // display only
+        checkbox.disabled = true
         listNode.prepend(checkbox)
         listNode.style.listStyle = 'none'
         listNode.style.marginLeft = '-1.5rem'
@@ -332,7 +356,6 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     const html = e.clipboardData.getData('text/html')
     const text = e.clipboardData.getData('text/plain')
     if (html) {
-      // Clean the pasted HTML - remove scripts and styles
       const cleaned = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
         .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
       document.execCommand('insertHTML', false, cleaned)
@@ -346,7 +369,8 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     <div className="rte">
       <div className="rte-toolbar">
         {/* ── Block format (Normal text / Headings) ── */}
-        <Select
+        <EditorSelect
+          editorRef={editorRef}
           value={activeBlock}
           onChange={formatBlock}
           title="Text style"
@@ -363,7 +387,8 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
         />
 
         {/* ── Font family ── */}
-        <Select
+        <EditorSelect
+          editorRef={editorRef}
           value={activeFont}
           onChange={setFont}
           title="Font family"
@@ -389,9 +414,9 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
 
         {/* ── Font size: - [size] + ── */}
         <div className="rte-toolbar__fontsize">
-          <button type="button" className="rte-toolbar__fontsize-btn" onClick={() => changeFontSize(-1)} title="Decrease font size">−</button>
+          <button type="button" className="rte-toolbar__fontsize-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => changeFontSize(-1)} title="Decrease font size">−</button>
           <span className="rte-toolbar__fontsize-val">{fontSize}</span>
-          <button type="button" className="rte-toolbar__fontsize-btn" onClick={() => changeFontSize(1)} title="Increase font size">+</button>
+          <button type="button" className="rte-toolbar__fontsize-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => changeFontSize(1)} title="Increase font size">+</button>
         </div>
 
         <Sep />
@@ -464,7 +489,8 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
         <Sep />
 
         {/* ── Alignment ── */}
-        <Select
+        <EditorSelect
+          editorRef={editorRef}
           value={activeAlign}
           onChange={(val) => {
             const map = { left: 'justifyLeft', center: 'justifyCenter', right: 'justifyRight', justify: 'justifyFull' }
@@ -537,14 +563,12 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
           emitChange()
         }}
         onKeyDown={(e) => {
-          // Catch Delete/Backspace when an image is selected
           if (e.key === 'Delete' || e.key === 'Backspace') {
             const sel = window.getSelection()
             if (sel && sel.rangeCount > 0) {
               const range = sel.getRangeAt(0)
               let node = range.startContainer
               if (node.nodeType === 3) node = node.parentElement
-              // Check if an image is selected or the cursor is next to one
               if (node?.tagName === 'IMG') {
                 setTimeout(() => emitChange(), 50)
               }
@@ -553,7 +577,6 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
         }}
         onKeyUp={(e) => {
           refreshToolbar()
-          // Also catch deletions on key up
           if (e.key === 'Delete' || e.key === 'Backspace' || e.key === 'Enter') {
             setTimeout(() => emitChange(), 10)
           }
