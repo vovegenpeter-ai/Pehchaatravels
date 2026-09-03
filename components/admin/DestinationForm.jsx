@@ -18,6 +18,7 @@ export default function DestinationForm({ destinationId = null }) {
   const [categories, setCategories] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [dataLoading, setDataLoading] = useState(!!destinationId)
 
   useEffect(() => {
     let cancelled = false
@@ -46,6 +47,8 @@ export default function DestinationForm({ destinationId = null }) {
           })
         } catch (e) {
           if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load destination')
+        } finally {
+          if (!cancelled) setDataLoading(false)
         }
       }
     }
@@ -107,6 +110,15 @@ export default function DestinationForm({ destinationId = null }) {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (dataLoading) {
+    return (
+      <div className="page-spinner-wrap" style={{ minHeight: '50vh' }}>
+        <div className="page-spinner" />
+        <p className="page-spinner-text">Loading destination data…</p>
+      </div>
+    )
   }
 
   return (

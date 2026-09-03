@@ -25,6 +25,7 @@ export default function TourForm({ tourId = null }) {
   const [form, setForm] = useState(emptyForm)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [dataLoading, setDataLoading] = useState(!!tourId)
 
   useEffect(() => {
     let cancelled = false
@@ -48,6 +49,8 @@ export default function TourForm({ tourId = null }) {
           })
         } catch (e) {
           if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load tour')
+        } finally {
+          if (!cancelled) setDataLoading(false)
         }
       }
     }
@@ -111,6 +114,15 @@ export default function TourForm({ tourId = null }) {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (dataLoading) {
+    return (
+      <div className="page-spinner-wrap" style={{ minHeight: '50vh' }}>
+        <div className="page-spinner" />
+        <p className="page-spinner-text">Loading tour data…</p>
+      </div>
+    )
   }
 
   return (

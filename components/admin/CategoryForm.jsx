@@ -24,6 +24,7 @@ export default function CategoryForm({ categoryId = null }) {
   const [form, setForm] = useState(emptyForm)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [dataLoading, setDataLoading] = useState(!!categoryId)
 
   useEffect(() => {
     let cancelled = false
@@ -34,6 +35,8 @@ export default function CategoryForm({ categoryId = null }) {
         if (!cancelled) setForm((prev) => ({ ...prev, ...data }))
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load category')
+      } finally {
+        if (!cancelled) setDataLoading(false)
       }
     }
     load()
@@ -70,6 +73,15 @@ export default function CategoryForm({ categoryId = null }) {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (dataLoading) {
+    return (
+      <div className="page-spinner-wrap" style={{ minHeight: '50vh' }}>
+        <div className="page-spinner" />
+        <p className="page-spinner-text">Loading category data…</p>
+      </div>
+    )
   }
 
   return (

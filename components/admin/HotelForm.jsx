@@ -21,6 +21,7 @@ export default function HotelForm({ hotelId = null }) {
   const [categories, setCategories] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [dataLoading, setDataLoading] = useState(!!hotelId)
 
   useEffect(() => {
     let cancelled = false
@@ -59,6 +60,8 @@ export default function HotelForm({ hotelId = null }) {
           })
         } catch (e) {
           if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load hotel')
+        } finally {
+          if (!cancelled) setDataLoading(false)
         }
       }
     }
@@ -130,6 +133,15 @@ export default function HotelForm({ hotelId = null }) {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (dataLoading) {
+    return (
+      <div className="page-spinner-wrap" style={{ minHeight: '50vh' }}>
+        <div className="page-spinner" />
+        <p className="page-spinner-text">Loading hotel data…</p>
+      </div>
+    )
   }
 
   return (
