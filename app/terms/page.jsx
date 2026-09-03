@@ -128,9 +128,9 @@ export default function TermsPage() {
               If you have any questions about these Terms of Service, please contact us:
             </p>
             <ul>
-              <li>Email: info@pehchaantravels.pk</li>
-              <li>Phone: +92 300 1234567</li>
-              <li>Address: Islamabad, Pakistan</li>
+              <li>Email: <a href="mailto:pehchaantravels@gmail.com">pehchaantravels@gmail.com</a></li>
+              <li>Phone: <a href="tel:+923264828913">+92 3264828913</a></li>
+              <li>Address: Lahore, Pakistan</li>
             </ul>
 
             <div className="terms-content__back">
