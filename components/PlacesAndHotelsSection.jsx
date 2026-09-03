@@ -54,7 +54,6 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
             ) : (
               <div className="places-hotels-grid">
                 {places.slice(0, 4).map((place) => {
-                  const rating = place.rating ? Number(place.rating).toFixed(1) : '4.9'
                   const destUrl = getDestinationPath(place)
 
                   return (
@@ -66,10 +65,6 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
                           loading="lazy"
                           className="ph-card__image"
                         />
-                        <div className="ph-card__rating">
-                          <span className="ph-card__star">★</span>
-                          <span>{rating}</span>
-                        </div>
                       </Link>
 
                       <div className="ph-card__body">
@@ -99,7 +94,6 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
         {activeTab === 'hotels' && (
           <div className="places-hotels-grid">
             {hotels.slice(0, 4).map((hotel) => {
-              const rating = hotel.rating ? Number(hotel.rating).toFixed(1) : '4.8'
               const hotelUrl = getHotelPath(hotel)
               const displayPrice = hotel.pricePerNight
                 ? `PKR ${formatPrice(hotel.pricePerNight)}`
@@ -114,10 +108,6 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
                       loading="lazy"
                       className="ph-card__image"
                     />
-                    <div className="ph-card__rating">
-                      <span className="ph-card__star">★</span>
-                      <span>{rating}</span>
-                    </div>
                   </Link>
 
                   <div className="ph-card__body">
