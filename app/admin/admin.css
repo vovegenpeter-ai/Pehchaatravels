@@ -209,6 +209,61 @@ html, body.admin-page {
   z-index: 1;
 }
 
+/* Login loading overlay */
+.login-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  background: linear-gradient(rgba(16, 38, 31, 0.85), rgba(10, 26, 22, 0.92));
+  backdrop-filter: blur(4px);
+  animation: loginFadeIn 0.2s ease-out;
+}
+
+.login-loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255,255,255,0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: loginSpin 0.7s linear infinite;
+}
+
+.login-loading-text {
+  color: rgba(255,255,255,0.9);
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.login-btn-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.login-btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: loginSpin 0.7s linear infinite;
+}
+
+@keyframes loginSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes loginFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @media (max-width: 900px) {
   html, body.admin-page {
     height: auto;
