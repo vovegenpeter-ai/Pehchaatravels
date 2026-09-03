@@ -33,11 +33,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       },
     })
 
-    Promise.resolve().then(() => {
-      revalidatePath('/')
-      revalidatePath('/places')
-      if (destination.slug) revalidatePath(`/destinations/${destination.slug}`)
-    })
+    revalidatePath('/')
+    revalidatePath('/places')
+    if (destination.slug) revalidatePath(`/destinations/${destination.slug}`)
     return NextResponse.json(mapDestination(destination))
   } catch (error) {
     const message = formatZodError(error, 'Failed to update destination')
@@ -48,17 +46,16 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   await prisma.destination.delete({ where: { id } })
-  Promise.resolve().then(() => { revalidatePath('/'); revalidatePath('/places') })
+  revalidatePath('/')
+  revalidatePath('/places')
   return NextResponse.json({ success: true })
 }
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const destination = await prisma.destination.update({ where: { id }, data: await request.json() })
-  Promise.resolve().then(() => {
-    revalidatePath('/')
-    revalidatePath('/places')
-    if (destination.slug) revalidatePath(`/destinations/${destination.slug}`)
-  })
+  revalidatePath('/')
+  revalidatePath('/places')
+  if (destination.slug) revalidatePath(`/destinations/${destination.slug}`)
   return NextResponse.json(mapDestination(destination))
 }

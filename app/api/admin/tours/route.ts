@@ -33,7 +33,8 @@ export async function POST(request: Request) {
       include: { images: true, category: true },
     })
 
-    Promise.resolve().then(() => { revalidatePath('/'); revalidatePath('/tours') })
+    revalidatePath('/')
+    revalidatePath('/tours')
     return NextResponse.json(mapTour(tour), { status: 201 })
   } catch (error) {
     const message = formatZodError(error, 'Failed to create tour')

@@ -41,11 +41,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       include: { images: true, category: true },
     })
 
-    Promise.resolve().then(() => {
-      revalidatePath('/')
-      revalidatePath('/hotels')
-      if (hotel.slug) revalidatePath(`/hotels/${hotel.slug}`)
-    })
+    revalidatePath('/')
+    revalidatePath('/hotels')
+    if (hotel.slug) revalidatePath(`/hotels/${hotel.slug}`)
     return NextResponse.json(mapHotel(hotel))
   } catch (error) {
     const message = formatZodError(error, 'Failed to update hotel')
@@ -56,7 +54,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   await prisma.hotel.delete({ where: { id } })
-  Promise.resolve().then(() => { revalidatePath('/'); revalidatePath('/hotels') })
+  revalidatePath('/')
+  revalidatePath('/hotels')
   return NextResponse.json({ success: true })
 }
 
@@ -68,10 +67,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     data: body,
     include: { images: true, category: true },
   })
-  Promise.resolve().then(() => {
-    revalidatePath('/')
-    revalidatePath('/hotels')
-    if (hotel.slug) revalidatePath(`/hotels/${hotel.slug}`)
-  })
+  revalidatePath('/')
+  revalidatePath('/hotels')
+  if (hotel.slug) revalidatePath(`/hotels/${hotel.slug}`)
   return NextResponse.json(mapHotel(hotel))
 }
