@@ -44,14 +44,17 @@ export default function TermsPage() {
 
             <h2>3. Cancellation Policy</h2>
             <p>
-              Cancellations must be made in writing via email. The following cancellation fees apply:
+              We understand that plans can change. All cancellations must be requested in writing by email. Our cancellation terms are as follows:
             </p>
             <ul>
-              <li><strong>30+ days before departure:</strong> Full refund minus administrative fee</li>
-              <li><strong>15-29 days before departure:</strong> 50% refund</li>
-              <li><strong>7-14 days before departure:</strong> 25% refund</li>
-              <li><strong>Less than 7 days before departure:</strong> No refund</li>
+              <li><strong>30 days or more before departure:</strong> Full refund (minus a small administrative fee)</li>
+              <li><strong>15–29 days before departure:</strong> 70% refund</li>
+              <li><strong>8–14 days before departure:</strong> 40% refund</li>
+              <li><strong>7 days or less before departure:</strong> No cash refund, but we will offer a credit valid for 12 months toward a future booking</li>
             </ul>
+            <p>
+              We always try to be as flexible as possible. If you need to reschedule instead of cancel, please contact us and we will do our best to help.
+            </p>
 
             <h2>4. Travel Insurance</h2>
             <p>
