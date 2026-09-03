@@ -13,8 +13,7 @@ export default function TourFaq({ faqs = [] }) {
 
   return (
     <section className="section tour-faq-section">
-      <div className="container container--narrow">
-        <h2 className="tour-section-title">Frequently Asked Questions</h2>
+      <div className="container">
         <div className="tour-faq">
           {faqs.map((faq, i) => (
             <div key={i} className={`tour-faq__item ${openIndex === i ? 'tour-faq__item--open' : ''}`}>
