@@ -97,7 +97,7 @@ export default function MakeMyTripForm() {
           <textarea id="message" name="message" rows={5} value={form.message} onChange={handleChange} placeholder="Tell us about your preferences, interests, and special requirements..." />
         </div>
         <button type="submit" className="btn btn--primary btn--lg" disabled={submitting}>
-          {submitting ? 'Submitting...' : 'Plan My Trip'}
+          {submitting ? 'Submitting...' : 'Send Inquiry'}
         </button>
       </form>
     </>
