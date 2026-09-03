@@ -2430,12 +2430,39 @@ ul { list-style: none; }
   overflow: hidden;
 }
 
-.tour-faq__answer p {
+.tour-faq__answer > div {
   padding: 0 1.25rem 1.25rem;
-  margin: 0;
+}
+
+.tour-faq__answer p {
+  margin: 0 0 0.5rem;
   color: #475569;
   line-height: 1.7;
   font-size: 0.95rem;
+}
+
+.tour-faq__answer p:last-child {
+  margin-bottom: 0;
+}
+
+.tour-faq__answer ul,
+.tour-faq__answer ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+  color: #475569;
+}
+
+.tour-faq__answer li {
+  margin-bottom: 0.25rem;
+}
+
+.tour-faq__answer a {
+  color: var(--green);
+  text-decoration: underline;
+}
+
+.tour-faq__answer strong {
+  color: var(--text);
 }
 
 /* Admin FAQ Builder */

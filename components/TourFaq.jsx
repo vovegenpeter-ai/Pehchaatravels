@@ -29,7 +29,7 @@ export default function TourFaq({ faqs = [] }) {
               </button>
               <div className="tour-faq__answer-wrap">
                 <div className="tour-faq__answer">
-                  <p>{faq.answer}</p>
+                  <div dangerouslySetInnerHTML={{ __html: faq.answer }} />
                 </div>
               </div>
             </div>

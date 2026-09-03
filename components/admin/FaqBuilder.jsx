@@ -1,5 +1,7 @@
 'use client'
 
+import RichTextEditor from '@/components/admin/RichTextEditor'
+
 export default function FaqBuilder({ value = [], onChange }) {
   const faqs = Array.isArray(value) ? value : []
 
@@ -44,11 +46,10 @@ export default function FaqBuilder({ value = [], onChange }) {
             </div>
             <div className="form-group">
               <label>Answer</label>
-              <textarea
-                rows={3}
+              <RichTextEditor
                 value={faq.answer}
-                onChange={(e) => updateFaq(i, 'answer', e.target.value)}
-                placeholder="e.g. The tour price includes transportation, accommodation, meals..."
+                onChange={(html) => updateFaq(i, 'answer', html)}
+                placeholder="Write the answer here..."
               />
             </div>
           </div>
