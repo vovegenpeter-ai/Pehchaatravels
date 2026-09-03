@@ -24,8 +24,7 @@ export async function POST(request: Request) {
     const body = await request.json()
     const data = categorySchema.parse(body)
     const category = await prisma.category.create({ data })
-    revalidatePath('/')
-    revalidatePath('/places')
+    Promise.resolve().then(() => { revalidatePath('/'); revalidatePath('/places') })
     return NextResponse.json(category, { status: 201 })
   } catch (error) {
     const message = formatZodError(error, 'Failed to create category')

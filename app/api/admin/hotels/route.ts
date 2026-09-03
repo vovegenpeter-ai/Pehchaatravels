@@ -41,8 +41,7 @@ export async function POST(request: Request) {
       include: { images: true, category: true },
     })
 
-    revalidatePath('/')
-    revalidatePath('/hotels')
+    Promise.resolve().then(() => { revalidatePath('/'); revalidatePath('/hotels') })
     return NextResponse.json(mapHotel(hotel), { status: 201 })
   } catch (error) {
     const message = formatZodError(error, 'Failed to create hotel')

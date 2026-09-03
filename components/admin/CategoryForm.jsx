@@ -133,7 +133,7 @@ export default function CategoryForm({ categoryId = null }) {
         </label>
       </div>
       <button type="submit" className="btn btn--primary btn--lg" disabled={loading} style={{ marginTop: '1.5rem' }}>
-        {loading ? 'Saving...' : categoryId ? 'Update Category' : 'Create Category'}
+        {loading ? <span className="btn-save-loading"><span className="btn-save-spinner" /> Saving…</span> : categoryId ? 'Update Category' : 'Create Category'}
       </button>
     </form>
   )

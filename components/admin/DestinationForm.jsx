@@ -182,7 +182,7 @@ export default function DestinationForm({ destinationId = null }) {
       </div>
 
       <button type="submit" className="btn btn--primary btn--lg" disabled={loading} style={{ marginTop: '1.5rem' }}>
-        {loading ? 'Saving...' : destinationId ? 'Update Explore Places' : 'Add Explore Places'}
+        {loading ? <span className="btn-save-loading"><span className="btn-save-spinner" /> Saving…</span> : destinationId ? 'Update Explore Places' : 'Add Explore Places'}
       </button>
     </form>
   )

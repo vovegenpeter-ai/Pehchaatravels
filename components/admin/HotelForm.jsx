@@ -202,7 +202,7 @@ export default function HotelForm({ hotelId = null }) {
         <label className="checkbox-label"><input name="featured" type="checkbox" checked={form.featured} onChange={handleChange} /> Featured</label>
       </div>
       <button type="submit" className="btn btn--primary btn--lg" disabled={loading} style={{ marginTop: '1.5rem' }}>
-        {loading ? 'Saving...' : hotelId ? 'Update Hotel' : 'Create Hotel'}
+        {loading ? <span className="btn-save-loading"><span className="btn-save-spinner" /> Saving…</span> : hotelId ? 'Update Hotel' : 'Create Hotel'}
       </button>
     </form>
   )

@@ -44,9 +44,11 @@ export async function POST(request: Request) {
       },
     })
 
-    revalidatePath('/')
-    revalidatePath('/places')
-    if (destination.categoryId) revalidatePath(`/places/${destination.slug || ''}`)
+    Promise.resolve().then(() => {
+      revalidatePath('/')
+      revalidatePath('/places')
+      if (destination.categoryId) revalidatePath(`/places/${destination.slug || ''}`)
+    })
     return NextResponse.json(mapDestination(destination), { status: 201 })
   } catch (error) {
     const message = formatZodError(error, 'Failed to create destination')

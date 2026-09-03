@@ -190,7 +190,7 @@ export default function TourForm({ tourId = null }) {
 
       </div>
       <button type="submit" className="btn btn--primary btn--lg" disabled={loading} style={{ marginTop: '1.5rem' }}>
-        {loading ? 'Saving...' : tourId ? 'Update Tour' : 'Create Tour'}
+        {loading ? <span className="btn-save-loading"><span className="btn-save-spinner" /> Saving…</span> : tourId ? 'Update Tour' : 'Create Tour'}
       </button>
     </form>
   )
