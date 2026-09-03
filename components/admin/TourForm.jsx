@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 
 import MultiImageUpload from '@/components/admin/MultiImageUpload'
 import ItineraryBuilder from '@/components/admin/ItineraryBuilder'
+import FaqBuilder from '@/components/admin/FaqBuilder'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
@@ -16,6 +17,7 @@ const emptyForm = {
   includedServices: '', excludedServices: '', maxGuests: '', rating: '4.5',
   published: true, featured: false,
   itinerary: [],
+  faqs: [],
 }
 
 export default function TourForm({ tourId = null }) {
@@ -42,6 +44,7 @@ export default function TourForm({ tourId = null }) {
             maxGuests: t.maxGuests ? String(t.maxGuests) : '',
             rating: String(t.rating), published: t.published, featured: t.featured,
             itinerary: Array.isArray(t.itinerary) ? t.itinerary : [],
+            faqs: Array.isArray(t.faqs) ? t.faqs : [],
           })
         } catch (e) {
           if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load tour')
@@ -92,6 +95,7 @@ export default function TourForm({ tourId = null }) {
         featured: form.featured,
 
         itinerary: form.itinerary,
+        faqs: form.faqs,
       }
 
       const url = tourId ? `/api/admin/tours/${tourId}` : '/api/admin/tours'
@@ -161,6 +165,12 @@ export default function TourForm({ tourId = null }) {
         <div className="form-group form-group--full">
           <label style={{ marginBottom: '0.75rem', display: 'block' }}>Itinerary</label>
           <ItineraryBuilder value={form.itinerary} onChange={(val) => setForm((prev) => ({ ...prev, itinerary: val }))} />
+        </div>
+        <div className="form-group form-group--full">
+          <label style={{ marginBottom: '0.75rem', display: 'block' }}>
+            FAQs <span style={{ fontSize: '0.85rem', fontWeight: 'normal', color: '#64748b' }}>(Frequently Asked Questions — displayed on the Tour Detail page)</span>
+          </label>
+          <FaqBuilder value={form.faqs} onChange={(val) => setForm((prev) => ({ ...prev, faqs: val }))} />
         </div>
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
         <label className="checkbox-label"><input name="featured" type="checkbox" checked={form.featured} onChange={handleChange} /> Featured</label>

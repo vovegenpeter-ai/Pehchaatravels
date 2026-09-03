@@ -9,6 +9,7 @@ import { formatPrice } from '@/lib/tourUtils'
 import ReviewsList from '@/components/ReviewsList'
 import WriteReviewButton from '@/components/WriteReviewButton'
 import ReviewStatusBanner from '@/components/ReviewStatusBanner'
+import TourFaq from '@/components/TourFaq'
 
 export const revalidate = 60
 
@@ -44,6 +45,7 @@ export default async function TourDetailPage({ params }) {
 
   const description = tour.fullDescription || tour.description
   const itinerary = tour.itinerary || []
+  const faqs = Array.isArray(tour.faqs) ? tour.faqs : []
 
   return (
     <>
@@ -171,6 +173,11 @@ export default async function TourDetailPage({ params }) {
           </div>
         </aside>
       </div>
+
+      {/* 4b. FAQs */}
+      {faqs.length > 0 && (
+        <TourFaq faqs={faqs} />
+      )}
 
       {/* 5. Reviews Section */}
       <section className="section" style={{ background: '#fff' }}>

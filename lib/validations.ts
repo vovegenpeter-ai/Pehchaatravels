@@ -26,6 +26,10 @@ export const tourSchema = z.object({
     title: z.string(),
     activities: z.array(z.string()),
   })).optional(),
+  faqs: z.array(z.object({
+    question: z.string(),
+    answer: z.string(),
+  })).optional(),
   includedServices: z.array(z.string()).default([]),
   excludedServices: z.array(z.string()).default([]),
   maxGuests: z.number().int().positive().optional(),

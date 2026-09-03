@@ -2343,6 +2343,134 @@ ul { list-style: none; }
   margin-bottom: 1.5rem;
 }
 
+/* ── Tour FAQ Accordion ── */
+.tour-faq-section {
+  background: #fff;
+}
+
+.tour-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--beige-dark);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.tour-faq__item {
+  border-bottom: 1px solid var(--beige-dark);
+}
+
+.tour-faq__item:last-child {
+  border-bottom: none;
+}
+
+.tour-faq__question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1.1rem 1.25rem;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  transition: background 0.15s;
+  gap: 1rem;
+}
+
+.tour-faq__question:hover {
+  background: #f8fafb;
+}
+
+.tour-faq__item--open .tour-faq__question {
+  background: #f0fdf4;
+  color: var(--green);
+}
+
+.tour-faq__question-text {
+  flex: 1;
+}
+
+.tour-faq__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--beige);
+  color: var(--green);
+  font-size: 1.1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tour-faq__item--open .tour-faq__icon {
+  background: var(--green);
+  color: #fff;
+}
+
+.tour-faq__answer-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s ease;
+}
+
+.tour-faq__item--open .tour-faq__answer-wrap {
+  grid-template-rows: 1fr;
+}
+
+.tour-faq__answer {
+  overflow: hidden;
+}
+
+.tour-faq__answer p {
+  padding: 0 1.25rem 1.25rem;
+  margin: 0;
+  color: #475569;
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+/* Admin FAQ Builder */
+.faq-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.faq-builder__card {
+  background: #f8fafb;
+  border: 1px solid var(--beige-dark);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.faq-builder__card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.faq-builder__label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--green);
+}
+
+.faq-builder__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 .tour-info-section {
   padding: 3.5rem 0;
 }

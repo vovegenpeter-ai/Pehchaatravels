@@ -64,6 +64,7 @@ model Tour {
   endTime          String?
   meetingPoint     String?
   itinerary        Json?
+  faqs             Json?
   includedServices String[]          @default([])
   excludedServices String[]          @default([])
   maxGuests        Int?
