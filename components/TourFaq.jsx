@@ -23,8 +23,8 @@ export default function TourFaq({ faqs = [] }) {
                 onClick={() => toggle(i)}
                 aria-expanded={openIndex === i}
               >
-                <span className="tour-faq__question-text">{faq.question}</span>
                 <span className="tour-faq__icon">{openIndex === i ? '−' : '+'}</span>
+                <span className="tour-faq__question-text">{faq.question}</span>
               </button>
               <div className="tour-faq__answer-wrap">
                 <div className="tour-faq__answer">
