@@ -1,5 +1,3 @@
-import Link from 'next/link'
-
 export const metadata = {
   title: 'Terms of Service — Pehchaan Travels',
   description: 'Terms and conditions for using Pehchaan Travels services and booking tours in Pakistan.',
@@ -133,11 +131,6 @@ export default function TermsPage() {
               <li>Address: Lahore, Pakistan</li>
             </ul>
 
-            <div className="terms-content__back">
-              <Link href="/" className="btn btn--primary">
-                Back to Home
-              </Link>
-            </div>
           </div>
         </div>
       </section>
