@@ -10,7 +10,7 @@ import ReviewsList from '@/components/ReviewsList'
 import WriteReviewButton from '@/components/WriteReviewButton'
 import ReviewStatusBanner from '@/components/ReviewStatusBanner'
 
-export const revalidate = 300
+export const revalidate = 60
 
 export async function generateMetadata({ params }) {
   const { slug } = await params

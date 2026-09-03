@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { hotelSchema, formatZodError } from '@/lib/validations'
 import { mapHotel } from '@/lib/mappers'
@@ -40,6 +41,8 @@ export async function POST(request: Request) {
       include: { images: true, category: true },
     })
 
+    revalidatePath('/')
+    revalidatePath('/hotels')
     return NextResponse.json(mapHotel(hotel), { status: 201 })
   } catch (error) {
     const message = formatZodError(error, 'Failed to create hotel')

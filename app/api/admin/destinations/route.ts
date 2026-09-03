@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { destinationSchema, formatZodError } from '@/lib/validations'
 import { mapDestination } from '@/lib/mappers'
@@ -43,6 +44,9 @@ export async function POST(request: Request) {
       },
     })
 
+    revalidatePath('/')
+    revalidatePath('/places')
+    if (destination.categoryId) revalidatePath(`/places/${destination.slug || ''}`)
     return NextResponse.json(mapDestination(destination), { status: 201 })
   } catch (error) {
     const message = formatZodError(error, 'Failed to create destination')

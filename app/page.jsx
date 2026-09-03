@@ -4,7 +4,7 @@ import PlacesAndHotelsSection from '@/components/PlacesAndHotelsSection'
 import { getFeaturedTours, getFeaturedDestinations, getFeaturedHotels, getDestinationCategories } from '@/lib/db'
 import { HERO_IMAGE, TRIP_IMAGE, defaultTours, popularPlaces, defaultHotels } from '@/lib/initialData'
 
-export const revalidate = 300
+export const revalidate = 60
 
 export default async function HomePage() {
   let tours = []

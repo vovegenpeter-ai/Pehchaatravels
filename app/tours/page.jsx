@@ -3,7 +3,7 @@ import TourCard from '@/components/TourCard'
 import { getPublishedTours } from '@/lib/db'
 import { HERO_IMAGE } from '@/lib/initialData'
 
-export const revalidate = 300
+export const revalidate = 60
 
 export const metadata = {
   title: 'Tours — Pehchaan Travels',

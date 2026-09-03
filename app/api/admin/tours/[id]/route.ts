@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { tourSchema, formatZodError } from '@/lib/validations'
 import { mapTour } from '@/lib/mappers'
@@ -34,6 +35,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       include: { images: true, category: true },
     })
 
+    revalidatePath('/')
+    revalidatePath('/tours')
+    if (tour.slug) revalidatePath(`/tours/${tour.slug}`)
     return NextResponse.json(mapTour(tour))
   } catch (error) {
     const message = formatZodError(error, 'Failed to update tour')
@@ -44,6 +48,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   await prisma.tour.delete({ where: { id } })
+  revalidatePath('/')
+  revalidatePath('/tours')
   return NextResponse.json({ success: true })
 }
 
@@ -55,5 +61,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     data: body,
     include: { images: true, category: true },
   })
+  revalidatePath('/')
+  revalidatePath('/tours')
+  if (tour.slug) revalidatePath(`/tours/${tour.slug}`)
   return NextResponse.json(mapTour(tour))
 }

@@ -4,7 +4,7 @@ import PlaceCard from '@/components/PlaceCard'
 import { getCategoryBySlug } from '@/lib/db'
 import { HERO_IMAGE } from '@/lib/initialData'
 
-export const revalidate = 300
+export const revalidate = 60
 
 export async function generateMetadata({ params }) {
   const { categorySlug } = await params

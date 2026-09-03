@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { categorySchema, formatZodError } from '@/lib/validations'
 
@@ -23,6 +24,8 @@ export async function POST(request: Request) {
     const body = await request.json()
     const data = categorySchema.parse(body)
     const category = await prisma.category.create({ data })
+    revalidatePath('/')
+    revalidatePath('/places')
     return NextResponse.json(category, { status: 201 })
   } catch (error) {
     const message = formatZodError(error, 'Failed to create category')

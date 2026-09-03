@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { tourSchema, formatZodError } from '@/lib/validations'
 import { mapTour } from '@/lib/mappers'
@@ -32,6 +33,8 @@ export async function POST(request: Request) {
       include: { images: true, category: true },
     })
 
+    revalidatePath('/')
+    revalidatePath('/tours')
     return NextResponse.json(mapTour(tour), { status: 201 })
   } catch (error) {
     const message = formatZodError(error, 'Failed to create tour')

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { destinationSchema, formatZodError } from '@/lib/validations'
 import { mapDestination } from '@/lib/mappers'
@@ -32,6 +33,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       },
     })
 
+    revalidatePath('/')
+    revalidatePath('/places')
+    if (destination.slug) revalidatePath(`/destinations/${destination.slug}`)
     return NextResponse.json(mapDestination(destination))
   } catch (error) {
     const message = formatZodError(error, 'Failed to update destination')
@@ -42,11 +46,16 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   await prisma.destination.delete({ where: { id } })
+  revalidatePath('/')
+  revalidatePath('/places')
   return NextResponse.json({ success: true })
 }
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const destination = await prisma.destination.update({ where: { id }, data: await request.json() })
+  revalidatePath('/')
+  revalidatePath('/places')
+  if (destination.slug) revalidatePath(`/destinations/${destination.slug}`)
   return NextResponse.json(mapDestination(destination))
 }

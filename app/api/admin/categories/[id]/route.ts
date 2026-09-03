@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { categorySchema, formatZodError } from '@/lib/validations'
 
@@ -14,6 +15,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     const { id } = await params
     const data = categorySchema.parse(await request.json())
     const category = await prisma.category.update({ where: { id }, data })
+    revalidatePath('/')
+    revalidatePath('/places')
+    if (category.slug) revalidatePath(`/places/${category.slug}`)
     return NextResponse.json(category)
   } catch (error) {
     const message = formatZodError(error, 'Failed to update category')
@@ -24,11 +28,16 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   await prisma.category.delete({ where: { id } })
+  revalidatePath('/')
+  revalidatePath('/places')
   return NextResponse.json({ success: true })
 }
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const category = await prisma.category.update({ where: { id }, data: await request.json() })
+  revalidatePath('/')
+  revalidatePath('/places')
+  if (category.slug) revalidatePath(`/places/${category.slug}`)
   return NextResponse.json(category)
 }

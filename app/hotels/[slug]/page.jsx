@@ -5,7 +5,7 @@ import TourCard from '@/components/TourCard'
 import { SectionHeader } from '@/components/UI'
 import { getHotelBySlugOrId, getRelatedHotels } from '@/lib/db'
 
-export const revalidate = 300
+export const revalidate = 60
 
 export async function generateMetadata({ params }) {
   const { slug } = await params

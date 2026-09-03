@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { getDestinationCategories } from '@/lib/db'
 import { HERO_IMAGE } from '@/lib/initialData'
 
-export const revalidate = 300
+export const revalidate = 60
 
 export const metadata = {
   title: 'Places — Pehchaan Travels',

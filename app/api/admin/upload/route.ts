@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
+import { writeFile } from 'fs/promises'
+import path from 'path'
 
 const MAX_SIZE = 5 * 1024 * 1024
+const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads')
 
 export async function POST(request: Request) {
   try {
@@ -19,11 +22,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'File too large (max 5MB)' }, { status: 400 })
     }
 
+    /* Save file to public/uploads/ and return the URL path */
+    const ext = file.name.split('.').pop() || 'jpg'
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
     const buffer = Buffer.from(await file.arrayBuffer())
-    const base64 = buffer.toString('base64')
-    const dataUrl = `data:${file.type};base64,${base64}`
+    await writeFile(path.join(UPLOAD_DIR, filename), buffer)
 
-    return NextResponse.json({ url: dataUrl })
+    const url = `/uploads/${filename}`
+    return NextResponse.json({ url })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Upload failed'
     return NextResponse.json({ error: message }, { status: 500 })
