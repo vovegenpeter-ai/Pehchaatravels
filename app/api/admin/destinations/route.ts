@@ -5,9 +5,11 @@ import { mapDestination } from '@/lib/mappers'
 
 export async function GET() {
   const destinations = await prisma.destination.findMany({
-    include: {
+    select: {
+      id: true, slug: true, name: true, shortDescription: true,
+      image: true, published: true, featured: true,
+      orderNumber: true, categoryId: true,
       category: { select: { id: true, name: true, slug: true } },
-      _count: { select: { tours: true, hotels: true } },
     },
   })
   // Sort: custom order first, then by newest
@@ -15,21 +17,9 @@ export async function GET() {
     const aOrder = (a.orderNumber ?? 0) > 0 ? a.orderNumber : Infinity
     const bOrder = (b.orderNumber ?? 0) > 0 ? b.orderNumber : Infinity
     if (aOrder !== bOrder) return aOrder - bOrder
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    return 0
   })
-  return NextResponse.json(destinations.map((d) => ({
-    id: d.id,
-    slug: d.slug,
-    name: d.name,
-    shortDescription: d.shortDescription,
-    location: d.location,
-    image: d.image,
-    published: d.published,
-    featured: d.featured,
-    orderNumber: d.orderNumber ?? 0,
-    categoryId: d.categoryId,
-    category: d.category,
-  })))
+  return NextResponse.json(destinations)
 }
 
 export async function POST(request: Request) {

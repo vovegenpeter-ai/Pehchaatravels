@@ -7,14 +7,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const { id } = await params
   const destination = await prisma.destination.findUnique({
     where: { id },
-    include: { tours: true, hotels: true },
   })
   if (!destination) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json({
-    ...mapDestination(destination),
-    tourIds: destination.tours.map((t) => t.tourId),
-    hotelIds: destination.hotels.map((h) => h.hotelId),
-  })
+  return NextResponse.json(mapDestination(destination))
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -22,9 +17,6 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     const { id } = await params
     const data = destinationSchema.parse(await request.json())
     const { tourIds, hotelIds, ...destData } = data
-
-    await prisma.destinationTour.deleteMany({ where: { destinationId: id } })
-    await prisma.destinationHotel.deleteMany({ where: { destinationId: id } })
 
     const description = destData.fullDescription || destData.description || destData.shortDescription || ''
     const shortDescription = destData.shortDescription || destData.description || ''
@@ -37,8 +29,6 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         description,
         shortDescription,
         fullDescription,
-        tours: { create: tourIds.map((tourId) => ({ tourId })) },
-        hotels: { create: hotelIds.map((hotelId) => ({ hotelId })) },
       },
     })
 

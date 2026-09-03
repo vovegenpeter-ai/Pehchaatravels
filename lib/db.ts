@@ -2,45 +2,64 @@ import 'server-only'
 import { prisma } from '@/lib/prisma'
 import { mapTour, mapHotel, mapDestination, mapTestimonial } from '@/lib/mappers'
 
-const tourInclude = { images: true, category: true }
+/* Lightweight select for listing pages — avoids loading base64 images */
+const tourListSelect = {
+  id: true, slug: true, name: true, destination: true, location: true,
+  shortDescription: true, fullDescription: true,
+  price: true, rating: true, bannerImage: true,
+  startDate: true, startTime: true, endDate: true, endTime: true,
+  meetingPoint: true, itinerary: true,
+  includedServices: true, excludedServices: true, maxGuests: true,
+  published: true, featured: true, latest: true, categoryId: true,
+  createdAt: true,
+}
+
+const hotelListSelect = {
+  id: true, slug: true, name: true, shortDescription: true, fullDescription: true,
+  location: true, address: true, pricePerNight: true, rating: true,
+  contactPhone: true, contactEmail: true,
+  checkInTime: true, checkOutTime: true, bannerImage: true,
+  amenities: true, roomTypes: true,
+  published: true, featured: true, categoryId: true, createdAt: true,
+}
 
 export async function getPublishedTours() {
   const tours = await prisma.tour.findMany({
     where: { published: true },
-    include: tourInclude,
+    select: tourListSelect,
     orderBy: { createdAt: 'desc' },
   })
-  return tours.map(mapTour)
+  return tours.map((t) => mapTour(t as any))
 }
 
 export async function getFeaturedTours(limit = 6) {
   const tours = await prisma.tour.findMany({
     where: { published: true, featured: true },
-    include: tourInclude,
+    select: tourListSelect,
     take: limit,
     orderBy: { createdAt: 'desc' },
   })
-  return tours.map(mapTour)
+  return tours.map((t) => mapTour(t as any))
 }
 
 export async function getRelatedTours(currentId: string, limit = 3) {
   const tours = await prisma.tour.findMany({
     where: { published: true, id: { not: currentId } },
-    include: tourInclude,
+    select: tourListSelect,
     take: limit,
     orderBy: { rating: 'desc' },
   })
-  return tours.map(mapTour)
+  return tours.map((t) => mapTour(t as any))
 }
 
 export async function getRelatedHotels(currentId: string, limit = 3) {
   const hotels = await prisma.hotel.findMany({
     where: { published: true, id: { not: currentId } },
-    include: { images: true, category: true },
+    select: hotelListSelect,
     take: limit,
     orderBy: { rating: 'desc' },
   })
-  return hotels.map(mapHotel)
+  return hotels.map((h) => mapHotel(h as any))
 }
 
 export async function getRelatedDestinations(currentId: string, limit = 4, categoryId?: string | null) {
@@ -73,11 +92,11 @@ export async function getRelatedDestinations(currentId: string, limit = 4, categ
 export async function getLatestTours(limit = 6) {
   const tours = await prisma.tour.findMany({
     where: { published: true, latest: true },
-    include: tourInclude,
+    select: tourListSelect,
     take: limit,
     orderBy: { createdAt: 'desc' },
   })
-  return tours.map(mapTour)
+  return tours.map((t) => mapTour(t as any))
 }
 
 export async function getTourBySlugOrId(slugOrId: string) {
@@ -86,36 +105,36 @@ export async function getTourBySlugOrId(slugOrId: string) {
       OR: [{ slug: slugOrId }, { id: slugOrId }],
       published: true,
     },
-    include: tourInclude,
+    select: { ...tourListSelect, images: { select: { url: true, order: true } } },
   })
-  return tour ? mapTour(tour) : null
+  return tour ? mapTour(tour as any) : null
 }
 
 export async function getAllToursAdmin() {
   const tours = await prisma.tour.findMany({
-    include: tourInclude,
+    select: tourListSelect,
     orderBy: { createdAt: 'desc' },
   })
-  return tours.map(mapTour)
+  return tours.map((t) => mapTour(t as any))
 }
 
 export async function getPublishedHotels() {
   const hotels = await prisma.hotel.findMany({
     where: { published: true },
-    include: { images: true, category: true },
+    select: hotelListSelect,
     orderBy: { createdAt: 'desc' },
   })
-  return hotels.map(mapHotel)
+  return hotels.map((h) => mapHotel(h as any))
 }
 
 export async function getFeaturedHotels(limit = 6) {
   const hotels = await prisma.hotel.findMany({
     where: { published: true, featured: true },
-    include: { images: true, category: true },
+    select: hotelListSelect,
     take: limit,
     orderBy: { rating: 'desc' },
   })
-  return hotels.map(mapHotel)
+  return hotels.map((h) => mapHotel(h as any))
 }
 
 export async function getHotelBySlugOrId(slugOrId: string) {
@@ -124,7 +143,7 @@ export async function getHotelBySlugOrId(slugOrId: string) {
       OR: [{ slug: slugOrId }, { id: slugOrId }],
       published: true,
     },
-    include: { images: true, category: true, destinations: { include: { destination: true } } },
+    include: { images: true, category: true },
   })
   return hotel ? mapHotel(hotel) : null
 }
@@ -227,26 +246,25 @@ export async function getFeaturedDestinations(limit = 8) {
 }
 
 export async function getDestinationBySlug(slug: string) {
-  // Fetched in separate sequential queries: the local dev database (Prisma
-  // PGlite) crashes on deep nested includes, so we avoid them here.
   const destination = await prisma.destination.findFirst({
     where: { OR: [{ slug }, { id: slug }], published: true },
   })
   if (!destination) return null
 
+  /* Fetch related tours/hotels WITHOUT images (cards only need bannerImage) */
   const tourLinks = await prisma.destinationTour.findMany({
     where: { destinationId: destination.id },
-    include: { tour: { include: tourInclude } },
+    include: { tour: { select: tourListSelect } },
   })
   const hotelLinks = await prisma.destinationHotel.findMany({
     where: { destinationId: destination.id },
-    include: { hotel: { include: { images: true, category: true } } },
+    include: { hotel: { select: hotelListSelect } },
   })
 
   return {
     ...mapDestination(destination),
-    tours: tourLinks.map((dt) => mapTour(dt.tour)).filter((t) => t.published),
-    hotels: hotelLinks.map((dh) => mapHotel(dh.hotel)).filter((h) => h.published),
+    tours: tourLinks.map((dt) => mapTour(dt.tour as any)).filter((t) => t.published),
+    hotels: hotelLinks.map((dh) => mapHotel(dh.hotel as any)).filter((h) => h.published),
   }
 }
 

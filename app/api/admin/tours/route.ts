@@ -4,10 +4,15 @@ import { tourSchema, formatZodError } from '@/lib/validations'
 import { mapTour } from '@/lib/mappers'
 
 export async function GET() {
-  // Plain list query (no relation includes): the local dev database (Prisma
-  // PGlite) is unstable under concurrent relation queries.
-  const tours = await prisma.tour.findMany({ orderBy: { createdAt: 'desc' } })
-  return NextResponse.json(tours.map(mapTour))
+  const tours = await prisma.tour.findMany({
+    select: {
+      id: true, slug: true, name: true, shortDescription: true,
+      price: true, rating: true, published: true, featured: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+  return NextResponse.json(tours.map((t) => ({ ...t, price: Number(t.price) })))
 }
 
 export async function POST(request: Request) {

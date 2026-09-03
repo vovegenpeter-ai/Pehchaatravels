@@ -4,10 +4,15 @@ import { hotelSchema, formatZodError } from '@/lib/validations'
 import { mapHotel } from '@/lib/mappers'
 
 export async function GET() {
-  // Plain list query (no relation includes): the local dev database (Prisma
-  // PGlite) is unstable under concurrent relation queries.
-  const hotels = await prisma.hotel.findMany({ orderBy: { createdAt: 'desc' } })
-  return NextResponse.json(hotels.map(mapHotel))
+  const hotels = await prisma.hotel.findMany({
+    select: {
+      id: true, slug: true, name: true, shortDescription: true,
+      location: true, pricePerNight: true, rating: true,
+      published: true, featured: true, createdAt: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+  return NextResponse.json(hotels.map((h) => ({ ...h, pricePerNight: Number(h.pricePerNight) })))
 }
 
 export async function POST(request: Request) {
