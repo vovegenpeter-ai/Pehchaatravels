@@ -48,45 +48,51 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
 
         {/* Places Tab Content */}
         {activeTab === 'places' && (
-          <div className="places-hotels-grid">
-            {places.slice(0, 4).map((place) => {
-              const rating = place.rating ? Number(place.rating).toFixed(1) : '4.9'
-              const destUrl = getDestinationPath(place)
+          <>
+            {places.length === 0 ? (
+              <p className="places-hotels-empty">No featured places available yet.</p>
+            ) : (
+              <div className="places-hotels-grid">
+                {places.slice(0, 4).map((place) => {
+                  const rating = place.rating ? Number(place.rating).toFixed(1) : '4.9'
+                  const destUrl = getDestinationPath(place)
 
-              return (
-                <article key={place.id || place.slug} className="ph-card">
-                  <Link href={destUrl} className="ph-card__image-wrap" tabIndex={-1}>
-                    <img
-                      src={place.image || place.bannerImage}
-                      alt={place.name}
-                      loading="lazy"
-                      className="ph-card__image"
-                    />
-                    <div className="ph-card__rating">
-                      <span className="ph-card__star">★</span>
-                      <span>{rating}</span>
-                    </div>
-                  </Link>
-
-                  <div className="ph-card__body">
-                    <h3 className="ph-card__title">
-                      <Link href={destUrl}>{place.name}</Link>
-                    </h3>
-
-                    <p className="ph-card__desc">{place.shortDescription || place.description}</p>
-
-                    <div className="ph-card__divider" />
-
-                    <div className="ph-card__footer">
-                      <Link href={destUrl} className="ph-card__btn">
-                        View Details
+                  return (
+                    <article key={place.id || place.slug} className="ph-card">
+                      <Link href={destUrl} className="ph-card__image-wrap" tabIndex={-1}>
+                        <img
+                          src={place.image || place.bannerImage}
+                          alt={place.name}
+                          loading="lazy"
+                          className="ph-card__image"
+                        />
+                        <div className="ph-card__rating">
+                          <span className="ph-card__star">★</span>
+                          <span>{rating}</span>
+                        </div>
                       </Link>
-                    </div>
-                  </div>
-                </article>
-              )
-            })}
-          </div>
+
+                      <div className="ph-card__body">
+                        <h3 className="ph-card__title">
+                          <Link href={destUrl}>{place.name}</Link>
+                        </h3>
+
+                        <p className="ph-card__desc">{place.shortDescription || place.description}</p>
+
+                        <div className="ph-card__divider" />
+
+                        <div className="ph-card__footer">
+                          <Link href={destUrl} className="ph-card__btn">
+                            View Details
+                          </Link>
+                        </div>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            )}
+          </>
         )}
 
         {/* Hotels Tab Content */}
