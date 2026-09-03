@@ -3,6 +3,7 @@ import type { Tour, Hotel, Destination, Testimonial, TourImage, HotelImage, Cate
 export type TourWithRelations = Tour & {
   images?: TourImage[]
   category?: Category | null
+  faqs?: unknown
 }
 
 export type HotelWithRelations = Hotel & {
@@ -31,6 +32,7 @@ export function mapTour(tour: TourWithRelations) {
     endTime: tour.endTime,
     meetingPoint: tour.meetingPoint,
     itinerary: (tour.itinerary as Array<Record<string, unknown>>) ?? [],
+    faqs: (tour.faqs as Array<Record<string, unknown>>) ?? [],
     includedServices: tour.includedServices,
     excludedServices: tour.excludedServices,
     maxGuests: tour.maxGuests,

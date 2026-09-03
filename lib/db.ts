@@ -8,7 +8,7 @@ const tourListSelect = {
   shortDescription: true, fullDescription: true,
   price: true, rating: true, bannerImage: true,
   startDate: true, startTime: true, endDate: true, endTime: true,
-  meetingPoint: true, itinerary: true,
+  meetingPoint: true, itinerary: true, faqs: true,
   includedServices: true, excludedServices: true, maxGuests: true,
   published: true, featured: true, latest: true, categoryId: true,
   createdAt: true,
