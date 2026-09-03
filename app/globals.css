@@ -2211,6 +2211,18 @@ ul { list-style: none; }
   font-style: italic;
 }
 
+.terms-content a {
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+
+.terms-content a:hover {
+  color: #0f3d2e;
+  text-decoration-thickness: 2px;
+}
+
 .terms-content__back {
   margin-top: 3rem;
   padding-top: 2rem;
