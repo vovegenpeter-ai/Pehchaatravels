@@ -308,8 +308,8 @@ function RequestRow({ request, expanded, onToggle, onStatusChange, onDelete, for
                 <p>{startDate} – {endDate}</p>
               </div>
               <div>
-                <strong>Budget</strong>
-                <p>{request.budget ? `PKR ${Number(request.budget).toLocaleString()}` : 'Not specified'}</p>
+                <strong>Departure City</strong>
+                <p>{request.budget || 'Not specified'}</p>
               </div>
               <div>
                 <strong>Received</strong>

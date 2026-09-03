@@ -78,8 +78,8 @@ export default function MakeMyTripForm() {
             <input id="travelers" name="travelers" type="number" min="1" required value={form.travelers} onChange={handleChange} placeholder="Enter number of travelers" />
           </div>
           <div className="form-group">
-            <label htmlFor="budget">Estimated Budget (PKR)</label>
-            <input id="budget" name="budget" type="number" value={form.budget} onChange={handleChange} placeholder="Optional" />
+            <label htmlFor="budget">Your Departure City</label>
+            <input id="budget" name="budget" value={form.budget} onChange={handleChange} placeholder="e.g. Lahore, Islamabad" />
           </div>
         </div>
         <div className="form-row-2">
