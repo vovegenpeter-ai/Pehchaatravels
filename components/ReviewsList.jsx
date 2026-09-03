@@ -172,7 +172,10 @@ export default function ReviewsList({ tourId }) {
 
       {/* Reviews List */}
       {loading ? (
-        <div className="review-empty">Loading reviews...</div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', gap: '0.75rem' }}>
+          <div className="page-spinner page-spinner--sm" />
+          <span style={{ fontSize: '0.9rem', color: '#94a3b8' }}>Loading reviews…</span>
+        </div>
       ) : reviews.length === 0 ? (
         <div className="review-empty">
           No reviews found. Be the first to review this tour!

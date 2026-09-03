@@ -107,7 +107,12 @@ export default function MyReviews() {
   }
 
   if (loading) {
-    return <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>Loading your reviews...</div>
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', gap: '0.75rem' }}>
+        <div className="page-spinner page-spinner--sm" />
+        <span style={{ fontSize: '0.9rem', color: '#94a3b8' }}>Loading your reviews…</span>
+      </div>
+    )
   }
 
   if (error) {

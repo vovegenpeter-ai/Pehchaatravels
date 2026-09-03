@@ -78,8 +78,9 @@ export default function MyBookingsPage() {
         )}
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#718096' }}>
-            Loading your bookings…
+          <div className="page-spinner-wrap" style={{ minHeight: '40vh' }}>
+            <div className="page-spinner" />
+            <p className="page-spinner-text">Loading your bookings…</p>
           </div>
         ) : bookings.length === 0 ? (
           <div style={{
