@@ -34,6 +34,9 @@ export async function DELETE(
     const user = await prisma.user.findUnique({ where: { id } })
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
+    // Manual cascade delete for MongoDB
+    await prisma.userPasswordResetToken.deleteMany({ where: { userId: id } })
+    await prisma.review.deleteMany({ where: { userId: id } })
     await prisma.user.delete({ where: { id } })
     return NextResponse.json({ success: true })
   } catch (err) {

@@ -12,6 +12,9 @@ export async function DELETE(
     return NextResponse.json({ error: 'Booking not found.' }, { status: 404 })
   }
 
+  // Manual cascade delete for MongoDB
+  await prisma.orderItem.deleteMany({ where: { orderId: id } })
+  await prisma.transaction.deleteMany({ where: { orderId: id } })
   await prisma.order.delete({ where: { id } })
 
   return NextResponse.json({ success: true })

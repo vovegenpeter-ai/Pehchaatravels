@@ -3,11 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model Admin {
-  id              String              @id @default(cuid())
+  id              String              @id @default(cuid()) @map("_id")
   email           String              @unique
   passwordHash    String
   name            String
@@ -17,26 +18,23 @@ model Admin {
 }
 
 model PasswordResetToken {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid()) @map("_id")
   token     String   @unique
   adminId   String
-  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  admin     Admin    @relation(fields: [adminId], references: [id])
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
-
-  @@index([token])
-  @@index([adminId])
 }
 
 model Category {
-  id               String        @id @default(cuid())
+  id               String        @id @default(cuid()) @map("_id")
   name             String
   slug             String        @unique
   description      String?
   shortDescription String?
   longDescription  String?
-  type             CategoryType
+  type             String        @default("DESTINATION")
   published        Boolean       @default(true)
   image            String?
   orderNumber      Int           @default(0)
@@ -48,14 +46,14 @@ model Category {
 }
 
 model Tour {
-  id               String            @id @default(cuid())
+  id               String            @id @default(cuid()) @map("_id")
   slug             String            @unique
   name             String
   shortDescription String
   fullDescription  String
   destination      String
   location         String?
-  price            Decimal           @db.Decimal(10, 2)
+  price            Float
   duration         String
   days             Int
   startDate        String?
@@ -65,8 +63,8 @@ model Tour {
   meetingPoint     String?
   itinerary        Json?
   faqs             Json?
-  includedServices String[]          @default([])
-  excludedServices String[]          @default([])
+  includedServices String[]
+  excludedServices String[]
   maxGuests        Int?
   rating           Float             @default(0)
   bannerImage      String
@@ -76,23 +74,23 @@ model Tour {
   categoryId       String?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
-  destinations     DestinationTour[]
   category         Category?         @relation(fields: [categoryId], references: [id])
   images           TourImage[]
   reviews          Review[]
+  destinationTours DestinationTour[]
 }
 
 model TourImage {
-  id     String  @id @default(cuid())
+  id     String  @id @default(cuid()) @map("_id")
   url    String
   alt    String?
   order  Int     @default(0)
   tourId String
-  tour   Tour    @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tour   Tour    @relation(fields: [tourId], references: [id])
 }
 
 model Hotel {
-  id               String             @id @default(cuid())
+  id               String             @id @default(cuid()) @map("_id")
   slug             String             @unique
   name             String
   shortDescription String?
@@ -100,13 +98,13 @@ model Hotel {
   description      String
   location         String
   address          String?
-  pricePerNight    Decimal            @db.Decimal(10, 2)
+  pricePerNight    Float
   rating           Float              @default(0)
   contactPhone     String?
   contactEmail     String?
   checkInTime      String?
   checkOutTime     String?
-  amenities        String[]           @default([])
+  amenities        String[]
   roomTypes        Json?
   bannerImage      String
   published        Boolean            @default(true)
@@ -114,22 +112,22 @@ model Hotel {
   categoryId       String?
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
-  destinations     DestinationHotel[]
   category         Category?          @relation(fields: [categoryId], references: [id])
   images           HotelImage[]
+  destinationHotels DestinationHotel[]
 }
 
 model HotelImage {
-  id      String  @id @default(cuid())
+  id      String  @id @default(cuid()) @map("_id")
   url     String
   alt     String?
   order   Int     @default(0)
   hotelId String
-  hotel   Hotel   @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  hotel   Hotel   @relation(fields: [hotelId], references: [id])
 }
 
 model Destination {
-  id               String             @id @default(cuid())
+  id               String             @id @default(cuid()) @map("_id")
   slug             String             @unique
   name             String
   shortDescription String?
@@ -149,25 +147,27 @@ model Destination {
 }
 
 model DestinationTour {
+  id            String      @id @default(cuid()) @map("_id")
   destinationId String
   tourId        String
-  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
-  tour          Tour        @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  destination   Destination @relation(fields: [destinationId], references: [id])
+  tour          Tour        @relation(fields: [tourId], references: [id])
 
-  @@id([destinationId, tourId])
+  @@unique([destinationId, tourId])
 }
 
 model DestinationHotel {
+  id            String      @id @default(cuid()) @map("_id")
   destinationId String
   hotelId       String
-  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
-  hotel         Hotel       @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  destination   Destination @relation(fields: [destinationId], references: [id])
+  hotel         Hotel       @relation(fields: [hotelId], references: [id])
 
-  @@id([destinationId, hotelId])
+  @@unique([destinationId, hotelId])
 }
 
 model Testimonial {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid()) @map("_id")
   name      String
   text      String
   rating    Int      @default(5)
@@ -179,25 +179,19 @@ model Testimonial {
 }
 
 model ContactMessage {
-  id        String               @id @default(cuid())
+  id        String   @id @default(cuid()) @map("_id")
   name      String
   email     String
   phone     String?
   subject   String
   message   String
-  status    ContactMessageStatus @default(NEW)
-  createdAt DateTime             @default(now())
-  updatedAt DateTime             @updatedAt
-}
-
-enum ContactMessageStatus {
-  NEW
-  IN_PROGRESS
-  RESOLVED
+  status    String   @default("NEW")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model TripRequest {
-  id          String           @id @default(cuid())
+  id          String   @id @default(cuid()) @map("_id")
   name        String
   email       String
   phone       String
@@ -207,55 +201,45 @@ model TripRequest {
   endDate     String
   budget      String?
   message     String?
-  status      TripRequestStatus @default(PENDING)
+  status      String   @default("PENDING")
   adminNotes  String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-}
-
-enum TripRequestStatus {
-  PENDING
-  CONTACTED
-  CONFIRMED
-  CANCELLED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model User {
-  id              String                @id @default(cuid())
+  id              String                @id @default(cuid()) @map("_id")
   fullName        String
   email           String                @unique
   phone           String                @unique
   passwordHash    String
   avatar          String?
-  blocked         Boolean             @default(false)
+  blocked         Boolean               @default(false)
   createdAt       DateTime              @default(now())
   resetTokens     UserPasswordResetToken[]
   reviews         Review[]
 }
 
 model UserPasswordResetToken {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid()) @map("_id")
   token     String   @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
-
-  @@index([token])
-  @@index([userId])
 }
 
 model Order {
-  id            String      @id @default(cuid())
+  id            String      @id @default(cuid()) @map("_id")
   fullName      String
   email         String
   phone         String
   address       String?
   city          String?
   notes         String?
-  totalAmount   Decimal     @db.Decimal(10, 2)
-  status        OrderStatus @default(PENDING)
+  totalAmount   Float
+  status        String      @default("PENDING")
   createdAt     DateTime    @default(now())
   items         OrderItem[]
   transactions  Transaction[]
@@ -263,107 +247,71 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
+  id        String  @id @default(cuid()) @map("_id")
   tourId    String
   tourName  String
   tourImage String?
-  price     Decimal @db.Decimal(10, 2)
+  price     Float
   quantity  Int
   orderId   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-}
-
-enum OrderStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-  COMPLETED
-}
-
-enum CategoryType {
-  TOUR
-  HOTEL
-  DESTINATION
-  ACTIVITY
-}
-
-enum TransactionStatus {
-  Pending
-  Successful
-  Failed
-  Refunded
+  order     Order   @relation(fields: [orderId], references: [id])
 }
 
 model Transaction {
-  id            String            @id @default(cuid())
+  id            String   @id @default(cuid()) @map("_id")
   orderId       String?
   tracker       String?
   customerName  String
   customerEmail String
-  amount        Int               // amount in PKR
-  status        TransactionStatus @default(Pending)
+  amount        Int
+  status        String   @default("Pending")
   method        String
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-  // Relations
-  order         Order?            @relation(fields: [orderId], references: [id])
-
-  @@index([tracker])
-  @@index([orderId])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  order         Order?   @relation(fields: [orderId], references: [id])
 }
 
 model NewsletterSubscriber {
-  id              String    @id @default(cuid())
+  id              String    @id @default(cuid()) @map("_id")
   email           String    @unique
-  status          String    @default("active") // active, unsubscribed
+  status          String    @default("active")
   subscribedAt    DateTime  @default(now())
   unsubscribedAt  DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-
-  @@index([email])
-  @@index([status])
 }
 
 model Newsletter {
-  id              String    @id @default(cuid())
+  id              String    @id @default(cuid()) @map("_id")
   subject         String
   title           String
   content         String
   image           String?
   ctaText         String?
   ctaUrl          String?
-  status          String    @default("draft") // draft, sending, sent, failed
+  status          String    @default("draft")
   sentAt          DateTime?
   recipientCount  Int       @default(0)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-
-  @@index([status])
-  @@index([sentAt])
 }
 
 model Review {
-  id            String   @id @default(cuid())
+  id            String   @id @default(cuid()) @map("_id")
   userId        String
   orderId       String?
   tourId        String
-  rating        Float    // 0.5 - 5.0 (supports half-stars)
+  rating        Float
   comment       String
-  images        String[] @default([])
-  status        String   @default("pending") // pending, approved, rejected
+  images        String[]
+  status        String   @default("pending")
   adminResponse String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  // Relations
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  order         Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
-  tour          Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id])
+  order         Order?   @relation(fields: [orderId], references: [id])
+  tour          Tour     @relation(fields: [tourId], references: [id])
 
-  @@unique([userId, tourId]) // One review per user per tour
-  @@index([userId])
-  @@index([tourId])
-  @@index([status])
-  @@index([createdAt])
+  @@unique([userId, tourId])
 }

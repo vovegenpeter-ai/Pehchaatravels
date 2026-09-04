@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     const where: any = {}
 
     if (search) {
-      where.email = { contains: search, mode: 'insensitive' }
+      where.email = { contains: search }
     }
 
     if (status) {

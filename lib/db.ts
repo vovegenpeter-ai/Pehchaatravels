@@ -162,10 +162,17 @@ export async function getPublishedDestinations() {
 export async function getDestinationCategories() {
   const categories = await prisma.category.findMany({
     where: { published: true },
-    include: {
-      _count: { select: { destinations: { where: { published: true } } } },
-    },
   })
+  // MongoDB doesn't support _count with nested filters — count manually
+  const destinationCounts = await prisma.destination.groupBy({
+    by: ['categoryId'],
+    where: { published: true, categoryId: { not: null } },
+    _count: true,
+  })
+  const countMap = new Map<string, number>()
+  for (const dc of destinationCounts) {
+    if (dc.categoryId) countMap.set(dc.categoryId, dc._count)
+  }
   const mapped = categories.map((c) => ({
     id: c.id,
     slug: c.slug,
@@ -175,7 +182,7 @@ export async function getDestinationCategories() {
     longDescription: c.longDescription,
     image: c.image,
     orderNumber: c.orderNumber ?? 0,
-    destinationCount: c._count.destinations,
+    destinationCount: countMap.get(c.id) ?? 0,
     createdAt: c.createdAt,
   }))
   // Sort: custom order (orderNumber > 0) first ascending, then unordered (0) by newest
@@ -192,9 +199,6 @@ export async function getDestinationCategories() {
 export async function getCategoryBySlug(slug: string) {
   const category = await prisma.category.findFirst({
     where: { slug, published: true },
-    include: {
-      _count: { select: { destinations: { where: { published: true } } } },
-    },
   })
   if (!category) return null
   const destinations = await prisma.destination.findMany({
@@ -216,7 +220,7 @@ export async function getCategoryBySlug(slug: string) {
     longDescription: category.longDescription,
     image: category.image,
     orderNumber: category.orderNumber,
-    destinationCount: category._count.destinations,
+    destinationCount: destinations.length,
     destinations: destinations.map(mapDestination),
   }
 }

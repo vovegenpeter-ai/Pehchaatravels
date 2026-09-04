@@ -33,16 +33,16 @@ export async function POST(request) {
     // Hash the new password and update the user
     const passwordHash = await bcrypt.hash(password, 10)
 
-    await prisma.$transaction([
-      prisma.user.update({
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
         where: { id: resetRecord.userId },
         data: { passwordHash },
-      }),
-      prisma.userPasswordResetToken.update({
+      })
+      await tx.userPasswordResetToken.update({
         where: { id: resetRecord.id },
         data: { used: true },
-      }),
-    ])
+      })
+    })
 
     return NextResponse.json({ message: 'Password has been reset successfully' })
   } catch (error) {

@@ -45,6 +45,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  // Manual cascade delete for MongoDB
+  await prisma.destinationTour.deleteMany({ where: { destinationId: id } })
+  await prisma.destinationHotel.deleteMany({ where: { destinationId: id } })
   await prisma.destination.delete({ where: { id } })
   revalidatePath('/')
   revalidatePath('/places')

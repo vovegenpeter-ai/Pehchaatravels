@@ -12,11 +12,9 @@ export async function GET(request: Request) {
       ...(search
         ? {
             OR: [
-              { fullName: { contains: search, mode: 'insensitive' } },
-              { email: { contains: search, mode: 'insensitive' } },
-              { phone: { contains: search, mode: 'insensitive' } },
-              { id: { contains: search, mode: 'insensitive' } },
-              { items: { some: { tourName: { contains: search, mode: 'insensitive' } } } },
+              { fullName: { contains: search } },
+              { email: { contains: search } },
+              { phone: { contains: search } },
             ],
           }
         : {}),

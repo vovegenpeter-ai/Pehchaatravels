@@ -1,16 +1,12 @@
 import bcrypt from 'bcryptjs'
 import { PrismaClient } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
-import { Pool } from 'pg'
 import 'dotenv/config'
 import { defaultTours, defaultHotels, popularPlaces, reviews } from '../lib/initialData.js'
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL })
-const adapter = new PrismaPg(pool)
-const prisma = new PrismaClient({ adapter })
+const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Seeding database...')
+  console.log('Seeding MongoDB database...')
 
   const passwordHash = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'Admin@123', 10)
   await prisma.admin.upsert({
@@ -183,67 +179,70 @@ async function main() {
   })
 
   for (const [index, tour] of defaultTours.entries()) {
-    await prisma.tour.upsert({
-      where: { slug: tour.slug },
-      update: {},
-      create: {
-        slug: tour.slug,
-        name: tour.name,
-        shortDescription: tour.description,
-        fullDescription: tour.fullDescription || tour.description,
-        destination: tour.destination,
-        location: tour.destination,
-        price: tour.price,
-        duration: tour.duration || `${tour.days} Days`,
-        days: tour.days,
-        startDate: tour.startDate,
-        startTime: tour.startTime,
-        endDate: tour.endDate,
-        endTime: tour.endTime,
-        meetingPoint: tour.meetingPoint,
-        itinerary: tour.itinerary ?? [],
-        includedServices: tour.highlights ?? [],
-        excludedServices: ['Personal expenses', 'Travel insurance', 'Tips'],
-        maxGuests: 20,
-        rating: tour.rating,
-        bannerImage: tour.image,
-        published: true,
-        featured: index < 3,
-        latest: index >= 2,
-        categoryId: tourCategory.id,
-        images: {
-          create: [{ url: tour.image, alt: tour.name, order: 0 }],
+    // Create tour without nested image creation — handle images separately for MongoDB
+    const existingTour = await prisma.tour.findUnique({ where: { slug: tour.slug } })
+    if (!existingTour) {
+      const createdTour = await prisma.tour.create({
+        data: {
+          slug: tour.slug,
+          name: tour.name,
+          shortDescription: tour.description,
+          fullDescription: tour.fullDescription || tour.description,
+          destination: tour.destination,
+          location: tour.destination,
+          price: tour.price,
+          duration: tour.duration || `${tour.days} Days`,
+          days: tour.days,
+          startDate: tour.startDate,
+          startTime: tour.startTime,
+          endDate: tour.endDate,
+          endTime: tour.endTime,
+          meetingPoint: tour.meetingPoint,
+          itinerary: tour.itinerary ?? [],
+          includedServices: tour.highlights ?? [],
+          excludedServices: ['Personal expenses', 'Travel insurance', 'Tips'],
+          maxGuests: 20,
+          rating: tour.rating,
+          bannerImage: tour.image,
+          published: true,
+          featured: index < 3,
+          latest: index >= 2,
+          categoryId: tourCategory.id,
         },
-      },
-    })
+      })
+      await prisma.tourImage.create({
+        data: { url: tour.image, alt: tour.name, order: 0, tourId: createdTour.id },
+      })
+    }
   }
 
   for (const [index, hotel] of defaultHotels.entries()) {
     const slug = hotel.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-    await prisma.hotel.upsert({
-      where: { slug },
-      update: {},
-      create: {
-        slug,
-        name: hotel.name,
-        description: hotel.description,
-        location: hotel.location,
-        address: hotel.location,
-        pricePerNight: hotel.pricePerNight,
-        rating: hotel.rating,
-        checkInTime: '2:00 PM',
-        checkOutTime: '12:00 PM',
-        amenities: ['WiFi', 'Parking', 'Restaurant', 'Room Service'],
-        roomTypes: [{ name: 'Standard', price: hotel.pricePerNight, description: 'Comfortable room with mountain views' }],
-        bannerImage: hotel.image,
-        published: true,
-        featured: index < 3,
-        categoryId: hotelCategory.id,
-        images: {
-          create: [{ url: hotel.image, alt: hotel.name, order: 0 }],
+    const existingHotel = await prisma.hotel.findUnique({ where: { slug } })
+    if (!existingHotel) {
+      const createdHotel = await prisma.hotel.create({
+        data: {
+          slug,
+          name: hotel.name,
+          description: hotel.description,
+          location: hotel.location,
+          address: hotel.location,
+          pricePerNight: hotel.pricePerNight,
+          rating: hotel.rating,
+          checkInTime: '2:00 PM',
+          checkOutTime: '12:00 PM',
+          amenities: ['WiFi', 'Parking', 'Restaurant', 'Room Service'],
+          roomTypes: [{ name: 'Standard', price: hotel.pricePerNight, description: 'Comfortable room with mountain views' }],
+          bannerImage: hotel.image,
+          published: true,
+          featured: index < 3,
+          categoryId: hotelCategory.id,
         },
-      },
-    })
+      })
+      await prisma.hotelImage.create({
+        data: { url: hotel.image, alt: hotel.name, order: 0, hotelId: createdHotel.id },
+      })
+    }
   }
 
   /* Map destinations to appropriate categories */
@@ -311,5 +310,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect()
-    await pool.end()
   })
