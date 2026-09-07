@@ -9,11 +9,12 @@ import FaqBuilder from '@/components/admin/FaqBuilder'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
+import { imageUrl } from '@/lib/cloudinaryUrl'
 
 const emptyForm = {
   name: '', slug: '', shortDescription: '', fullDescription: '', destination: '',
   location: '', price: '', startDate: '', startTime: '',
-  endDate: '', endTime: '', meetingPoint: '',  images: [],
+  endDate: '', endTime: '', meetingPoint: '',  images: [], // [{ url, publicId }] — uploaded via Cloudinary
   includedServices: '', excludedServices: '', maxGuests: '', rating: '4.5',
   published: true, featured: false,
   itinerary: [],
@@ -39,7 +40,9 @@ export default function TourForm({ tourId = null }) {
             fullDescription: t.fullDescription, destination: t.destination,
             location: t.location || '', price: String(t.price), startDate: t.startDate || '', startTime: t.startTime || '',
             endDate: t.endDate || '', endTime: t.endTime || '', meetingPoint: t.meetingPoint || '',
-            images: t.images || [],
+            images: Array.isArray(t.imagesMeta) && t.imagesMeta.length > 0
+              ? t.imagesMeta
+              : (t.images || []).map((url) => ({ url, publicId: null })),
             includedServices: (t.includedServices || []).join('\n'),
             excludedServices: (t.excludedServices || []).join('\n'),
             maxGuests: t.maxGuests ? String(t.maxGuests) : '',
@@ -88,8 +91,12 @@ export default function TourForm({ tourId = null }) {
         endDate: form.endDate,
         endTime: form.endTime,
         meetingPoint: form.meetingPoint,
-        bannerImage: form.images[0] || '',
-        images: form.images,
+        bannerImage: form.images[0] ? imageUrl(form.images[0]) : '',
+        bannerImagePublicId: form.images[0]?.publicId || null,
+        images: form.images.map((img) => ({
+          url: imageUrl(img),
+          publicId: img?.publicId || null,
+        })),
         includedServices: form.includedServices.split('\n').map((s) => s.trim()).filter(Boolean),
         excludedServices: form.excludedServices.split('\n').map((s) => s.trim()).filter(Boolean),
         maxGuests: form.maxGuests ? Number(form.maxGuests) : undefined,

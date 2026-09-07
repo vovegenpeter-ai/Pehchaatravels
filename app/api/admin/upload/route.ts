@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
-import { writeFile } from 'fs/promises'
-import path from 'path'
+import { uploadImageBuffer, deleteCloudinaryImage } from '@/lib/cloudinary'
 
 const MAX_SIZE = 5 * 1024 * 1024
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads')
 
 export async function POST(request: Request) {
   try {
@@ -22,16 +20,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'File too large (max 5MB)' }, { status: 400 })
     }
 
-    /* Save file to public/uploads/ and return the URL path */
-    const ext = file.name.split('.').pop() || 'jpg'
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+    /* Upload the image to Cloudinary and return the URL + public ID.
+       The image file itself is never stored in MongoDB or on the server. */
     const buffer = Buffer.from(await file.arrayBuffer())
-    await writeFile(path.join(UPLOAD_DIR, filename), buffer)
+    const { url, publicId } = await uploadImageBuffer(buffer)
 
-    const url = `/uploads/${filename}`
-    return NextResponse.json({ url })
+    return NextResponse.json({ url, publicId })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Upload failed'
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const body = await request.json().catch(() => null)
+    const publicId = body?.publicId
+    if (!publicId || typeof publicId !== 'string') {
+      return NextResponse.json({ error: 'No public ID provided' }, { status: 400 })
+    }
+    await deleteCloudinaryImage(publicId)
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Delete failed'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

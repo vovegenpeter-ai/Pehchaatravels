@@ -3,15 +3,19 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploadField from '@/components/admin/ImageUploadField'
+import MultiImageUpload from '@/components/admin/MultiImageUpload'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
+import { imageUrl } from '@/lib/cloudinaryUrl'
 
 const emptyForm = {
   name: '', slug: '', shortDescription: '', fullDescription: '', location: '', address: '',
   pricePerNight: '', rating: '4.5', contactPhone: '', contactEmail: '',
   checkInTime: '2:00 PM', checkOutTime: '12:00 PM',
-  bannerImage: '', extraImages: '', amenities: '', roomTypes: '',
+  bannerImage: null, // { url, publicId } — uploaded via Cloudinary
+  extraImages: [], // [{ url, publicId }] — uploaded via Cloudinary
+  amenities: '', roomTypes: '',
   published: true, featured: false, categoryId: '',
 }
 
@@ -50,8 +54,10 @@ export default function HotelForm({ hotelId = null }) {
             contactEmail: h.contactEmail || '',
             checkInTime: h.checkInTime || '2:00 PM',
             checkOutTime: h.checkOutTime || '12:00 PM',
-            bannerImage: h.bannerImage,
-            extraImages: (h.images || []).filter((i) => i !== h.bannerImage).join('\n'),
+            bannerImage: h.bannerImage ? { url: h.bannerImage, publicId: h.bannerImagePublicId || null } : null,
+            extraImages: Array.isArray(h.imagesMeta) && h.imagesMeta.length > 0
+              ? h.imagesMeta.filter((img) => img.url !== h.bannerImage)
+              : (h.images || []).filter((i) => i !== h.bannerImage).map((url) => ({ url, publicId: null })),
             amenities: (h.amenities || []).join('\n'),
             roomTypes: JSON.stringify(h.roomTypes || [], null, 2),
             published: h.published,
@@ -96,7 +102,7 @@ export default function HotelForm({ hotelId = null }) {
 
     setLoading(true)
     try {
-      const extraImages = form.extraImages.split('\n').map((s) => s.trim()).filter(Boolean)
+      const bannerImage = imageUrl(form.bannerImage)
       const payload = {
         name: form.name,
         slug: form.slug,
@@ -111,8 +117,15 @@ export default function HotelForm({ hotelId = null }) {
         contactEmail: form.contactEmail,
         checkInTime: form.checkInTime,
         checkOutTime: form.checkOutTime,
-        bannerImage: form.bannerImage,
-        images: [form.bannerImage, ...extraImages],
+        bannerImage,
+        bannerImagePublicId: form.bannerImage?.publicId || null,
+        images: [
+          { url: bannerImage, publicId: form.bannerImage?.publicId || null },
+          ...form.extraImages.map((img) => ({
+            url: imageUrl(img),
+            publicId: img?.publicId || null,
+          })),
+        ].filter((img) => img.url),
         amenities: form.amenities.split('\n').map((s) => s.trim()).filter(Boolean),
         roomTypes: form.roomTypes ? JSON.parse(form.roomTypes) : [],
         published: form.published,
@@ -187,7 +200,11 @@ export default function HotelForm({ hotelId = null }) {
         <div className="form-group"><label>Check-in Time</label><input name="checkInTime" value={form.checkInTime} onChange={handleChange} /></div>
         <div className="form-group"><label>Check-out Time</label><input name="checkOutTime" value={form.checkOutTime} onChange={handleChange} /></div>
         <ImageUploadField label="Banner Image" name="bannerImage" value={form.bannerImage} onChange={handleChange} />
-        <div className="form-group form-group--full"><label>Additional Image URLs (one per line)</label><textarea name="extraImages" rows={3} value={form.extraImages} onChange={handleChange} /></div>
+        <MultiImageUpload
+          label="Additional Images"
+          value={form.extraImages}
+          onChange={(imgs) => setForm((prev) => ({ ...prev, extraImages: imgs }))}
+        />
         <div className="form-group"><label>Amenities (one per line)</label><textarea name="amenities" rows={4} value={form.amenities} onChange={handleChange} /></div>
         <div className="form-group"><label>Room Types (JSON)</label><textarea name="roomTypes" rows={6} value={form.roomTypes} onChange={handleChange} placeholder='[{"name":"Standard","price":15000}]' /></div>
         <div className="form-group"><label>Category</label>

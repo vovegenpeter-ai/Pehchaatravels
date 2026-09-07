@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { getDestinationPath, getHotelPath } from '@/lib/pathUtils'
 import { formatPrice } from '@/lib/tourUtils'
+import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 
 export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
   const [activeTab, setActiveTab] = useState('places')
@@ -60,7 +61,7 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
                     <article key={place.id || place.slug} className="ph-card">
                       <Link href={destUrl} className="ph-card__image-wrap" tabIndex={-1}>
                         <img
-                          src={place.image || place.bannerImage}
+                          src={cloudinaryImg(place.image || place.bannerImage, { width: 600 })}
                           alt={place.name}
                           loading="lazy"
                           className="ph-card__image"
@@ -103,7 +104,7 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
                 <article key={hotel.id || hotel.slug} className="ph-card">
                   <Link href={hotelUrl} className="ph-card__image-wrap" tabIndex={-1}>
                     <img
-                      src={hotel.image || hotel.bannerImage}
+                      src={cloudinaryImg(hotel.image || hotel.bannerImage, { width: 600 })}
                       alt={hotel.name}
                       loading="lazy"
                       className="ph-card__image"

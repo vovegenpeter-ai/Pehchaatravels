@@ -8,7 +8,7 @@ import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 
 const emptyForm = {
-  name: '', slug: '', shortDescription: '', fullDescription: '', image: '',
+  name: '', slug: '', shortDescription: '', fullDescription: '', image: null, // { url, publicId } — uploaded via Cloudinary
   published: true, featured: false, orderNumber: 0, categoryId: '',
 }
 
@@ -38,7 +38,7 @@ export default function DestinationForm({ destinationId = null }) {
             slug: d.slug,
             shortDescription: d.shortDescription || d.description || '',
             fullDescription: d.fullDescription || d.description || '',
-            image: d.image,
+            image: d.image ? { url: d.image, publicId: d.imagePublicId || null } : null,
             published: d.published,
             featured: d.featured,
             orderNumber: d.orderNumber || 0,
@@ -89,7 +89,8 @@ export default function DestinationForm({ destinationId = null }) {
         shortDescription: form.shortDescription,
         fullDescription: form.fullDescription,
         description: form.fullDescription || form.shortDescription,
-        image: form.image,
+        image: form.image?.url || '',
+        imagePublicId: form.image?.publicId || null,
         published: form.published,
         featured: form.featured,
         orderNumber: form.orderNumber,

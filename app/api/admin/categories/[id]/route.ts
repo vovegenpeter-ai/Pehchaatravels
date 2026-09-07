@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { categorySchema, formatZodError } from '@/lib/validations'
+import { deleteCloudinaryImage } from '@/lib/cloudinary'
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -14,7 +15,21 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params
     const data = categorySchema.parse(await request.json())
-    const category = await prisma.category.update({ where: { id }, data })
+    const newPublicId = data.imagePublicId || null
+
+    const existing = await prisma.category.findUnique({ where: { id } })
+    const oldPublicId = existing?.imagePublicId || null
+
+    const category = await prisma.category.update({
+      where: { id },
+      data: { ...data, imagePublicId: newPublicId },
+    })
+
+    /* Replace: delete the old Cloudinary asset once the DB no longer references it. */
+    if (oldPublicId && oldPublicId !== newPublicId) {
+      await deleteCloudinaryImage(oldPublicId)
+    }
+
     revalidatePath('/')
     revalidatePath('/places')
     if (category.slug) revalidatePath(`/places/${category.slug}`)
@@ -27,7 +42,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  const existing = await prisma.category.findUnique({ where: { id } })
   await prisma.category.delete({ where: { id } })
+  /* Remove the Cloudinary asset after the record is gone. */
+  if (existing?.imagePublicId) await deleteCloudinaryImage(existing.imagePublicId)
   revalidatePath('/')
   revalidatePath('/places')
   return NextResponse.json({ success: true })

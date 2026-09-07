@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { getTourPath, formatPrice } from '@/lib/tourUtils'
 import { useCart } from '@/lib/CartContext'
+import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 
 export default function TourCard({ tour, dark }) {
   const { addItem } = useCart()
@@ -35,7 +36,7 @@ export default function TourCard({ tour, dark }) {
     <article className={`tour-card-ref ${dark ? 'tour-card-ref--dark' : ''}`}>
       <Link href={tourUrl} className="tour-card-ref__image-wrap" tabIndex={-1}>
         <img
-          src={tour.image || tour.bannerImage}
+          src={cloudinaryImg(tour.image || tour.bannerImage, { width: 600 })}
           alt={tour.name}
           loading="lazy"
           className="tour-card-ref__image"

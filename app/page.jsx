@@ -3,6 +3,7 @@ import TourCard from '@/components/TourCard'
 import PlacesAndHotelsSection from '@/components/PlacesAndHotelsSection'
 import { getFeaturedTours, getFeaturedDestinations, getFeaturedHotels, getDestinationCategories } from '@/lib/db'
 import { HERO_IMAGE, TRIP_IMAGE, defaultTours, popularPlaces, defaultHotels } from '@/lib/initialData'
+import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 
 export const revalidate = 60
 
@@ -98,7 +99,7 @@ export default async function HomePage() {
               {categories.map((cat) => (
                 <Link key={cat.id} href={`/places/${cat.slug}`} className="home-category-card">
                   <div className="home-category-card__image">
-                    <img src={cat.image || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&q=80'} alt={cat.name} loading="lazy" />
+                    <img src={cloudinaryImg(cat.image || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&q=80', { width: 600 })} alt={cat.name} loading="lazy" />
                     <div className="home-category-card__badge">
                       {cat.destinationCount} {cat.destinationCount === 1 ? 'place' : 'places'}
                     </div>

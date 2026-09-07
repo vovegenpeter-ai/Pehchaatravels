@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getDestinationCategories } from '@/lib/db'
 import { HERO_IMAGE } from '@/lib/initialData'
+import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 
 export const revalidate = 60
 
@@ -69,7 +70,7 @@ export default async function PlacesPage() {
                     className="places-category-card"
                   >
                     <div className="places-category-card__image">
-                      <img src={img} alt={category.name} loading="lazy" />
+                      <img src={cloudinaryImg(img, { width: 800 })} alt={category.name} loading="lazy" />
                       <div className="places-category-card__badge">
                         {category.destinationCount} {category.destinationCount === 1 ? 'place' : 'places'}
                       </div>

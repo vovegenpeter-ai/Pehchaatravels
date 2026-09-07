@@ -37,6 +37,7 @@ model Category {
   type             String        @default("DESTINATION")
   published        Boolean       @default(true)
   image            String?
+  imagePublicId    String?
   orderNumber      Int           @default(0)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
@@ -68,6 +69,7 @@ model Tour {
   maxGuests        Int?
   rating           Float             @default(0)
   bannerImage      String
+  bannerImagePublicId String?
   published        Boolean           @default(true)
   featured         Boolean           @default(false)
   latest           Boolean           @default(false)
@@ -81,12 +83,13 @@ model Tour {
 }
 
 model TourImage {
-  id     String  @id @default(cuid()) @map("_id")
-  url    String
-  alt    String?
-  order  Int     @default(0)
-  tourId String
-  tour   Tour    @relation(fields: [tourId], references: [id])
+  id       String  @id @default(cuid()) @map("_id")
+  url      String
+  publicId String?
+  alt      String?
+  order    Int     @default(0)
+  tourId   String
+  tour     Tour    @relation(fields: [tourId], references: [id])
 }
 
 model Hotel {
@@ -107,6 +110,7 @@ model Hotel {
   amenities        String[]
   roomTypes        Json?
   bannerImage      String
+  bannerImagePublicId String?
   published        Boolean            @default(true)
   featured         Boolean            @default(false)
   categoryId       String?
@@ -118,12 +122,13 @@ model Hotel {
 }
 
 model HotelImage {
-  id      String  @id @default(cuid()) @map("_id")
-  url     String
-  alt     String?
-  order   Int     @default(0)
-  hotelId String
-  hotel   Hotel   @relation(fields: [hotelId], references: [id])
+  id       String  @id @default(cuid()) @map("_id")
+  url      String
+  publicId String?
+  alt      String?
+  order    Int     @default(0)
+  hotelId  String
+  hotel    Hotel   @relation(fields: [hotelId], references: [id])
 }
 
 model Destination {
@@ -135,6 +140,7 @@ model Destination {
   description      String
   location         String
   image            String
+  imagePublicId    String?
   published        Boolean            @default(true)
   featured         Boolean            @default(false)
   orderNumber      Int                @default(0)

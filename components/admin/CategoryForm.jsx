@@ -15,7 +15,7 @@ const emptyForm = {
   longDescription: '',
   type: 'DESTINATION',
   published: true,
-  image: '',
+  image: null, // { url, publicId } — uploaded via Cloudinary
   orderNumber: 0,
 }
 
@@ -32,7 +32,12 @@ export default function CategoryForm({ categoryId = null }) {
       if (!categoryId) return
       try {
         const data = await fetchJson(`/api/admin/categories/${categoryId}`)
-        if (!cancelled) setForm((prev) => ({ ...prev, ...data }))
+        if (cancelled) return
+        setForm((prev) => ({
+          ...prev,
+          ...data,
+          image: data.image ? { url: data.image, publicId: data.imagePublicId || null } : null,
+        }))
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load category')
       } finally {
@@ -60,12 +65,17 @@ export default function CategoryForm({ categoryId = null }) {
     setError('')
     setLoading(true)
     try {
+      const payload = {
+        ...form,
+        image: form.image?.url || '',
+        imagePublicId: form.image?.publicId || null,
+      }
       const url = categoryId ? `/api/admin/categories/${categoryId}` : '/api/admin/categories'
       const method = categoryId ? 'PUT' : 'POST'
       await fetchJson(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       })
       router.push('/admin/categories')
     } catch (err) {
@@ -127,7 +137,7 @@ export default function CategoryForm({ categoryId = null }) {
         </div>
 
         <input type="hidden" name="type" value={form.type} />
-        <ImageUploadField label="Category Image" name="image" value={form.image || ''} onChange={handleChange} />
+        <ImageUploadField label="Category Image" name="image" value={form.image} onChange={handleChange} />
         <label className="checkbox-label">
           <input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published
         </label>

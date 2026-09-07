@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { hotelSchema, formatZodError } from '@/lib/validations'
 import { mapHotel } from '@/lib/mappers'
+import { normalizeCloudImage } from '@/lib/cloudinary'
 
 export async function GET() {
   const hotels = await prisma.hotel.findMany({
@@ -21,6 +22,7 @@ export async function POST(request: Request) {
     const body = await request.json()
     const data = hotelSchema.parse(body)
     const { images, ...hotelData } = data
+    const normalizedImages = images.map(normalizeCloudImage)
 
     const description = hotelData.fullDescription || hotelData.description || hotelData.shortDescription || ''
     const shortDescription = hotelData.shortDescription || hotelData.description || ''
@@ -32,10 +34,11 @@ export async function POST(request: Request) {
         description,
         shortDescription,
         fullDescription,
+        bannerImagePublicId: hotelData.bannerImagePublicId || null,
         pricePerNight: hotelData.pricePerNight,
         contactEmail: hotelData.contactEmail || null,
         images: {
-          create: images.map((url, index) => ({ url, order: index })),
+          create: normalizedImages.map((img, index) => ({ url: img.url, publicId: img.publicId, order: index })),
         },
       },
       include: { images: true, category: true },

@@ -4,6 +4,7 @@ import HotelCard from '@/components/HotelCard'
 import TourCard from '@/components/TourCard'
 import { SectionHeader } from '@/components/UI'
 import { getHotelBySlugOrId, getRelatedHotels } from '@/lib/db'
+import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 
 export const revalidate = 60
 
@@ -27,7 +28,7 @@ export default async function HotelDetailPage({ params }) {
 
   return (
     <>
-      <section className="tour-detail-hero" style={{ backgroundImage: `url(${hotel.image})` }}>
+      <section className="tour-detail-hero" style={{ backgroundImage: `url(${cloudinaryImg(hotel.image, { width: 1600 })})` }}>
         <div className="tour-detail-hero__overlay">
           <div className="container">
             <h1>{hotel.name}</h1>
@@ -91,7 +92,7 @@ export default async function HotelDetailPage({ params }) {
               <h2 className="tour-section-title">Gallery</h2>
               <div className="grid grid--3">
                 {hotel.images.map((img) => (
-                  <img key={img} src={img} alt={hotel.name} style={{ borderRadius: 'var(--radius)', width: '100%', height: '200px', objectFit: 'cover' }} />
+                  <img key={img} src={cloudinaryImg(img, { width: 800 })} alt={hotel.name} style={{ borderRadius: 'var(--radius)', width: '100%', height: '200px', objectFit: 'cover' }} />
                 ))}
               </div>
             </section>

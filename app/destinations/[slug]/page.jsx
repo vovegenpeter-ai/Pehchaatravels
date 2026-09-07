@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import TourCard from '@/components/TourCard'
 import HotelCard from '@/components/HotelCard'
 import { getDestinationBySlug, getRelatedDestinations } from '@/lib/db'
+import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 
 export const revalidate = 60
 
@@ -28,7 +29,7 @@ export default async function DestinationDetailPage({ params }) {
       {/* Hero Section */}
       <section
         className="place-detail-hero"
-        style={{ backgroundImage: `url(${destination.image})` }}
+        style={{ backgroundImage: `url(${cloudinaryImg(destination.image, { width: 1600 })})` }}
       >
         <div className="place-detail-hero__overlay">
           <div className="container">
@@ -158,7 +159,7 @@ export default async function DestinationDetailPage({ params }) {
                   className="places-related-card"
                 >
                   <div className="places-related-card__image">
-                    <img src={place.image} alt={place.name} loading="lazy" />
+                    <img src={cloudinaryImg(place.image, { width: 600 })} alt={place.name} loading="lazy" />
                   </div>
                   <div className="places-related-card__body">
                     <h3 className="places-related-card__name">{place.name}</h3>

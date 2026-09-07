@@ -39,6 +39,7 @@ export async function POST(request: Request) {
         description,
         shortDescription,
         fullDescription,
+        imagePublicId: destData.imagePublicId || null,
         tours: { create: tourIds.map((tourId) => ({ tourId })) },
         hotels: { create: hotelIds.map((hotelId) => ({ hotelId })) },
       },

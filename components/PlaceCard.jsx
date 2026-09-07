@@ -1,11 +1,12 @@
 import Link from 'next/link'
 import { getDestinationPath } from '@/lib/pathUtils'
+import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 
 export default function PlaceCard({ place, dark }) {
   return (
     <article className={`card place-card${dark ? ' card--dark' : ''}`}>
       <div className="card__image">
-        <img src={place.image} alt={place.name} loading="lazy" />
+        <img src={cloudinaryImg(place.image, { width: 600 })} alt={place.name} loading="lazy" />
       </div>
       <div className="card__body">
         <h3>{place.name}</h3>

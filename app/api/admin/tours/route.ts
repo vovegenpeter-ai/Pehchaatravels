@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { tourSchema, formatZodError } from '@/lib/validations'
 import { mapTour } from '@/lib/mappers'
+import { normalizeCloudImage } from '@/lib/cloudinary'
 
 export async function GET() {
   const tours = await prisma.tour.findMany({
@@ -21,13 +22,15 @@ export async function POST(request: Request) {
     const body = await request.json()
     const data = tourSchema.parse(body)
     const { images, ...tourData } = data
+    const normalizedImages = images.map(normalizeCloudImage)
 
     const tour = await prisma.tour.create({
       data: {
         ...tourData,
+        bannerImagePublicId: tourData.bannerImagePublicId || null,
         price: tourData.price,
         images: {
-          create: images.map((url, index) => ({ url, order: index })),
+          create: normalizedImages.map((img, index) => ({ url: img.url, publicId: img.publicId, order: index })),
         },
       },
       include: { images: true, category: true },

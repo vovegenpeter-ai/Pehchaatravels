@@ -6,6 +6,7 @@ import BookTourButton from '@/components/BookTourButton'
 import { SectionHeader } from '@/components/UI'
 import { getTourBySlugOrId, getRelatedTours } from '@/lib/db'
 import { formatPrice } from '@/lib/tourUtils'
+import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 import ReviewsList from '@/components/ReviewsList'
 import WriteReviewButton from '@/components/WriteReviewButton'
 import ReviewStatusBanner from '@/components/ReviewStatusBanner'
@@ -52,7 +53,7 @@ export default async function TourDetailPage({ params }) {
       {/* 1. Tour Banner */}
       <section
         className="tour-detail-hero"
-        style={{ backgroundImage: `url(${tour.image})` }}
+        style={{ backgroundImage: `url(${cloudinaryImg(tour.image, { width: 1600 })})` }}
       >
         <div className="tour-detail-hero__overlay">
           <div className="container">

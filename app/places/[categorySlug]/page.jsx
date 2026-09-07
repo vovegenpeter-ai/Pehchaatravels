@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import PlaceCard from '@/components/PlaceCard'
 import { getCategoryBySlug } from '@/lib/db'
 import { HERO_IMAGE } from '@/lib/initialData'
+import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 
 export const revalidate = 60
 
@@ -26,7 +27,7 @@ export default async function CategoryPage({ params }) {
       {/* Hero Section */}
       <section
         className="places-hero places-hero--category places-hero--no-overlay"
-        style={{ backgroundImage: `url(${category.image || HERO_IMAGE})` }}
+        style={{ backgroundImage: `url(${cloudinaryImg(category.image || HERO_IMAGE, { width: 1600 })})` }}
       >
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <div className="places-hero__content">

@@ -23,7 +23,9 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     const data = categorySchema.parse(body)
-    const category = await prisma.category.create({ data })
+    const category = await prisma.category.create({
+      data: { ...data, imagePublicId: data.imagePublicId || null },
+    })
     revalidatePath('/')
     revalidatePath('/places')
     return NextResponse.json(category, { status: 201 })

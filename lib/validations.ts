@@ -5,6 +5,15 @@ const imageField = z.string().min(1).refine(
   'Must be a valid URL, upload path, or uploaded image',
 )
 
+/** An image entry: a plain URL (legacy) or a { url, publicId } object from Cloudinary. */
+export const cloudImageEntry = z.union([
+  imageField,
+  z.object({
+    url: imageField,
+    publicId: z.string().optional().nullable().or(z.literal('')),
+  }),
+])
+
 export const tourSchema = z.object({
   name: z.string().min(3),
   slug: z.string().min(3).regex(/^[a-z0-9-]+$/),
@@ -35,7 +44,8 @@ export const tourSchema = z.object({
   maxGuests: z.number().int().positive().optional(),
   rating: z.number().min(0).max(5).default(0),
   bannerImage: imageField,
-  images: z.array(imageField).default([]),
+  bannerImagePublicId: z.string().optional().nullable().or(z.literal('')),
+  images: z.array(cloudImageEntry).default([]),
   published: z.boolean().default(true),
   featured: z.boolean().default(false),
   latest: z.boolean().default(false),
@@ -63,7 +73,8 @@ export const hotelSchema = z.object({
     description: z.string().optional(),
   })).optional(),
   bannerImage: imageField,
-  images: z.array(imageField).default([]),
+  bannerImagePublicId: z.string().optional().nullable().or(z.literal('')),
+  images: z.array(cloudImageEntry).default([]),
   published: z.boolean().default(true),
   featured: z.boolean().default(false),
   categoryId: z.string().optional().nullable(),
@@ -78,6 +89,7 @@ export const categorySchema = z.object({
   type: z.enum(['TOUR', 'HOTEL', 'DESTINATION', 'ACTIVITY']),
   published: z.boolean().default(true),
   image: z.string().optional().nullable().or(z.literal('')),
+  imagePublicId: z.string().optional().nullable().or(z.literal('')),
   orderNumber: z.number().int().default(0),
 })
 
@@ -89,6 +101,7 @@ export const destinationSchema = z.object({
   description: z.string().optional().or(z.literal('')),
   location: z.string().optional().default(''),
   image: imageField,
+  imagePublicId: z.string().optional().nullable().or(z.literal('')),
   published: z.boolean().default(true),
   featured: z.boolean().default(false),
   orderNumber: z.number().int().default(0),

@@ -2,6 +2,7 @@
 
 import { useRef, useCallback, useState, useEffect } from 'react'
 import { compressImage } from '@/lib/compressImage'
+import { fetchJson } from '@/lib/fetchJson'
 
 /* ─── Small sub-components ─── */
 function ToolbarBtn({ active, onClick, title, children, className = '' }) {
@@ -358,30 +359,32 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     emitChange()
   }, [emitChange])
 
-  /* ── Image upload (compressed base64) ── */
+  /* ── Image upload (Cloudinary URL instead of base64) ── */
   const handleImage = useCallback(async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
     if (!file.type.startsWith('image/')) { alert('Please upload a valid image file.'); return }
     if (file.size > 5 * 1024 * 1024) { alert('Image must be under 5 MB.'); return }
 
-    // Compress image before inserting to keep HTML size manageable
+    // Compress image before uploading to keep the payload small
     let uploadFile = file
     if (file.size > 200 * 1024) {
       uploadFile = await compressImage(file)
     }
 
-    const dataUrl = await new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result)
-      reader.onerror = () => reject(new Error('Failed to read file'))
-      reader.readAsDataURL(uploadFile)
-    })
+    try {
+      const formData = new FormData()
+      formData.append('file', uploadFile)
+      const data = await fetchJson('/api/admin/upload', { method: 'POST', body: formData })
 
-    editorRef.current?.focus()
-    document.execCommand('insertImage', false, dataUrl)
-    emitChange()
-    if (fileRef.current) fileRef.current.value = ''
+      editorRef.current?.focus()
+      document.execCommand('insertImage', false, data.url)
+      emitChange()
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Image upload failed')
+    } finally {
+      if (fileRef.current) fileRef.current.value = ''
+    }
   }, [emitChange])
 
   /* ── Handle paste: clean paste ── */
