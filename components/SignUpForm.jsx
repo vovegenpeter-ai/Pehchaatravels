@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { SuccessMessage, ErrorBanner } from '@/components/UI'
 import { fetchJson } from '@/lib/fetchJson'
+import { startNavigation } from '@/components/NavigationLoader'
 
 export default function SignUpForm() {
   const router = useRouter()
@@ -118,7 +119,12 @@ export default function SignUpForm() {
           I agree to the <Link href="/terms" target="_blank">Terms of Service</Link>
         </label>
         <button type="submit" className="btn btn--primary btn--full" disabled={submitting}>
-          {submitting ? 'Creating Account...' : 'Create Account'}
+          {submitting ? (
+            <span className="auth-submit-loading">
+              <span className="auth-submit-spinner" aria-hidden="true" />
+              Creating Account...
+            </span>
+          ) : 'Create Account'}
         </button>
       </form>
 
