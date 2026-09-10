@@ -1058,14 +1058,15 @@ ul { list-style: none; }
 }
 
 .ph-card__footer--hotel {
-  flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
 }
 
 .ph-card__price-wrap {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 
 .ph-card__price-label {
@@ -1084,6 +1085,7 @@ ul { list-style: none; }
 
 .ph-card__btn {
   width: auto;
+  flex-shrink: 0;
 }
 
 /* 4. Make Your Own Trip Promotional Banner Section */
@@ -3507,8 +3509,20 @@ ul { list-style: none; }
 
 .cart-item__quantity {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.cart-item__quantity label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cart-item__quantity-control {
+  display: flex;
   align-items: center;
-  gap: 0;
   border: 1.5px solid var(--beige-dark);
   border-radius: var(--radius-sm);
   overflow: hidden;
@@ -3516,16 +3530,16 @@ ul { list-style: none; }
 
 .cart-item__qty-btn {
   width: 36px;
-  height: 36px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--white);
   border: none;
+  color: var(--text);
   font-size: 1.1rem;
   cursor: pointer;
   transition: background var(--transition);
-  color: var(--text);
 }
 
 .cart-item__qty-btn:hover:not(:disabled) {
@@ -3537,17 +3551,34 @@ ul { list-style: none; }
   cursor: not-allowed;
 }
 
-.cart-item__qty-value {
-  width: 40px;
-  text-align: center;
-  font-weight: 600;
-  font-size: 0.95rem;
+.cart-item__quantity input {
+  width: 48px;
+  height: 38px;
+  padding: 0.45rem 0.25rem;
+  border: none;
   border-left: 1.5px solid var(--beige-dark);
   border-right: 1.5px solid var(--beige-dark);
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: var(--white);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  text-align: center;
+}
+
+.cart-item__quantity input::-webkit-outer-spin-button,
+.cart-item__quantity input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.cart-item__quantity input[type='number'] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.cart-item__quantity input:focus {
+  outline: 2px solid var(--green-light);
+  outline-offset: -2px;
 }
 
 .cart-item__price {

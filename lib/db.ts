@@ -242,7 +242,7 @@ export async function getDestinationsByCategory(categoryId: string) {
 
 export async function getFeaturedDestinations(limit = 8) {
   const destinations = await prisma.destination.findMany({
-    where: { published: true, featured: true },
+    where: { featured: true },
     take: limit,
     orderBy: { name: 'asc' },
   })

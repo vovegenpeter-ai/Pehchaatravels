@@ -27,7 +27,7 @@ export default function TourCard({ tour, dark }) {
   const displayPrice = tour.currency
     ? `${tour.currency}${formatPrice(tour.price)}`
     : tour.price < 5000
-      ? `$${formatPrice(tour.price)}`
+      ? formatPrice(tour.price)
       : `PKR ${formatPrice(tour.price)}`
 
   const tourUrl = getTourPath(tour)

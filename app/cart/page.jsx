@@ -69,35 +69,57 @@ export default function CartPage() {
                   <div className="cart-item__header">
                     <div>
                       <h3 className="cart-item__name">{item.name}</h3>
-                      <p className="cart-item__destination">📍 {item.destination}</p>
                     </div>
                     <button
                       type="button"
                       className="cart-item__remove"
                       onClick={() => handleRemove(item.id)}
                       aria-label="Remove item"
+                      title="Remove tour"
                     >
-                      ✕
+                      <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 6h18" />
+                        <path d="M8 6V4h8v2" />
+                        <path d="M19 6l-1 14H6L5 6" />
+                        <path d="M10 11v5M14 11v5" />
+                      </svg>
                     </button>
                   </div>
                   <div className="cart-item__footer">
                     <div className="cart-item__quantity">
-                      <button
-                        type="button"
-                        className="cart-item__qty-btn"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        disabled={item.quantity <= 1}
-                      >
-                        −
-                      </button>
-                      <span className="cart-item__qty-value">{item.quantity}</span>
-                      <button
-                        type="button"
-                        className="cart-item__qty-btn"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      >
-                        +
-                      </button>
+                      <label htmlFor={`seats-${item.id}`}>Number of Seats</label>
+                      <div className="cart-item__quantity-control">
+                        <button
+                          type="button"
+                          className="cart-item__qty-btn"
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          disabled={item.quantity <= 1}
+                          aria-label="Decrease number of seats"
+                        >
+                          −
+                        </button>
+                        <input
+                          id={`seats-${item.id}`}
+                          type="number"
+                          min="1"
+                          step="1"
+                          inputMode="numeric"
+                          value={item.quantity}
+                          onChange={(e) => {
+                            const seats = Number(e.target.value)
+                            if (Number.isInteger(seats) && seats >= 1) updateQuantity(item.id, seats)
+                          }}
+                          aria-label={`Number of Seats for ${item.name}`}
+                        />
+                        <button
+                          type="button"
+                          className="cart-item__qty-btn"
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          aria-label="Increase number of seats"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                     <div className="cart-item__price">
                       <span className="cart-item__unit-price">PKR {formatPrice(item.price)} × {item.quantity}</span>
