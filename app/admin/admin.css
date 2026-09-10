@@ -59,6 +59,38 @@ html, body.admin-page {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+@media (max-width: 768px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+    display: block;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .admin-nav-toggle {
+    display: flex;
+  }
+  .admin-nav-overlay.open {
+    display: block;
+  }
+  .admin-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 200;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 16px rgba(0,0,0,0.25);
+  }
+  .admin-nav.open {
+    transform: translateX(0);
+  }
+  .admin-main {
+    padding: 1rem !important;
+    padding-top: 68px !important;
+  }
+}
+
 .admin-nav::-webkit-scrollbar {
   width: 5px;
 }

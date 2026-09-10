@@ -49,13 +49,6 @@ export default function AdminLayout({ children }) {
     return () => el.removeEventListener('wheel', handleWheel)
   }, [isLogin])
 
-  useEffect(() => {
-    if (!isLogin && window.innerWidth <= 768) {
-      document.body.style.paddingLeft = '0'
-    }
-    return () => { document.body.style.paddingLeft = '' }
-  }, [isLogin])
-
   const toggleSidebar = () => setSidebarOpen((v) => !v)
   const closeSidebar = () => setSidebarOpen(false)
 
@@ -65,24 +58,20 @@ export default function AdminLayout({ children }) {
 
   return (
     <div className="admin-layout" ref={layoutRef}>
-      {window.innerWidth <= 768 && (
-        <>
-          <button
-            type="button"
-            className="admin-nav-toggle"
-            onClick={toggleSidebar}
-            aria-label="Toggle navigation menu"
-            aria-expanded={sidebarOpen}
-          >
-            <span aria-hidden="true">{sidebarOpen ? '×' : '☰'}</span>
-          </button>
-          <div
-            className={`admin-nav-overlay ${sidebarOpen ? 'open' : ''}`}
-            onClick={closeSidebar}
-            aria-hidden="true"
-          />
-        </>
-      )}
+      <button
+        type="button"
+        className="admin-nav-toggle"
+        onClick={toggleSidebar}
+        aria-label="Toggle navigation menu"
+        aria-expanded={sidebarOpen}
+      >
+        <span aria-hidden="true">{sidebarOpen ? '×' : '☰'}</span>
+      </button>
+      <div
+        className={`admin-nav-overlay ${sidebarOpen ? 'open' : ''}`}
+        onClick={closeSidebar}
+        aria-hidden="true"
+      />
       <AdminNav sidebarOpen={sidebarOpen} onCloseSidebar={closeSidebar} />
       <main className="admin-main">{children}</main>
     </div>

@@ -4,15 +4,12 @@ import { prisma } from '@/lib/prisma'
 import { socialMediaSchema, formatZodError } from '@/lib/validations'
 
 export async function GET() {
-  let record = await prisma.socialMedia.findFirst()
-  if (!record) {
-    record = await prisma.socialMedia.create({ data: {} })
-  }
+  const record = await prisma.socialMedia.findFirst()
   return NextResponse.json({
-    facebookUrl: record.facebookUrl ?? '',
-    instagramUrl: record.instagramUrl ?? '',
-    youtubeUrl: record.youtubeUrl ?? '',
-    tiktokUrl: record.tiktokUrl ?? '',
+    facebookUrl: record?.facebookUrl ?? '',
+    instagramUrl: record?.instagramUrl ?? '',
+    youtubeUrl: record?.youtubeUrl ?? '',
+    tiktokUrl: record?.tiktokUrl ?? '',
   })
 }
 

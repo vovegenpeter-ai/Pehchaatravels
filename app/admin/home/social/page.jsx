@@ -23,7 +23,16 @@ export default function SocialMediaSettingsPage() {
 
   useEffect(() => {
     fetchJson('/api/admin/home/social')
-      .then(setUrls)
+      .then((data) => {
+        if (data && typeof data === 'object') {
+          setUrls({
+            facebookUrl: data.facebookUrl || '',
+            instagramUrl: data.instagramUrl || '',
+            youtubeUrl: data.youtubeUrl || '',
+            tiktokUrl: data.tiktokUrl || '',
+          })
+        }
+      })
       .catch(() => setError('Failed to load social media settings'))
   }, [])
 

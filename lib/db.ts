@@ -296,11 +296,16 @@ export async function getFeaturedTestimonials(limit = 6) {
 }
 
 // Social media URLs for the Follow Us section
-/** Returns the single SocialMedia record (created automatically on first save). */
+/** Returns the single SocialMedia record (or empty defaults if none configured). */
 export async function getSocialMedia() {
-  let record = await prisma.socialMedia.findFirst()
+  const record = await prisma.socialMedia.findFirst()
   if (!record) {
-    record = await prisma.socialMedia.create({ data: {} })
+    return {
+      facebookUrl: '',
+      instagramUrl: '',
+      youtubeUrl: '',
+      tiktokUrl: '',
+    }
   }
   return {
     facebookUrl: record.facebookUrl ?? '',
