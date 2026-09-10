@@ -93,6 +93,7 @@ export default function Header() {
     try {
       await logout()
       setProfileOpen(false)
+        startNavigation()
       router.push('/')
       router.refresh()
     } catch {

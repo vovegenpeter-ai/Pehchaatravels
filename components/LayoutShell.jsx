@@ -3,20 +3,24 @@
 import { usePathname } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import NavigationLoader from '@/components/NavigationLoader'
 
 export default function LayoutShell({ children }) {
   const pathname = usePathname()
   const isAdmin = pathname?.startsWith('/admin')
 
   if (isAdmin) {
-    return <>{children}</>
+    return <><NavigationLoader />{children}</>
   }
 
   return (
-    <div className="layout">
-      <Header />
-      <main>{children}</main>
-      <Footer />
-    </div>
+    <>
+      <NavigationLoader />
+      <div className="layout">
+        <Header />
+        <main>{children}</main>
+        <Footer />
+      </div>
+    </>
   )
 }

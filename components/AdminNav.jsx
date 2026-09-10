@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { startNavigation } from '@/components/NavigationLoader'
 
 const links = [
   { href: '/admin', label: 'Dashboard' },
@@ -38,6 +39,7 @@ export default function AdminNav({ sidebarOpen = false, onCloseSidebar }) {
     try {
       await fetch('/api/admin/auth/logout', { method: 'POST' })
       setIsAuthenticated(false)
+      startNavigation()
       router.replace('/admin/login')
       router.refresh()
     } catch {

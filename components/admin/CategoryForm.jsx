@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
+import { startNavigation } from '@/components/NavigationLoader'
 import ImageUploadField from '@/components/admin/ImageUploadField'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 
@@ -77,6 +78,7 @@ export default function CategoryForm({ categoryId = null }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
+      startNavigation()
       router.push('/admin/categories')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Save failed')

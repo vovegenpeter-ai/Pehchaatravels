@@ -35,6 +35,7 @@ export default function SignInForm() {
 
       setSuccess(true)
       window.dispatchEvent(new Event('user-profile-updated'))
+        startNavigation()
       setTimeout(() => router.push('/'), 1500)
     } catch (err) {
       setError(err.message)

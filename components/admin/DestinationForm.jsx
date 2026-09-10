@@ -6,6 +6,7 @@ import ImageUploadField from '@/components/admin/ImageUploadField'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
+import { startNavigation } from '@/components/NavigationLoader'
 
 const emptyForm = {
   name: '', slug: '', shortDescription: '', fullDescription: '', image: null, // { url, publicId } — uploaded via Cloudinary
@@ -105,6 +106,7 @@ export default function DestinationForm({ destinationId = null }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
+      startNavigation()
       router.push('/admin/destinations')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Save failed')

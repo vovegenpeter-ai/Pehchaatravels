@@ -8,6 +8,7 @@ import RichTextEditor from '@/components/admin/RichTextEditor'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 import { imageUrl } from '@/lib/cloudinaryUrl'
+import { startNavigation } from '@/components/NavigationLoader'
 
 const emptyForm = {
   name: '', slug: '', shortDescription: '', fullDescription: '', location: '', address: '',
@@ -140,6 +141,7 @@ export default function HotelForm({ hotelId = null }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
+      startNavigation()
       router.push('/admin/hotels')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Save failed')

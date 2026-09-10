@@ -14,6 +14,7 @@ export default function BookTourButton({ tour }) {
     addItem(tour)
     setTimeout(() => {
       setAdding(false)
+        startNavigation()
       router.push('/cart')
     }, 400)
   }
