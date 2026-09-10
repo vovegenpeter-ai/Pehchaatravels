@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import TourCard from '@/components/TourCard'
 import PlacesAndHotelsSection from '@/components/PlacesAndHotelsSection'
-import { getFeaturedTours, getFeaturedDestinations, getFeaturedHotels, getDestinationCategories } from '@/lib/db'
+import { getFeaturedTours, getFeaturedDestinations, getFeaturedHotels, getDestinationCategories, getSocialMedia } from '@/lib/db'
 import { HERO_IMAGE, TRIP_IMAGE, defaultTours, popularPlaces, defaultHotels } from '@/lib/initialData'
 import { cloudinaryImg } from '@/lib/cloudinaryUrl'
+import FollowUsSection from '@/components/FollowUsSection'
 
 export const revalidate = 60
 
@@ -14,11 +15,12 @@ export default async function HomePage() {
 
   let categories = []
 
-  const [dbTours, dbPlaces, dbHotels, dbCategories] = await Promise.allSettled([
+  const [dbTours, dbPlaces, dbHotels, dbCategories, dbSocial] = await Promise.allSettled([
     getFeaturedTours(3),
     getFeaturedDestinations(4),
     getFeaturedHotels(4),
     getDestinationCategories(),
+    getSocialMedia(),
   ])
 
   categories = dbCategories.status === 'fulfilled' ? dbCategories.value : []
@@ -34,6 +36,8 @@ export default async function HomePage() {
   hotels = dbHotels.status === 'fulfilled' && dbHotels.value?.length >= 4
     ? dbHotels.value.slice(0, 4)
     : defaultHotels.slice(0, 4)
+
+  const socialMedia = dbSocial.status === 'fulfilled' ? dbSocial.value : null
 
   return (
     <div className="home-page-ref">
@@ -142,6 +146,11 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* 5. Follow Us Section */}
+      {socialMedia && (
+        <FollowUsSection socialMedia={socialMedia} />
+      )}
     </div>
   )
 }

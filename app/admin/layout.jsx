@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import AdminNav from '@/components/AdminNav'
 import '../globals.css'
 import './admin.css'
@@ -10,6 +10,7 @@ export default function AdminLayout({ children }) {
   const pathname = usePathname()
   const isLogin = pathname === '/admin/login'
   const layoutRef = useRef(null)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     if (!isLogin) {
@@ -48,13 +49,41 @@ export default function AdminLayout({ children }) {
     return () => el.removeEventListener('wheel', handleWheel)
   }, [isLogin])
 
+  useEffect(() => {
+    if (!isLogin && window.innerWidth <= 768) {
+      document.body.style.paddingLeft = '0'
+    }
+    return () => { document.body.style.paddingLeft = '' }
+  }, [isLogin])
+
+  const toggleSidebar = () => setSidebarOpen((v) => !v)
+  const closeSidebar = () => setSidebarOpen(false)
+
   if (isLogin) {
     return <>{children}</>
   }
 
   return (
     <div className="admin-layout" ref={layoutRef}>
-      <AdminNav />
+      {window.innerWidth <= 768 && (
+        <>
+          <button
+            type="button"
+            className="admin-nav-toggle"
+            onClick={toggleSidebar}
+            aria-label="Toggle navigation menu"
+            aria-expanded={sidebarOpen}
+          >
+            <span aria-hidden="true">{sidebarOpen ? '×' : '☰'}</span>
+          </button>
+          <div
+            className={`admin-nav-overlay ${sidebarOpen ? 'open' : ''}`}
+            onClick={closeSidebar}
+            aria-hidden="true"
+          />
+        </>
+      )}
+      <AdminNav sidebarOpen={sidebarOpen} onCloseSidebar={closeSidebar} />
       <main className="admin-main">{children}</main>
     </div>
   )

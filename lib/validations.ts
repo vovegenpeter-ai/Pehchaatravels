@@ -110,6 +110,23 @@ export const destinationSchema = z.object({
   hotelIds: z.array(z.string()).default([]),
 })
 
+// Social media URL — optional, but if provided must be a valid HTTP(S) URL
+const socialUrl = z.string()
+  .optional()
+  .nullable()
+  .or(z.literal(''))
+  .refine(
+    (v) => !v || v.startsWith('http://') || v.startsWith('https://'),
+    'Must be a valid URL starting with http:// or https://',
+  )
+
+export const socialMediaSchema = z.object({
+  facebookUrl: socialUrl,
+  instagramUrl: socialUrl,
+  youtubeUrl: socialUrl,
+  tiktokUrl: socialUrl,
+})
+
 export const adminLoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),

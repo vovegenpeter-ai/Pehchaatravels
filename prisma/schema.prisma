@@ -17,6 +17,16 @@ model Admin {
   resetTokens     PasswordResetToken[]
 }
 
+model SocialMedia {
+  id          String @id @default(cuid()) @map("_id")
+  facebookUrl String? @default("")
+  instagramUrl String? @default("")
+  youtubeUrl  String? @default("")
+  tiktokUrl   String? @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model PasswordResetToken {
   id        String   @id @default(cuid()) @map("_id")
   token     String   @unique

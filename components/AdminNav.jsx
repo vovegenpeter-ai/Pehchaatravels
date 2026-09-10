@@ -12,6 +12,7 @@ const links = [
   { href: '/admin/trip-requests', label: 'Trip Requests' },
   { href: '/admin/destinations', label: 'Explore Places' },
   { href: '/admin/home', label: 'Home Page' },
+  { href: '/admin/home/social', label: 'Follow Us' },
   { href: '/admin/hotels', label: 'Hotels' },
   { href: '/admin/newsletter', label: 'Newsletter' },
   { href: '/admin/reviews', label: 'Reviews' },
@@ -19,7 +20,7 @@ const links = [
   { href: '/admin/users', label: 'Users' },
 ]
 
-export default function AdminNav() {
+export default function AdminNav({ sidebarOpen = false, onCloseSidebar }) {
   const pathname = usePathname()
   const router = useRouter()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -44,15 +45,25 @@ export default function AdminNav() {
     }
   }
 
+  const handleNavClick = (href) => {
+    if (window.innerWidth <= 768 && onCloseSidebar) {
+      onCloseSidebar()
+    }
+  }
+
   return (
-    <aside className="admin-nav">
+    <aside className={`admin-nav ${sidebarOpen ? 'open' : ''}`}>
       <div className="admin-nav__brand">
-        <Link href="/admin" className="logo logo--admin">
+        <Link
+          href="/admin"
+          className="logo logo--admin"
+          onClick={() => handleNavClick('/admin')}
+        >
           <img src="/logo.png" alt="Pehchaan Travels" className="logo__img" />
         </Link>
       </div>
 
-      <nav>
+      <nav onClick={handleNavClick}>
         {links.map(({ href, label }) => (
           <Link
             key={href}
@@ -68,7 +79,7 @@ export default function AdminNav() {
         {isAuthenticated && (
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={() => { handleLogout(); if (window.innerWidth <= 768 && onCloseSidebar) onCloseSidebar(); }}
             className="btn btn--outline btn--sm admin-nav__logout"
             disabled={loggingOut}
           >

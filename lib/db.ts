@@ -295,6 +295,37 @@ export async function getFeaturedTestimonials(limit = 6) {
   return items.map(mapTestimonial)
 }
 
+// Social media URLs for the Follow Us section
+/** Returns the single SocialMedia record (created automatically on first save). */
+export async function getSocialMedia() {
+  let record = await prisma.socialMedia.findFirst()
+  if (!record) {
+    record = await prisma.socialMedia.create({ data: {} })
+  }
+  return {
+    facebookUrl: record.facebookUrl ?? '',
+    instagramUrl: record.instagramUrl ?? '',
+    youtubeUrl: record.youtubeUrl ?? '',
+    tiktokUrl: record.tiktokUrl ?? '',
+  }
+}
+
+export async function updateSocialMedia(data: {
+  facebookUrl?: string
+  instagramUrl?: string
+  youtubeUrl?: string
+  tiktokUrl?: string
+}) {
+  const existing = await prisma.socialMedia.findFirst()
+  if (!existing) {
+    return prisma.socialMedia.create({ data })
+  }
+  return prisma.socialMedia.update({
+    where: { id: existing.id },
+    data,
+  })
+}
+
 // Backward-compatible aliases for existing pages
 export const getTours = getPublishedTours
 export const getHotels = getPublishedHotels
