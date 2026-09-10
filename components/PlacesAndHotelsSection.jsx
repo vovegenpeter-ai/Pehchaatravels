@@ -74,7 +74,7 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
                         <div className="ph-card__divider" />
 
                         <div className="ph-card__footer">
-                          <Link href={destUrl} className="ph-card__btn">
+                          <Link href={destUrl} className="btn btn--primary btn--sm ph-card__btn">
                             View Details
                           </Link>
                         </div>
@@ -124,7 +124,7 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
                         </div>
                       )}
 
-                      <Link href={hotelUrl} className="ph-card__btn">
+                      <Link href={hotelUrl} className="btn btn--primary btn--sm ph-card__btn">
                         View Hotel
                       </Link>
                     </div>
