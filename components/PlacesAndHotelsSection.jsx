@@ -23,10 +23,6 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
               Explore featured destinations and stay at the best hotels across Pakistan.
             </p>
           </div>
-
-          <Link href={viewAllLink} className="places-hotels-header__link">
-            {viewAllLabel}
-          </Link>
         </div>
 
         {/* Tab Toggle Controls */}
@@ -138,6 +134,13 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
             })}
           </div>
         )}
+
+        {/* Centered View All CTA at the bottom */}
+        <div className="section-view-all-wrap">
+          <Link href={viewAllLink} className="btn-view-all">
+            {activeTab === 'places' ? 'View All Places' : 'View All Hotels'} <span aria-hidden="true">→</span>
+          </Link>
+        </div>
       </div>
     </section>
   )

@@ -73,15 +73,18 @@ export default async function HomePage() {
               <h2 className="best-tours-header__title">Discover Our Best Tours</h2>
               <p className="best-tours-header__subtitle">Handpicked experiences for the adventurous soul.</p>
             </div>
-            <Link href="/tours" className="best-tours-header__link">
-              View All <span aria-hidden="true">→</span>
-            </Link>
           </div>
 
           <div className="tour-cards-grid">
             {tours.map((tour) => (
               <TourCard key={tour.id || tour.slug} tour={tour} />
             ))}
+          </div>
+
+          <div className="section-view-all-wrap">
+            <Link href="/tours" className="btn-view-all">
+              View All Tours <span aria-hidden="true">→</span>
+            </Link>
           </div>
         </div>
       </section>
@@ -95,9 +98,6 @@ export default async function HomePage() {
                 <h2 className="best-tours-header__title">Explore Pakistan&apos;s Destinations</h2>
                 <p className="best-tours-header__subtitle">Browse categories to discover hidden gems across the country.</p>
               </div>
-              <Link href="/places" className="best-tours-header__link">
-                View All Places <span aria-hidden="true">→</span>
-              </Link>
             </div>
             <div className="home-categories-grid">
               {categories.map((cat) => (
@@ -117,6 +117,12 @@ export default async function HomePage() {
                   </div>
                 </Link>
               ))}
+            </div>
+
+            <div className="section-view-all-wrap">
+              <Link href="/places" className="btn-view-all">
+                View All Places <span aria-hidden="true">→</span>
+              </Link>
             </div>
           </div>
         </section>
@@ -148,9 +154,7 @@ export default async function HomePage() {
       </section>
 
       {/* 5. Follow Us Section */}
-      {socialMedia && (
-        <FollowUsSection socialMedia={socialMedia} />
-      )}
+      <FollowUsSection socialMedia={socialMedia} />
     </div>
   )
 }

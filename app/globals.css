@@ -491,6 +491,65 @@ ul { list-style: none; }
   transform: translateX(4px);
 }
 
+/* Centered View All button at bottom of homepage & catalog sections */
+.section-view-all-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 2.75rem;
+  padding-bottom: 0.5rem;
+}
+
+.btn-view-all {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: var(--green);
+  color: #ffffff !important;
+  font-size: 0.98rem;
+  font-weight: 700;
+  padding: 0.9rem 2.5rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--green);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(16, 38, 31, 0.18);
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.btn-view-all:hover {
+  background: var(--green-light);
+  border-color: var(--green-light);
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(16, 38, 31, 0.28);
+}
+
+.btn-view-all span {
+  transition: transform 0.2s ease;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.btn-view-all:hover span {
+  transform: translateX(4px);
+}
+
+@media (max-width: 768px) {
+  .section-view-all-wrap {
+    margin-top: 2rem;
+  }
+  .btn-view-all {
+    width: 100%;
+    max-width: 320px;
+    padding: 0.85rem 1.75rem;
+  }
+}
+
 /* 3 Tour Cards Grid */
 .tour-cards-grid {
   display: grid;

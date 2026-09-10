@@ -1,8 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { FaFacebook, FaInstagram, FaYoutube } from 'react-icons/fa'
-import { FaTiktok } from 'react-icons/fa'
+import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from 'react-icons/fa'
+
+const DEFAULT_LINKS = {
+  facebookUrl: 'https://facebook.com',
+  instagramUrl: 'https://instagram.com',
+  youtubeUrl: 'https://youtube.com',
+  tiktokUrl: 'https://tiktok.com',
+}
 
 const PLATFORMS = [
   {
@@ -32,12 +38,19 @@ const PLATFORMS = [
 ]
 
 export default function FollowUsSection({ socialMedia }) {
-  const links = PLATFORMS.filter((p) => socialMedia?.[p.key + 'Url'])
+  const merged = {
+    facebookUrl: socialMedia?.facebookUrl || DEFAULT_LINKS.facebookUrl,
+    instagramUrl: socialMedia?.instagramUrl || DEFAULT_LINKS.instagramUrl,
+    youtubeUrl: socialMedia?.youtubeUrl || DEFAULT_LINKS.youtubeUrl,
+    tiktokUrl: socialMedia?.tiktokUrl || DEFAULT_LINKS.tiktokUrl,
+  }
+
+  const links = PLATFORMS.filter((p) => merged[p.key + 'Url'])
 
   if (links.length === 0) return null
 
   return (
-    <section className="follow-us-section">
+    <section className="follow-us-section" id="follow-us">
       <div className="container">
         <div className="follow-us-header">
           <h2 className="follow-us-title">Follow Us</h2>
@@ -48,8 +61,7 @@ export default function FollowUsSection({ socialMedia }) {
         </div>
         <div className="follow-us-links">
           {links.map(({ key, label, Icon, color }) => {
-            const urlKey = key + 'Url'
-            const href = socialMedia?.[urlKey]
+            const href = merged[key + 'Url']
             if (!href) return null
             return (
               <Link
