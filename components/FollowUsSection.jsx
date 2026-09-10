@@ -3,13 +3,6 @@
 import Link from 'next/link'
 import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from 'react-icons/fa'
 
-const DEFAULT_LINKS = {
-  facebookUrl: 'https://facebook.com',
-  instagramUrl: 'https://instagram.com',
-  youtubeUrl: 'https://youtube.com',
-  tiktokUrl: 'https://tiktok.com',
-}
-
 const PLATFORMS = [
   {
     key: 'facebook',
@@ -38,14 +31,10 @@ const PLATFORMS = [
 ]
 
 export default function FollowUsSection({ socialMedia }) {
-  const merged = {
-    facebookUrl: socialMedia?.facebookUrl || DEFAULT_LINKS.facebookUrl,
-    instagramUrl: socialMedia?.instagramUrl || DEFAULT_LINKS.instagramUrl,
-    youtubeUrl: socialMedia?.youtubeUrl || DEFAULT_LINKS.youtubeUrl,
-    tiktokUrl: socialMedia?.tiktokUrl || DEFAULT_LINKS.tiktokUrl,
-  }
-
-  const links = PLATFORMS.filter((p) => merged[p.key + 'Url'])
+  const links = PLATFORMS.filter((p) => {
+    const url = socialMedia?.[p.key + 'Url']
+    return typeof url === 'string' && url.trim().length > 0
+  })
 
   if (links.length === 0) return null
 
@@ -61,8 +50,7 @@ export default function FollowUsSection({ socialMedia }) {
         </div>
         <div className="follow-us-links">
           {links.map(({ key, label, Icon, color }) => {
-            const href = merged[key + 'Url']
-            if (!href) return null
+            const href = socialMedia[key + 'Url'].trim()
             return (
               <Link
                 key={key}
@@ -73,8 +61,8 @@ export default function FollowUsSection({ socialMedia }) {
                 style={{ '--icon-color': color }}
                 aria-label={`Follow us on ${label}`}
               >
-                <span className="follow-us-icon">
-                  <Icon size={26} color={color} />
+                <span className="follow-us-icon" aria-hidden="true">
+                  <Icon />
                 </span>
                 <span className="follow-us-label">{label}</span>
               </Link>

@@ -512,6 +512,7 @@ ul { list-style: none; }
   font-weight: 700;
   padding: 0.9rem 2.5rem;
   border-radius: 10px;
+  min-width: 200px;
   border: 1.5px solid var(--green);
   text-decoration: none;
   cursor: pointer;
@@ -541,6 +542,8 @@ ul { list-style: none; }
 
 @media (max-width: 768px) {
   .section-view-all-wrap {
+    display: flex;
+    justify-content: center;
     margin-top: 2rem;
   }
   .btn-view-all {
@@ -1210,15 +1213,23 @@ ul { list-style: none; }
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
   flex-wrap: wrap;
+  gap: 1rem;
+  max-width: 760px;
+  margin: 0 auto;
 }
 
 .follow-us-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1.4rem;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 172px;
+  min-width: 172px;
+  max-width: 172px;
+  height: 52px;
+  box-sizing: border-box;
+  padding: 0 1rem;
   background: var(--white);
   color: var(--green);
   border: 2px solid var(--green);
@@ -1228,9 +1239,8 @@ ul { list-style: none; }
   text-decoration: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(26, 77, 62, 0.08);
-  min-height: 48px;
   position: relative;
-  overflow: visible;
+  flex-shrink: 0;
 }
 
 .follow-us-link .follow-us-icon {
@@ -1238,26 +1248,41 @@ ul { list-style: none; }
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  overflow: visible;
+  width: 24px;
+  height: 24px;
   line-height: 0;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--icon-color, var(--green));
+  transition: color 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .follow-us-link .follow-us-icon svg {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 24px;
+  height: 24px;
+  display: block;
+  flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease, fill 0.3s ease;
 }
 
 .follow-us-label {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: color 0.3s ease;
 }
 
 .follow-us-link:hover {
   background: var(--icon-color, var(--green));
-  color: #ffffff;
+  color: #ffffff !important;
   border-color: var(--icon-color, var(--green));
   transform: translateY(-3px);
   box-shadow: 0 8px 24px color-mix(in srgb, var(--icon-color, var(--green)) 30%, transparent);
+}
+
+.follow-us-link:hover .follow-us-icon {
+  color: #ffffff;
 }
 
 .follow-us-link:hover .follow-us-icon svg {
@@ -1267,20 +1292,7 @@ ul { list-style: none; }
 }
 
 .follow-us-link:hover .follow-us-label {
-  color: #ffffff;
-}
-
-.follow-us-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  overflow: visible;
-  line-height: 0;
-}
-
-.follow-us-label {
-  white-space: nowrap;
+  color: #ffffff !important;
 }
 
 @media (max-width: 768px) {
@@ -1290,15 +1302,39 @@ ul { list-style: none; }
 
   .follow-us-links {
     gap: 0.75rem;
+    max-width: 100%;
+    padding: 0 0.5rem;
   }
 
   .follow-us-link {
-    padding: 0.6rem 1.1rem;
-    font-size: 0.875rem;
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
+    height: 48px;
+    font-size: 0.9rem;
+    gap: 0.5rem;
+    padding: 0 0.85rem;
   }
 
   .follow-us-link:hover {
     transform: translateY(-1px);
+  }
+}
+
+@media (max-width: 480px) {
+  .follow-us-links {
+    display: grid;
+    grid-template-columns: repeat(2, 160px);
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .follow-us-link {
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
+    height: 48px;
+    font-size: 0.85rem;
   }
 }
 
@@ -4314,7 +4350,8 @@ ul { list-style: none; }
   width: 24px;
   height: 24px;
   border-width: 3px;
-  border-top-color: var(--green, #1a4d3e);}
+  border-top-color: var(--green, #1a4d3e);
+}
 
 .page-spinner-text {
   font-size: 1rem;
@@ -5358,7 +5395,8 @@ ul { list-style: none; }
   padding: 1.25rem;
   background: #f9fafb;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;}
+  border: 1px solid #e5e7eb;
+}
 
 .review-card__header {
   display: flex;
@@ -5401,7 +5439,8 @@ ul { list-style: none; }
 
 .review-card__date {
   font-size: 12px;
-  color: #6b7280;}
+  color: #6b7280;
+}
 
 .review-card__badge {
   font-size: 10px;
@@ -5409,7 +5448,8 @@ ul { list-style: none; }
   border-radius: 10px;
   background: #d1fae5;
   color: #065f46;
-  font-weight: 600;}
+  font-weight: 600;
+}
 
 .review-card__actions {
   display: flex;
