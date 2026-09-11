@@ -1,16 +1,25 @@
 import { NextResponse } from 'next/server'
 import { registerUser, createSession } from '@/lib/auth'
 import { sendWelcomeEmail } from '@/lib/mail'
+import { verifyRecaptcha } from '@/lib/recaptcha'
 
 export async function POST(request) {
   try {
-    const { fullName, email, phone, password } = await request.json()
+    const { fullName, email, phone, password, recaptchaToken } = await request.json()
 
     if (!fullName || !email || !phone || !password) {
       return NextResponse.json({ error: 'All fields are required.' }, { status: 400 })
     }
     if (password.length < 6) {
       return NextResponse.json({ error: 'Password must be at least 6 characters.' }, { status: 400 })
+    }
+
+    const captcha = await verifyRecaptcha(recaptchaToken)
+    if (!captcha.success) {
+      return NextResponse.json(
+        { error: 'Captcha verification failed. Please complete the captcha and try again.' },
+        { status: 400 },
+      )
     }
 
     const user = await registerUser({ fullName, email, phone, password })

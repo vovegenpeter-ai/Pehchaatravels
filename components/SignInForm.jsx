@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { SuccessMessage, ErrorBanner } from '@/components/UI'
 import { fetchJson } from '@/lib/fetchJson'
+import RecaptchaWidget from '@/components/RecaptchaWidget'
 
 export default function SignInForm() {
   const router = useRouter()
@@ -13,6 +14,8 @@ export default function SignInForm() {
   const [success, setSuccess] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [recaptchaToken, setRecaptchaToken] = useState('')
+  const [recaptchaResetSignal, setRecaptchaResetSignal] = useState(0)
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -22,6 +25,11 @@ export default function SignInForm() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    if (!recaptchaToken) {
+      setError('Please complete the captcha.')
+      return
+    }
+
     setSubmitting(true)
     try {
       await fetchJson('/api/auth/signin', {
@@ -30,15 +38,18 @@ export default function SignInForm() {
         body: JSON.stringify({
           emailOrPhone: form.emailOrPhone,
           password: form.password,
+          recaptchaToken,
         }),
       })
 
       setSuccess(true)
       window.dispatchEvent(new Event('user-profile-updated'))
-        startNavigation()
+      startNavigation()
       setTimeout(() => router.push('/'), 1500)
     } catch (err) {
       setError(err.message)
+      setRecaptchaResetSignal((n) => n + 1)
+      setRecaptchaToken('')
     } finally {
       setSubmitting(false)
     }
@@ -81,6 +92,7 @@ export default function SignInForm() {
           </label>
           <Link href="/forgot-password" className="auth-form__forgot">Forgot Password?</Link>
         </div>
+        <RecaptchaWidget onChange={setRecaptchaToken} resetSignal={recaptchaResetSignal} />
         <button type="submit" className="btn btn--primary btn--full" disabled={submitting}>
           {submitting ? 'Signing In...' : 'Sign In'}
         </button>

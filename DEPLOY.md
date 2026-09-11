@@ -59,9 +59,16 @@ Add these in **Project → Settings → Environment Variables** (copy the keys f
 | `SMTP_USER`       | Sender email address (e.g. `your-email@gmail.com`)                 |
 | `SMTP_PASS`       | Gmail App Password or SMTP key                                     |
 | `SMTP_FROM`       | Sender format: `"Pehchaan Travels" <your-email@gmail.com>`         |
+| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | reCAPTCHA v2 site key (public) — required for Sign In/Sign Up |
+| `RECAPTCHA_SECRET_KEY` | reCAPTCHA v2 secret key (server-only) — required for Sign In/Sign Up |
 
 Then **Deploy** (or Redeploy) — the build works without a database because
 every data page is dynamic (server-rendered on demand).
+
+> **reCAPTCHA:** the Sign In and Sign Up forms are protected by Google
+> reCAPTCHA v2. In the reCAPTCHA admin console, add your production domain
+> (e.g. `pehchaantravels.vercel.app` and any custom domain) to the site key's
+> allowed domains, plus `localhost` for local development.
 
 ## 5. Notes & limits
 
