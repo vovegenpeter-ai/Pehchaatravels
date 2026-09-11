@@ -218,6 +218,13 @@ html, body.admin-page {
   max-width: 900px;
 }
 
+/* The admin login card doubles as .auth-card (max-width: 400px in globals.css);
+   keep it compact instead of stretching to the wide .admin-form width. */
+.admin-form.auth-card {
+  max-width: 400px;
+  padding: 2.25rem 2rem;
+}
+
 .admin-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
