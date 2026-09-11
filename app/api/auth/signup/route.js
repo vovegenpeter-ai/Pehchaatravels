@@ -23,6 +23,17 @@ export async function POST(request) {
 
     return NextResponse.json({ user, message: 'Account created successfully.' }, { status: 201 })
   } catch (error) {
+    const databaseUnavailable =
+      error instanceof Error &&
+      /server selection timeout|server monitor timeout|replicasetnoprimary|mongodb/i.test(error.message)
+
+    if (databaseUnavailable) {
+      return NextResponse.json(
+        { error: 'Registration is temporarily unavailable because the database cannot be reached. Please try again shortly.' },
+        { status: 503 },
+      )
+    }
+
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
 }
