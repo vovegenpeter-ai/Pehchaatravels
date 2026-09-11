@@ -8,8 +8,13 @@
 // based on NODE_ENV so that `npx prisma migrate dev`, `prisma db push`,
 // and `tsx prisma/seed.ts` always target the local/dev database.
 // ---------------------------------------------------------------------------
-import "dotenv/config";
+import dotenv from "dotenv";
 import { defineConfig } from "prisma/config";
+
+// Load .env.local first so it takes precedence over .env — same
+// precedence order Next.js uses when loading these files.
+dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env" });
 
 function resolveDatabaseUrl(): string {
   // Production CLI operations (rare — typically only CI/CD pipelines)
