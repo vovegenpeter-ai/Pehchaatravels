@@ -9,7 +9,7 @@ export default function NotFound() {
           Oops! The page you are looking for doesn't exist or has been moved.
         </p>
         <a href="/" className="btn-view-all" style={{ marginTop: '2rem' }}>
-          Go Home <span aria-hidden="true">→</span>
+          Go Home
         </a>
       </section>
     </LayoutShell>

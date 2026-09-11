@@ -10,7 +10,7 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
   const [activeTab, setActiveTab] = useState('places')
 
   const viewAllLink = activeTab === 'places' ? '/places' : '/hotels'
-  const viewAllLabel = activeTab === 'places' ? 'View All Places →' : 'View All Hotels →'
+  const viewAllLabel = activeTab === 'places' ? 'View All Places' : 'View All Hotels'
 
   return (
     <section className="places-hotels-section" id="places-and-hotels">
@@ -138,7 +138,7 @@ export default function PlacesAndHotelsSection({ places = [], hotels = [] }) {
         {/* Centered View All CTA at the bottom */}
         <div className="section-view-all-wrap">
           <Link href={viewAllLink} className="btn-view-all">
-            {activeTab === 'places' ? 'View All Places' : 'View All Hotels'} <span aria-hidden="true">→</span>
+            {activeTab === 'places' ? 'View All Places' : 'View All Hotels'}
           </Link>
         </div>
       </div>

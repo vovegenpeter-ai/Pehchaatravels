@@ -242,7 +242,7 @@ export default function CheckoutPage() {
                 <span>PKR {formatPrice(totalPrice)}</span>
               </div>
               <Link href="/cart" className="btn btn--outline btn--full" style={{ marginTop: '1rem' }}>
-                ← Edit Cart
+                Edit Cart
               </Link>
             </div>
           </div>

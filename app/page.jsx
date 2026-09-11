@@ -83,7 +83,7 @@ export default async function HomePage() {
 
           <div className="section-view-all-wrap">
             <Link href="/tours" className="btn-view-all">
-              View All Tours <span aria-hidden="true">→</span>
+              View All Tours
             </Link>
           </div>
         </div>
@@ -121,7 +121,7 @@ export default async function HomePage() {
 
             <div className="section-view-all-wrap">
               <Link href="/places" className="btn-view-all">
-                View All Places <span aria-hidden="true">→</span>
+                View All Places
               </Link>
             </div>
           </div>

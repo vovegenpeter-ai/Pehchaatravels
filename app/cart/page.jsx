@@ -151,10 +151,10 @@ export default function CartPage() {
               className="btn btn--primary btn--full cart-summary__checkout"
               onClick={() => router.push('/checkout')}
             >
-              Proceed to Checkout →
+              Proceed to Checkout
             </button>
             <Link href="/tours" className="btn btn--outline btn--full cart-summary__continue">
-              ← Continue Shopping
+              Continue Shopping
             </Link>
           </div>
         </div>
