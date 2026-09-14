@@ -2285,29 +2285,6 @@ ul { list-style: none; }
   pointer-events: none;
 }
 
-/* reCAPTCHA widget (sign in / sign up only) */
-.recaptcha-widget {
-  margin: 0.25rem 0 0.5rem;
-  min-height: 78px;
-}
-
-.recaptcha-error {
-  font-size: 0.9rem;
-  color: #b91c1c;
-  margin: 0.25rem 0 0.5rem;
-}
-
-.recaptcha-retry {
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--green);
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-  font-size: inherit;
-}
-
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;

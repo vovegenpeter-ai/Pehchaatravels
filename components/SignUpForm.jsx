@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'
 import { SuccessMessage, ErrorBanner } from '@/components/UI'
 import { fetchJson } from '@/lib/fetchJson'
 import { startNavigation } from '@/components/NavigationLoader'
-import RecaptchaWidget from '@/components/RecaptchaWidget'
 
 export default function SignUpForm() {
   const router = useRouter()
@@ -23,8 +22,6 @@ export default function SignUpForm() {
   const [submitting, setSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [recaptchaToken, setRecaptchaToken] = useState('')
-  const [recaptchaResetSignal, setRecaptchaResetSignal] = useState(0)
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -43,10 +40,6 @@ export default function SignUpForm() {
       setError('Please accept the Terms of Service.')
       return
     }
-    if (!recaptchaToken) {
-      setError('Please complete the captcha.')
-      return
-    }
 
     setSubmitting(true)
     try {
@@ -58,7 +51,6 @@ export default function SignUpForm() {
           email: form.email,
           phone: form.phone,
           password: form.password,
-          recaptchaToken,
         }),
       })
 
@@ -68,8 +60,6 @@ export default function SignUpForm() {
       setTimeout(() => router.push('/'), 2000)
     } catch (err) {
       setError(err.message)
-      setRecaptchaResetSignal((n) => n + 1)
-      setRecaptchaToken('')
     }
     finally {
       setSubmitting(false)
@@ -129,7 +119,6 @@ export default function SignUpForm() {
           <input name="terms" type="checkbox" checked={form.terms} onChange={handleChange} />
           I agree to the <Link href="/terms" target="_blank">Terms of Service</Link>
         </label>
-        <RecaptchaWidget onChange={setRecaptchaToken} resetSignal={recaptchaResetSignal} />
         <button type="submit" className="btn btn--primary btn--full" disabled={submitting}>
           {submitting ? (
             <span className="auth-submit-loading">
