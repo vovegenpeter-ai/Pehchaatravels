@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/lib/CartContext'
+import { startNavigation } from '@/components/NavigationLoader'
 
 export default function BookTourButton({ tour }) {
   const { addItem } = useCart()

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { getTourPath, formatPrice } from '@/lib/tourUtils'
 import { useCart } from '@/lib/CartContext'
 import { cloudinaryImg } from '@/lib/cloudinaryUrl'
+import { startNavigation } from '@/components/NavigationLoader'
 
 export default function TourCard({ tour, dark }) {
   const { addItem } = useCart()

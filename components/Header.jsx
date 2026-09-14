@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { PHONE_NUMBER } from '@/lib/initialData'
 import { useCart } from '@/lib/CartContext'
 import { useAuth } from '@/lib/AuthContext'
+import { startNavigation } from '@/components/NavigationLoader'
 
 const navLinks = [
   { href: '/', label: 'Home' },

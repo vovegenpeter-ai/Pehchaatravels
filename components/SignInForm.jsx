@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { SuccessMessage, ErrorBanner } from '@/components/UI'
 import { fetchJson } from '@/lib/fetchJson'
+import { startNavigation } from '@/components/NavigationLoader'
 
 export default function SignInForm() {
   const router = useRouter()
