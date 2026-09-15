@@ -184,6 +184,60 @@ export default function AdminUsersPage() {
             )}
           </tbody>
         </table>
+
+        {/* Mobile card layout (hidden on desktop) */}
+        <div className="user-card-list">
+          {loading ? (
+            <AdminLoadingRow cols={7} />
+          ) : users.length === 0 ? (
+            <div className="admin-table__empty">
+              {appliedSearch ? 'No users match your search.' : 'No users registered yet.'}
+            </div>
+          ) : (
+            users.map((user, idx) => (
+              <div key={user.id} className="user-card" style={user.blocked ? { opacity: 0.6 } : undefined}>
+                <div className="user-card__header">
+                  <span className="user-card__name">{user.fullName}</span>
+                  {user.blocked ? (
+                    <span className="cq-status cq-status--rejected">Blocked</span>
+                  ) : (
+                    <span className="cq-status cq-status--confirmed">Active</span>
+                  )}
+                </div>
+                <div className="user-card__body">
+                  <div className="user-card__row">
+                    <span className="user-card__label">Email</span>
+                    <a href={`mailto:${user.email}`} className="user-card__value">{user.email}</a>
+                  </div>
+                  <div className="user-card__row">
+                    <span className="user-card__label">Phone</span>
+                    <span className="user-card__value">{user.phone}</span>
+                  </div>
+                  <div className="user-card__row">
+                    <span className="user-card__label">Joined</span>
+                    <span className="user-card__value">{formatDate(user.createdAt)}</span>
+                  </div>
+                </div>
+                <div className="user-card__actions">
+                  <button
+                    type="button"
+                    className={`btn btn--sm ${user.blocked ? 'btn--primary' : 'btn--outline'}`}
+                    onClick={() => setConfirmBlock(user)}
+                  >
+                    {user.blocked ? 'Unblock' : 'Block'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn--sm btn--danger"
+                    onClick={() => setConfirmDelete(user)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       {total > 0 && (
