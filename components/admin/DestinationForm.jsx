@@ -7,6 +7,7 @@ import RichTextEditor from '@/components/admin/RichTextEditor'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 import { startNavigation } from '@/components/NavigationLoader'
+import { countTempImages, countPendingUploads, tempImageWarning, pendingUploadsWarning } from '@/lib/editorImages'
 
 const emptyForm = {
   name: '', slug: '', shortDescription: '', fullDescription: '', image: null, // { url, publicId } — uploaded via Cloudinary
@@ -81,6 +82,19 @@ export default function DestinationForm({ destinationId = null }) {
       setError('Long Description must be at least 20 characters long')
       return
     }
+    /* Every image in rich-text content must be a Cloudinary URL. Temporary
+       sources (data:/blob:/file:) are auto-uploaded by the editor — if any
+       remain here, refuse the save with a clear message. */
+    const tempInDesc = countTempImages(form.fullDescription)
+    if (tempInDesc > 0) {
+      setError(tempImageWarning(tempInDesc, 'Long Description'))
+      return
+    }
+    const pendingUploads = countPendingUploads(form.fullDescription)
+    if (pendingUploads > 0) {
+      setError(pendingUploadsWarning(pendingUploads, 'description'))
+      return
+    }
 
     setLoading(true)
     try {
@@ -107,7 +121,7 @@ export default function DestinationForm({ destinationId = null }) {
         body: JSON.stringify(payload),
       })
       startNavigation()
-      router.push('/admin/destinations')
+      router.push('/admin/explore-places')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Save failed')
     } finally {

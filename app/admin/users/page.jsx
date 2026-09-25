@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import ConfirmDialog from '@/components/admin/ConfirmDialog'
 import AdminLoadingRow from '@/components/admin/AdminLoadingRow'
+import { fetchJson } from '@/lib/fetchJson'
 
 const PAGE_SIZE = 10
+const DELETE_TIMEOUT_MS = 30000
 
 function formatDate(date) {
   if (!date) return '—'
@@ -71,8 +73,7 @@ export default function AdminUsersPage() {
   /* Delete */
   const handleDelete = async (user) => {
     try {
-      const res = await fetch(`/api/admin/users/${user.id}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error('Failed to delete user')
+      await fetchJson(`/api/admin/users/${user.id}`, { method: 'DELETE', timeoutMs: DELETE_TIMEOUT_MS })
       // If deleting the last item on the current page, go back a page
       if (users.length === 1 && page > 1) setPage(page - 1)
       else await fetchUsers()

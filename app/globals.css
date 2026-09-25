@@ -2856,7 +2856,7 @@ ul { list-style: none; }
   max-width: 100%;
   height: auto;
   border-radius: var(--radius-sm);
-  margin: 1rem 0;
+  margin: 1rem auto;
   display: block;
 }
 .tour-description code {
@@ -5005,9 +5005,20 @@ ul { list-style: none; }
 }
 
 .place-detail-description img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.5rem auto;
   border-radius: 12px;
-  margin: 1.5rem 0;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.place-detail-description ul {
+  list-style-type: disc;
+}
+
+.place-detail-description ol {
+  list-style-type: decimal;
 }
 
 .place-detail-description ul,
@@ -5018,6 +5029,7 @@ ul { list-style: none; }
 
 .place-detail-description li {
   margin-bottom: 0.5rem;
+  list-style-type: inherit;
 }
 
 /* --- Sidebar Cards --- */

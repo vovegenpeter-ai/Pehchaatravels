@@ -43,7 +43,14 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const existing = await prisma.category.findUnique({ where: { id } })
-  await prisma.category.delete({ where: { id } })
+  // Idempotent delete: already gone (double-click / repeated request) → success.
+  if (!existing) return NextResponse.json({ success: true })
+  try {
+    await prisma.category.delete({ where: { id } })
+  } catch (err) {
+    // P2025 = record vanished between the lookup and the delete — treat as success.
+    if (!(err && typeof err === 'object' && 'code' in err && err.code === 'P2025')) throw err
+  }
   /* Remove the Cloudinary asset after the record is gone. */
   if (existing?.imagePublicId) await deleteCloudinaryImage(existing.imagePublicId)
   revalidatePath('/')

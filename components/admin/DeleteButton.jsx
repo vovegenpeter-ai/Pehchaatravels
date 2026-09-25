@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation'
 import { fetchJson } from '@/lib/fetchJson'
 import ConfirmDialog from '@/components/admin/ConfirmDialog'
 
-export default function DeleteButton({ endpoint, label = 'Delete', confirmText }) {
+const DELETE_TIMEOUT_MS = 30000
+
+export default function DeleteButton({ endpoint, label = 'Delete', confirmText, disabled = false, onDeleted }) {
   const router = useRouter()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -16,18 +18,22 @@ export default function DeleteButton({ endpoint, label = 'Delete', confirmText }
     setBusy(true)
     setError('')
     try {
-      await fetchJson(endpoint, { method: 'DELETE' })
-      router.refresh()
+      await fetchJson(endpoint, { method: 'DELETE', timeoutMs: DELETE_TIMEOUT_MS })
+      if (onDeleted) onDeleted()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Delete failed')
+    } finally {
       setBusy(false)
+      // Re-sync even if the request failed/timed out — the row may already be
+      // gone server-side (e.g. deleted elsewhere), so never leave stale rows up.
+      router.refresh()
     }
   }
 
   return (
     <>
       {error && <span className="admin-delete-error">{error}</span>}
-      <button type="button" className="btn btn--danger btn--sm" onClick={() => setShowConfirm(true)} disabled={busy}>
+      <button type="button" className="btn btn--danger btn--sm" onClick={() => setShowConfirm(true)} disabled={busy || disabled}>
         {busy ? 'Deleting...' : label}
       </button>
       <ConfirmDialog

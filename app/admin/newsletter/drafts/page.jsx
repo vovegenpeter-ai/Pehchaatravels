@@ -4,6 +4,9 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ConfirmDialog from '@/components/admin/ConfirmDialog'
 import AdminLoadingRow from '@/components/admin/AdminLoadingRow'
+import { fetchJson } from '@/lib/fetchJson'
+
+const DELETE_TIMEOUT_MS = 30000
 
 export default function DraftsPage() {
   const router = useRouter()
@@ -35,8 +38,7 @@ export default function DraftsPage() {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`/api/admin/newsletter?id=${id}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error('Failed to delete draft')
+      await fetchJson(`/api/admin/newsletter?id=${id}`, { method: 'DELETE', timeoutMs: DELETE_TIMEOUT_MS })
       setDrafts((prev) => prev.filter((d) => d.id !== id))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to delete draft')

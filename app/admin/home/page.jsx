@@ -90,8 +90,7 @@ export default function AdminHomePage() {
             {destinations.map((d) => (
               <tr key={d.id}>
                 <td>{d.name}</td>
-                <td><span className={`badge${d.featured ? ' badge--green' : ' badge--gray'}`} style={{ cursor: 'pointer' }} onClick={() => toggle('destinations', d.id, 'featured', d.featured)}>{d.featured ? 'Featured' : 'Not Featured'}</span></td>
-                <td><Link href={`/admin/destinations/${d.id}`}>Edit</Link></td>
+                <td><span className={`badge${d.featured ? ' badge--green' : ' badge--gray'}`} style={{ cursor: 'pointer' }} onClick={() => toggle('destinations', d.id, 'featured', d.featured)}>{d.featured ? 'Featured' : 'Not Featured'}</span></td>                 <td><Link href={`/admin/explore-places/${d.id}`}>Edit</Link></td>
               </tr>
             ))}
           </tbody>

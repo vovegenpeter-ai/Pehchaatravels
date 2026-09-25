@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ConfirmDialog from '@/components/admin/ConfirmDialog'
 import AdminLoadingRow from '@/components/admin/AdminLoadingRow'
+import { fetchJson } from '@/lib/fetchJson'
 
 const STATUS_LABELS = {
   NEW: 'New',
@@ -71,10 +72,7 @@ export default function ContactQueriesPage() {
   const deleteQuery = async (id) => {
     setError('')
     try {
-      const res = await fetch(`/api/admin/contact-queries/${id}`, {
-        method: 'DELETE',
-      })
-      if (!res.ok) throw new Error('Failed to delete contact query')
+      await fetchJson(`/api/admin/contact-queries/${id}`, { method: 'DELETE', timeoutMs: 30000 })
       setQueries((prev) => prev.filter((q) => q.id !== id))
       setExpandedId((prev) => (prev === id ? null : prev))
     } catch (e) {

@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import ConfirmDialog from '@/components/admin/ConfirmDialog'
 import AdminLoadingRow from '@/components/admin/AdminLoadingRow'
+import { fetchJson } from '@/lib/fetchJson'
+
+const DELETE_TIMEOUT_MS = 30000
 
 const STATUS_LABELS = {
   pending: 'Pending',
@@ -82,8 +85,7 @@ export default function ReviewsPage() {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`/api/admin/reviews?id=${id}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error('Failed to delete review')
+      await fetchJson(`/api/admin/reviews?id=${id}`, { method: 'DELETE', timeoutMs: DELETE_TIMEOUT_MS })
       setReviews((prev) => prev.filter((r) => r.id !== id))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to delete review')

@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ConfirmDialog from '@/components/admin/ConfirmDialog'
 import AdminLoadingRow from '@/components/admin/AdminLoadingRow'
+import { fetchJson } from '@/lib/fetchJson'
+
+const DELETE_TIMEOUT_MS = 30000
 
 const STATUS_LABELS = {
   PENDING: 'Pending',
@@ -80,10 +83,7 @@ export default function BookingsPage() {
   const deleteBooking = async (id) => {
     setError('')
     try {
-      const res = await fetch(`/api/admin/bookings/${id}`, {
-        method: 'DELETE',
-      })
-      if (!res.ok) throw new Error('Failed to delete booking')
+      await fetchJson(`/api/admin/bookings/${id}`, { method: 'DELETE', timeoutMs: DELETE_TIMEOUT_MS })
       setBookings((prev) => prev.filter((b) => b.id !== id))
       setExpandedId((prev) => (prev === id ? null : prev))
     } catch (e) {

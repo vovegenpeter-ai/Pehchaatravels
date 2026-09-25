@@ -11,6 +11,7 @@ import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 import { imageUrl } from '@/lib/cloudinaryUrl'
 import { startNavigation } from '@/components/NavigationLoader'
+import { countTempImages, countPendingUploads, tempImageWarning, pendingUploadsWarning } from '@/lib/editorImages'
 
 const emptyForm = {
   name: '', slug: '', shortDescription: '', fullDescription: '', destination: '',
@@ -77,6 +78,26 @@ export default function TourForm({ tourId = null }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    /* Every image in rich-text content must be a Cloudinary URL. Temporary
+       sources (data:/blob:/file:) are auto-uploaded by the editor — if any
+       remain here, refuse the save with a clear message. Covers the Long
+       Description and every FAQ answer (both are rich text). */
+    const richTextFields = [
+      ['Long Description', form.fullDescription || ''],
+      ...form.faqs.map((faq, i) => [`FAQ ${i + 1} answer`, faq.answer || '']),
+    ]
+    for (const [label, html] of richTextFields) {
+      const tempCount = countTempImages(html)
+      if (tempCount > 0) {
+        setError(tempImageWarning(tempCount, label))
+        return
+      }
+      const pending = countPendingUploads(html)
+      if (pending > 0) {
+        setError(pendingUploadsWarning(pending, label))
+        return
+      }
+    }
     setLoading(true)
     try {
       const payload = {

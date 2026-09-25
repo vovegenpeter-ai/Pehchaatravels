@@ -8,6 +8,7 @@ import RichTextEditor from '@/components/admin/RichTextEditor'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 import { imageUrl } from '@/lib/cloudinaryUrl'
+import { countTempImages, countPendingUploads, tempImageWarning, pendingUploadsWarning } from '@/lib/editorImages'
 import { startNavigation } from '@/components/NavigationLoader'
 
 const emptyForm = {
@@ -98,6 +99,21 @@ export default function HotelForm({ hotelId = null }) {
     }
     if (form.fullDescription.length < 20) {
       setError('Long Description must be at least 20 characters long')
+      return
+    }
+    /* Embedded base64 images blow past server body limits ("Unterminated
+       string in JSON"). They should have been uploaded to Cloudinary by the
+       editor — if any remain, refuse the save with a clear message. */
+    /* Every image in rich-text content must be a Cloudinary URL — see
+       lib/editorImages.js. */
+    const tempInDesc = countTempImages(form.fullDescription)
+    if (tempInDesc > 0) {
+      setError(tempImageWarning(tempInDesc, 'Long Description'))
+      return
+    }
+    const pendingUploads = countPendingUploads(form.fullDescription)
+    if (pendingUploads > 0) {
+      setError(pendingUploadsWarning(pendingUploads, 'description'))
       return
     }
 

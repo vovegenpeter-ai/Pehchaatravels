@@ -3,6 +3,18 @@
 import { useRef, useCallback, useState, useEffect } from 'react'
 import { compressImage } from '@/lib/compressImage'
 import { fetchJson } from '@/lib/fetchJson'
+import { isTempUri, extractTempImageUris, hasUnmigratedTempImages } from '@/lib/editorImages'
+
+/* ─── Helpers ─── */
+
+/**
+ * Convert a data-URI image (base64 or url-encoded) into a File so it can be
+ * uploaded to Cloudinary instead of living inside the description HTML.
+ * Without this, pasted screenshots embed megabytes of base64 into the JSON
+ * payload and the save request fails with "Unterminated string in JSON".
+ */
+/* 1x1 transparent GIF used as a temporary placeholder while uploading */
+const PLACEHOLDER_SRC = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
 
 /* ─── Small sub-components ─── */
 function ToolbarBtn({ active, onClick, title, children, className = '' }) {
@@ -109,9 +121,9 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
   const [textColor, setTextColor] = useState('#000000')
   const [highlightColor, setHighlightColor] = useState('#FFFF00')
   const [strike, setStrike] = useState(false)
+  const [pasteStatus, setPasteStatus] = useState('')
   const fileRef = useRef(null)
   const ignoreNextInput = useRef(false)
-
   /* ── Set initial content ── */
   useEffect(() => {
     if (editorRef.current && editorRef.current.innerHTML !== value) {
@@ -359,48 +371,211 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
     emitChange()
   }, [emitChange])
 
-  /* ── Image upload (Cloudinary URL instead of base64) ── */
+  /* ── Upload one File to Cloudinary, compressing big images first ── */
+  const uploadFileToCloudinary = useCallback(async (file) => {
+    let uploadFile = file
+    if (file.size > 200 * 1024) {
+      try { uploadFile = await compressImage(file) } catch { /* keep original */ }
+    }
+    const formData = new FormData()
+    formData.append('file', uploadFile)
+    const data = await fetchJson('/api/admin/upload', { method: 'POST', body: formData })
+    return data.url
+  }, [])
+
+  /* ── Convert a data/blob/file URI image into a File for Cloudinary upload ── */
+  const uploadTempUriImage = useCallback(async (uri) => {
+    const blob = await (await fetch(uri)).blob()
+    const ext = (blob.type.split('/')[1] || 'png').replace(/[^a-z0-9]/gi, '') || 'png'
+    const file = new File([blob], `embedded-image.${ext}`, { type: blob.type || 'image/png' })
+    return uploadFileToCloudinary(file)
+  }, [uploadFileToCloudinary])
+
+  /* ── Upload image File(s) and insert them at the cursor ── */
+  const uploadAndInsertFiles = useCallback((files) => {
+    if (!files.length) return
+    setPasteStatus(`Uploading ${files.length} image${files.length > 1 ? 's' : ''}…`)
+    Promise.all(files.map((file) => uploadFileToCloudinary(file)))
+      .then((urls) => {
+        editorRef.current?.focus()
+        urls.forEach((url) => document.execCommand('insertImage', false, url))
+        setPasteStatus('')
+        emitChange()
+      })
+      .catch(() => {
+        setPasteStatus('Image upload failed — please try again')
+        setTimeout(() => setPasteStatus(''), 4000)
+      })
+  }, [uploadFileToCloudinary, emitChange])
+
+  /* ── Image upload via toolbar (Cloudinary URL instead of base64) ── */
   const handleImage = useCallback(async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
     if (!file.type.startsWith('image/')) { alert('Please upload a valid image file.'); return }
     if (file.size > 5 * 1024 * 1024) { alert('Image must be under 5 MB.'); return }
 
-    // Compress image before uploading to keep the payload small
-    let uploadFile = file
-    if (file.size > 200 * 1024) {
-      uploadFile = await compressImage(file)
-    }
-
     try {
-      const formData = new FormData()
-      formData.append('file', uploadFile)
-      const data = await fetchJson('/api/admin/upload', { method: 'POST', body: formData })
-
       editorRef.current?.focus()
-      document.execCommand('insertImage', false, data.url)
-      emitChange()
+      await uploadAndInsertFiles([file])
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Image upload failed')
     } finally {
       if (fileRef.current) fileRef.current.value = ''
     }
-  }, [emitChange])
+  }, [uploadAndInsertFiles])
 
-  /* ── Handle paste: clean paste ── */
+  /* ── Tokenize temp images in parsed HTML: swap each data:/blob:/file: src
+     for a unique placeholder so uploads can target the right <img> later ── */
+  const tokenizeTempImages = (tpl) => {
+    const tokenByUri = new Map()
+    let idx = 0
+    tpl.content.querySelectorAll('img').forEach((img) => {
+      const src = img.getAttribute('src')
+      if (isTempUri(src)) {
+        if (!tokenByUri.has(src)) {
+          tokenByUri.set(src, `rteimg-${Date.now()}-${idx}`)
+          idx += 1
+        }
+        img.src = PLACEHOLDER_SRC
+        img.setAttribute('data-rte-temp', tokenByUri.get(src))
+      }
+    })
+    return tokenByUri
+  }
+
+  /* ── Run the Cloudinary uploads for a token map and swap each placeholder
+     for the CDN URL (failed uploads remove their placeholder) ── */
+  const runTempImageUploads = useCallback((tokenByUri) => {
+    const swap = (token, apply) => {
+      const els = editorRef.current?.querySelectorAll(`img[data-rte-temp="${token}"]`) || []
+      els.forEach((el) => apply(el))
+    }
+
+    let failures = 0
+    let done = 0
+    tokenByUri.forEach((token, uri) => {
+      uploadTempUriImage(uri)
+        .then((url) => {
+          swap(token, (el) => {
+            el.src = url
+            el.removeAttribute('data-rte-temp')
+            el.removeAttribute('srcset')
+          })
+        })
+        .catch(() => {
+          failures += 1
+          swap(token, (el) => el.remove())
+        })
+        .finally(() => {
+          done += 1
+          if (done === tokenByUri.size) {
+            if (failures) {
+              setPasteStatus(`Uploaded ${tokenByUri.size - failures}/${tokenByUri.size} images — failed ones were removed`)
+              setTimeout(() => setPasteStatus(''), 5000)
+            } else {
+              setPasteStatus('')
+            }
+            emitChange()
+          }
+        })
+    })
+  }, [emitChange, uploadTempUriImage])
+
+  /* ── Migrate temp images inside pasted/dropped `html`, inserting the result
+     at the cursor ── */
+  const migrateTempImages = useCallback((html) => {
+    const tpl = document.createElement('template')
+    tpl.innerHTML = html
+    const tokenByUri = tokenizeTempImages(tpl)
+
+    if (!tokenByUri.size) {
+      document.execCommand('insertHTML', false, html)
+      emitChange()
+      return 0
+    }
+
+    setPasteStatus(`Uploading ${tokenByUri.size} image${tokenByUri.size > 1 ? 's' : ''}…`)
+    document.execCommand('insertHTML', false, tpl.innerHTML)
+    emitChange()
+    runTempImageUploads(tokenByUri)
+    return tokenByUri.size
+  }, [emitChange, runTempImageUploads])
+
+  /* ── Handle paste: clean paste + upload embedded images to Cloudinary ── */
   const handlePaste = useCallback((e) => {
     e.preventDefault()
+
+    /* Screenshots copied straight to the clipboard arrive as files */
+    const imageFiles = [...(e.clipboardData?.files || [])].filter((f) => f.type.startsWith('image/'))
+    if (imageFiles.length) {
+      uploadAndInsertFiles(imageFiles)
+      return
+    }
+
     const html = e.clipboardData.getData('text/html')
     const text = e.clipboardData.getData('text/plain')
-    if (html) {
-      const cleaned = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-      document.execCommand('insertHTML', false, cleaned)
-    } else {
+
+    if (!html) {
       document.execCommand('insertText', false, text)
+      emitChange()
+      return
     }
-    emitChange()
-  }, [emitChange])
+
+    /* Strip scripts/styles, then let migrateTempImages handle any embedded
+       images (they are uploaded to Cloudinary and swapped in automatically). */
+    const cleaned = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    migrateTempImages(cleaned)
+  }, [emitChange, migrateTempImages, uploadAndInsertFiles])
+
+  /* ── Handle drag & drop: image files, or HTML carrying temp images ── */
+  const handleDrop = useCallback((e) => {
+    const files = [...(e.dataTransfer?.files || [])].filter((f) => f.type.startsWith('image/'))
+    if (files.length) {
+      e.preventDefault()
+      uploadAndInsertFiles(files)
+      return
+    }
+    /* Dragging images from another page/tab arrives as HTML, not files */
+    const html = e.dataTransfer?.getData?.('text/html')
+    if (html && extractTempImageUris(html).length) {
+      e.preventDefault()
+      editorRef.current?.focus()
+      migrateTempImages(html)
+    }
+  }, [uploadAndInsertFiles, migrateTempImages])
+
+  /* ── Legacy content: migrate embedded data:/blob:/file: images to
+     Cloudinary when such content is loaded into the editor (e.g. records
+     created before images were uploaded automatically). Runs in place — no
+     focus steal, no cursor insertion. ── */
+  const migrateLoadedContent = useCallback((el, html) => {
+    const tpl = document.createElement('template')
+    tpl.innerHTML = html
+    const tokenByUri = tokenizeTempImages(tpl)
+    if (!tokenByUri.size) return false
+
+    el.innerHTML = tpl.innerHTML
+    setPasteStatus(`Uploading ${tokenByUri.size} image${tokenByUri.size > 1 ? 's' : ''}…`)
+    runTempImageUploads(tokenByUri)
+    return true
+  }, [runTempImageUploads])
+
+  /* ── Auto-migrate legacy embedded images when new content is loaded ── */
+  const migratedRef = useRef('')
+  useEffect(() => {
+    const el = editorRef.current
+    if (!el || !value || value === migratedRef.current) return
+    if (hasUnmigratedTempImages(value)) {
+      migratedRef.current = value
+      migrateLoadedContent(el, value)
+    }
+  }, [value, migrateLoadedContent])
+
+  const handleDragOver = useCallback((e) => {
+    if ([...(e.dataTransfer?.types || [])].includes('Files')) e.preventDefault()
+  }, [])
 
   return (
     <div className="rte">
@@ -618,8 +793,30 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
         onMouseUp={refreshToolbar}
         onBlur={refreshToolbar}
         onPaste={handlePaste}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
         style={{ minHeight: 250, padding: '1rem', outline: 'none', fontSize: '14px', lineHeight: 1.7 }}
       />
+
+      {pasteStatus && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            marginTop: '0.5rem',
+            padding: '0.5rem 0.75rem',
+            fontSize: '0.85rem',
+            color: '#047857',
+            background: '#ecfdf5',
+            border: '1px solid #a7f3d0',
+            borderRadius: 8,
+          }}
+        >
+          <span className="btn-save-spinner" />
+          {pasteStatus}
+        </div>
+      )}
     </div>
   )
 }

@@ -19,6 +19,10 @@
 .DS_Store
 *.pem
 
+# local dev server logs & local-only data backups
+dev-server*.log
+*-backup.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*

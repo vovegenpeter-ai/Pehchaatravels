@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
 import { startNavigation } from '@/components/NavigationLoader'
+import { countTempImages, countPendingUploads, tempImageWarning, pendingUploadsWarning } from '@/lib/editorImages'
 import ImageUploadField from '@/components/admin/ImageUploadField'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 
@@ -64,6 +65,19 @@ export default function CategoryForm({ categoryId = null }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    /* Every image in rich-text content must be a Cloudinary URL. Temporary
+       sources (data:/blob:/file:) are auto-uploaded by the editor — if any
+       remain here, refuse the save with a clear message. */
+    const tempInDesc = countTempImages(form.longDescription || '')
+    if (tempInDesc > 0) {
+      setError(tempImageWarning(tempInDesc, 'Description'))
+      return
+    }
+    const pendingUploads = countPendingUploads(form.longDescription || '')
+    if (pendingUploads > 0) {
+      setError(pendingUploadsWarning(pendingUploads, 'description'))
+      return
+    }
     setLoading(true)
     try {
       const payload = {

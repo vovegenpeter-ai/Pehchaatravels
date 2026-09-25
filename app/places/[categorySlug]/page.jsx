@@ -57,7 +57,7 @@ export default async function CategoryPage({ params }) {
             </h2>
             <p className="places-section-header__subtitle">
               {category.destinations.length > 0
-                ? `Discover ${category.destinations.length} amazing ${category.destinations.length === 1 ? 'place' : 'places'} in ${category.name}`
+                ? "Discover the breathtaking destinations of Khyber Pakhtunkhwa"
                 : `No destinations available in ${category.name} yet`
               }
             </p>

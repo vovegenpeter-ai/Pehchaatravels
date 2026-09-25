@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import ConfirmDialog from '@/components/admin/ConfirmDialog'
 import AdminLoadingRow from '@/components/admin/AdminLoadingRow'
+import { fetchJson } from '@/lib/fetchJson'
+
+const DELETE_TIMEOUT_MS = 30000
 
 export default function SubscribersPage() {
   const [subscribers, setSubscribers] = useState([])
@@ -37,8 +40,7 @@ export default function SubscribersPage() {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`/api/admin/newsletter/subscribers?id=${id}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error('Failed to delete subscriber')
+      await fetchJson(`/api/admin/newsletter/subscribers?id=${id}`, { method: 'DELETE', timeoutMs: DELETE_TIMEOUT_MS })
       setSubscribers((prev) => prev.filter((s) => s.id !== id))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to delete subscriber')

@@ -4,14 +4,21 @@ import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import { fetchJson } from '@/lib/fetchJson'
 import DeleteButton from '@/components/admin/DeleteButton'
+import ConfirmDialog from '@/components/admin/ConfirmDialog'
 
-export default function AdminDestinationsPage() {
+const DELETE_TIMEOUT_MS = 30000
+
+export default function AdminExplorePlacesPage() {
   const [destinations, setDestinations] = useState([])
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [filterCategory, setFilterCategory] = useState('')
   const [expandedCategories, setExpandedCategories] = useState({})
+  const [selectedIds, setSelectedIds] = useState(new Set())
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState('')
   const [page, setPage] = useState(1)
   const PAGE_SIZE = 10
 
@@ -72,6 +79,93 @@ export default function AdminDestinationsPage() {
 
   const toggleCategory = (id) => setExpandedCategories((p) => ({ ...p, [id]: !p[id] }))
 
+  /* ----- Bulk selection (Select All + per-row checkboxes) ----- */
+  const allPlaces = tree.flatMap((cat) => cat.places)
+  const allSelected = allPlaces.length > 0 && allPlaces.every((d) => selectedIds.has(d.id))
+  const someSelected = selectedIds.size > 0
+  // Resolve selected IDs against the full list (not the filtered view) so the
+  // bulk delete targets exactly what the user ticked, regardless of search/filter.
+  const selectedPlaces = destinations.filter((d) => selectedIds.has(d.id))
+
+  const toggleOne = (id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const toggleAll = () => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      const allSelectedNow = allPlaces.length > 0 && allPlaces.every((d) => prev.has(d.id))
+      allPlaces.forEach((d) => {
+        if (allSelectedNow) next.delete(d.id)
+        else next.add(d.id)
+      })
+      return next
+    })
+  }
+
+  const toggleCategoryPlaces = (cat) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      const allCatSelected = cat.places.every((d) => next.has(d.id))
+      cat.places.forEach((d) => {
+        if (allCatSelected) next.delete(d.id)
+        else next.add(d.id)
+      })
+      return next
+    })
+  }
+
+  const removeIds = (ids) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      ids.forEach((id) => next.delete(id))
+      return next
+    })
+  }
+
+  const bulkDelete = async () => {
+    const ids = selectedPlaces.map((d) => d.id)
+    if (ids.length === 0) return
+    setConfirmOpen(false)
+    setDeleting(true)
+    setError('')
+    try {
+      const results = await Promise.allSettled(
+        ids.map((id) =>
+          fetchJson(`/api/admin/destinations/${id}`, { method: 'DELETE', timeoutMs: DELETE_TIMEOUT_MS })
+        )
+      )
+      const failed = results.filter((r) => r.status === 'rejected')
+      if (failed.length > 0) {
+        const reason = failed[0].reason instanceof Error ? failed[0].reason.message : 'Delete failed'
+        setError(
+          failed.length === ids.length
+            ? `Delete failed: ${reason}`
+            : `${ids.length - failed.length} deleted, ${failed.length} failed: ${reason}`
+        )
+      }
+      // Remove deleted rows from local state immediately (list is client-fetched,
+      // so router.refresh() alone cannot re-sync it).
+      const failedIds = new Set(
+        results.map((r, i) => (r.status === 'rejected' ? ids[i] : null)).filter(Boolean)
+      )
+      removeIds(ids.filter((id) => !failedIds.has(id)))
+      setDestinations((prev) => prev.filter((d) => !ids.includes(d.id) || failedIds.has(d.id)))
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  const summary =
+    selectedPlaces.length <= 5
+      ? `Delete ${selectedPlaces.length} selected place${selectedPlaces.length === 1 ? '' : 's'}${selectedPlaces.length ? ` (${selectedPlaces.map((d) => d.name).join(', ')})` : ''}? This cannot be undone.`
+      : `Delete ${selectedPlaces.length} selected places (including "${selectedPlaces[0].name}", "${selectedPlaces[1].name}", "${selectedPlaces[2].name}"…)? This cannot be undone.`
+
   return (
     <>
       {/* Header */}
@@ -98,12 +192,55 @@ export default function AdminDestinationsPage() {
             <option value="">All Categories</option>
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
-          <Link href="/admin/destinations/new" className="btn btn--primary places-add-btn">
+          <button
+            type="button"
+            className="btn btn--outline"
+            onClick={toggleAll}
+            disabled={allPlaces.length === 0 || deleting}
+          >
+            {allSelected ? 'Clear All' : 'Select All'}
+          </button>
+          <Link href="/admin/explore-places/new" className="btn btn--primary places-add-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add New
           </Link>
         </div>
       </div>
+
+      {/* Bulk action bar */}
+      {someSelected && (
+        <div
+          className="cq-toolbar"
+          style={{
+            marginBottom: '1rem',
+            background: '#fef2f2',
+            border: '1px solid #fecaca',
+            borderRadius: '8px',
+            padding: '0.75rem 1rem',
+            alignItems: 'center',
+            gap: '1rem',
+          }}
+        >
+          <strong style={{ color: '#991b1b' }}>{selectedIds.size} selected</strong>
+          <button
+            type="button"
+            className="btn btn--danger btn--sm"
+            onClick={() => setConfirmOpen(true)}
+            disabled={deleting}
+          >
+            {deleting ? 'Deleting...' : `Delete Selected (${selectedIds.size})`}
+          </button>
+          <button
+            type="button"
+            className="btn btn--outline btn--sm"
+            onClick={() => setSelectedIds(new Set())}
+            disabled={deleting}
+          >
+            Clear Selection
+          </button>
+        </div>
+      )}
+      {error && <p className="cq-error">{error}</p>}
 
       {/* Tree View */}
       <div className="places-tree">
@@ -116,7 +253,7 @@ export default function AdminDestinationsPage() {
           <div className="places-empty">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             <p>No places found.</p>
-            <Link href="/admin/destinations/new" className="btn btn--primary" style={{ marginTop: '0.75rem' }}>Add your first place</Link>
+            <Link href="/admin/explore-places/new" className="btn btn--primary" style={{ marginTop: '0.75rem' }}>Add your first place</Link>
           </div>
         ) : (
           paginatedTree.map((cat) => {
@@ -126,6 +263,22 @@ export default function AdminDestinationsPage() {
                 {/* Category row */}
                 <div className="tree-category__header" onClick={() => toggleCategory(cat.id)}>
                   <span className="tree-chevron">{isExpanded ? '▾' : '▸'}</span>
+                  <input
+                    type="checkbox"
+                    aria-label={`Select all places in ${cat.name}`}
+                    checked={cat.places.every((d) => selectedIds.has(d.id))}
+                    ref={(el) => {
+                      if (el) {
+                        const any = cat.places.some((d) => selectedIds.has(d.id))
+                        const all = cat.places.every((d) => selectedIds.has(d.id))
+                        el.indeterminate = any && !all
+                      }
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => toggleCategoryPlaces(cat)}
+                    disabled={deleting}
+                    style={{ marginRight: '0.5rem' }}
+                  />
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                   <span className="tree-category__name">{cat.name}</span>
                   <span className="badge badge--outline">CATEGORY</span>
@@ -136,7 +289,15 @@ export default function AdminDestinationsPage() {
                 {isExpanded && (
                   <div className="tree-category__children">
                     {cat.places.map((d) => (
-                      <div key={d.id} className="tree-place">
+                      <div key={d.id} className="tree-place" style={selectedIds.has(d.id) ? { background: '#fef2f2' } : undefined}>
+                        <input
+                          type="checkbox"
+                          aria-label={`Select place ${d.name}`}
+                          checked={selectedIds.has(d.id)}
+                          onChange={() => toggleOne(d.id)}
+                          disabled={deleting}
+                          style={{ flexShrink: 0 }}
+                        />
                         <div className="tree-place__thumb">
                           {d.image ? (
                             <img src={d.image} alt={d.name} />
@@ -154,10 +315,15 @@ export default function AdminDestinationsPage() {
                           {!d.published && <span className="badge badge--yellow">Draft</span>}
                         </div>
                         <div className="tree-place__actions">
-                          <Link href={`/admin/destinations/${d.id}`} className="btn btn--outline btn--sm">Edit</Link>
+                          <Link href={`/admin/explore-places/${d.id}`} className="btn btn--outline btn--sm">Edit</Link>
                           <DeleteButton
                             endpoint={`/api/admin/destinations/${d.id}`}
                             confirmText={`Delete "${d.name}"? This cannot be undone.`}
+                            disabled={deleting}
+                            onDeleted={() => {
+                              removeIds([d.id])
+                              setDestinations((prev) => prev.filter((x) => x.id !== d.id))
+                            }}
                           />
                         </div>
                       </div>
@@ -210,6 +376,15 @@ export default function AdminDestinationsPage() {
           <span>{categories.length} categories</span>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete Selected Places"
+        message={summary}
+        confirmLabel={`Delete ${selectedPlaces.length || ''}`.trim()}
+        onConfirm={bulkDelete}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </>
   )
 }

@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ConfirmDialog from '@/components/admin/ConfirmDialog'
 import AdminLoadingRow from '@/components/admin/AdminLoadingRow'
+import { fetchJson } from '@/lib/fetchJson'
+
+const DELETE_TIMEOUT_MS = 30000
 
 const STATUS_LABELS = {
   PENDING: 'Pending',
@@ -73,10 +76,7 @@ export default function TripRequestsPage() {
   const deleteRequest = async (id) => {
     setError('')
     try {
-      const res = await fetch(`/api/admin/trip-requests/${id}`, {
-        method: 'DELETE',
-      })
-      if (!res.ok) throw new Error('Failed to delete trip request')
+      await fetchJson(`/api/admin/trip-requests/${id}`, { method: 'DELETE', timeoutMs: DELETE_TIMEOUT_MS })
       setRequests((prev) => prev.filter((r) => r.id !== id))
       setExpandedId((prev) => (prev === id ? null : prev))
     } catch (e) {
