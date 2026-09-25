@@ -5,6 +5,14 @@ import { getCategoryBySlug } from '@/lib/db'
 import { HERO_IMAGE } from '@/lib/initialData'
 import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 
+/** Title-case a category name for display (DB may store lowercase, e.g. "kashmir"). */
+function formatCategoryName(name) {
+  return (name || '')
+    .split(/\s+/)
+    .map((word) => (word ? word[0].toUpperCase() + word.slice(1) : word))
+    .join(' ')
+}
+
 export const revalidate = 60
 
 export async function generateMetadata({ params }) {
@@ -57,8 +65,8 @@ export default async function CategoryPage({ params }) {
             </h2>
             <p className="places-section-header__subtitle">
               {category.destinations.length > 0
-                ? "Discover the breathtaking destinations of Khyber Pakhtunkhwa"
-                : `No destinations available in ${category.name} yet`
+                ? `Discover the breathtaking destinations of ${formatCategoryName(category.name)}`
+                : `No destinations available in ${formatCategoryName(category.name)} yet`
               }
             </p>
           </div>

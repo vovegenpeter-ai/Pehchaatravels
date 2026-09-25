@@ -1793,10 +1793,23 @@ ul { list-style: none; }
   background: var(--dark-card);
 }
 
+/* Equal-height cards so the Explore button sits at the same position in every card */
+.place-card {
+  display: flex;
+  flex-direction: column;
+}
+
 .place-card .card__body {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  flex: 1;
+}
+
+/* Pin the Explore button to the card bottom so all buttons align in a row,
+   regardless of how long each card's description text is */
+.place-card .card__body .btn {
+  margin-top: auto;
 }
 
 /* ===== Feature Cards ===== */
