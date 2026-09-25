@@ -37,13 +37,6 @@ export default async function DestinationDetailPage({ params }) {
             {destination.shortDescription && (
               <p className="place-detail-hero__subtitle">{destination.shortDescription}</p>
             )}
-            {destination.featured && (
-              <div className="place-detail-hero__meta">
-                <span className="place-detail-hero__meta-item place-detail-hero__meta-item--featured">
-                  ⭐ Featured
-                </span>
-              </div>
-            )}
           </div>
         </div>
       </section>
