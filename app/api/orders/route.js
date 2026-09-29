@@ -64,6 +64,7 @@ export async function POST(request) {
             tourImage: item.image || null,
             price: Number(item.price),
             quantity: item.quantity,
+            bookingType: item.bookingType === 'COUPLE' ? 'COUPLE' : 'SINGLE',
           })),
         },
       },

@@ -17,8 +17,9 @@ export default async function HomePage() {
 
   const [dbTours, dbPlaces, dbHotels, dbCategories, dbSocial] = await Promise.allSettled([
     getFeaturedTours(3),
-    getFeaturedDestinations(4),
-    getFeaturedHotels(4),
+    /* More than 4 so the featured carousel has entries to scroll through */
+    getFeaturedDestinations(12),
+    getFeaturedHotels(12),
     getDestinationCategories(),
     getSocialMedia(),
   ])
@@ -30,11 +31,11 @@ export default async function HomePage() {
     : defaultTours.slice(0, 3)
 
   places = dbPlaces.status === 'fulfilled'
-    ? dbPlaces.value.slice(0, 4)
+    ? dbPlaces.value.slice(0, 12)
     : []
 
   hotels = dbHotels.status === 'fulfilled' && dbHotels.value?.length >= 4
-    ? dbHotels.value.slice(0, 4)
+    ? dbHotels.value.slice(0, 12)
     : defaultHotels.slice(0, 4)
 
   const socialMedia = dbSocial.status === 'fulfilled' ? dbSocial.value : null

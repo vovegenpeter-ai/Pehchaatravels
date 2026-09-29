@@ -15,12 +15,13 @@ import { countTempImages, countPendingUploads, tempImageWarning, pendingUploadsW
 
 const emptyForm = {
   name: '', slug: '', shortDescription: '', fullDescription: '', destination: '',
-  location: '', price: '', startDate: '', startTime: '',
+  price: '', couplePrice: '', startDate: '', startTime: '',
   endDate: '', endTime: '', meetingPoint: '',  images: [], // [{ url, publicId }] — uploaded via Cloudinary
   includedServices: '', excludedServices: '', maxGuests: '', rating: '4.5',
   published: true, featured: false,
   itinerary: [],
   faqs: [],
+  cancellationPolicy: '',
 }
 
 export default function TourForm({ tourId = null }) {
@@ -40,7 +41,9 @@ export default function TourForm({ tourId = null }) {
           setForm({
             name: t.name, slug: t.slug, shortDescription: t.shortDescription,
             fullDescription: t.fullDescription, destination: t.destination,
-            location: t.location || '', price: String(t.price), startDate: t.startDate || '', startTime: t.startTime || '',
+            price: String(t.price),
+            couplePrice: t.couplePrice != null ? String(t.couplePrice) : '',
+            startDate: t.startDate || '', startTime: t.startTime || '',
             endDate: t.endDate || '', endTime: t.endTime || '', meetingPoint: t.meetingPoint || '',
             images: Array.isArray(t.imagesMeta) && t.imagesMeta.length > 0
               ? t.imagesMeta
@@ -51,6 +54,7 @@ export default function TourForm({ tourId = null }) {
             rating: String(t.rating), published: t.published, featured: t.featured,
             itinerary: Array.isArray(t.itinerary) ? t.itinerary : [],
             faqs: Array.isArray(t.faqs) ? t.faqs : [],
+            cancellationPolicy: t.cancellationPolicy || '',
           })
         } catch (e) {
           if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load tour')
@@ -84,6 +88,7 @@ export default function TourForm({ tourId = null }) {
        Description and every FAQ answer (both are rich text). */
     const richTextFields = [
       ['Long Description', form.fullDescription || ''],
+      ['Cancellation Policy', form.cancellationPolicy || ''],
       ...form.faqs.map((faq, i) => [`FAQ ${i + 1} answer`, faq.answer || '']),
     ]
     for (const [label, html] of richTextFields) {
@@ -106,8 +111,8 @@ export default function TourForm({ tourId = null }) {
         shortDescription: form.shortDescription,
         fullDescription: form.fullDescription,
         destination: form.destination,
-        location: form.location || form.destination,
         price: Number(form.price),
+        couplePrice: form.couplePrice === '' ? null : Number(form.couplePrice),
         startDate: form.startDate,
         startTime: form.startTime,
         endDate: form.endDate,
@@ -128,6 +133,7 @@ export default function TourForm({ tourId = null }) {
 
         itinerary: form.itinerary,
         faqs: form.faqs,
+        cancellationPolicy: form.cancellationPolicy || null,
       }
 
       const url = tourId ? `/api/admin/tours/${tourId}` : '/api/admin/tours'
@@ -188,8 +194,20 @@ export default function TourForm({ tourId = null }) {
           />
         </div>
         <div className="form-group"><label>Destination</label><input name="destination" required value={form.destination} onChange={handleChange} /></div>
-        <div className="form-group"><label>Location</label><input name="location" value={form.location} onChange={handleChange} /></div>
-        <div className="form-group"><label>Price (PKR)</label><input name="price" type="number" required value={form.price} onChange={handleChange} /></div>
+        <div className="form-group">
+          <label>
+            Single Person Price (PKR)
+            <span style={{ fontSize: '0.85rem', fontWeight: 'normal', color: '#64748b', display: 'block' }}>(per person — used when customer selects Single)</span>
+          </label>
+          <input name="price" type="number" min="0" step="0.01" required value={form.price} onChange={handleChange} />
+        </div>
+        <div className="form-group">
+          <label>
+            Couple Price (PKR)
+            <span style={{ fontSize: '0.85rem', fontWeight: 'normal', color: '#64748b', display: 'block' }}>(optional — leave empty to hide the couple option)</span>
+          </label>
+          <input name="couplePrice" type="number" min="0" step="0.01" value={form.couplePrice} onChange={handleChange} placeholder="Optional" />
+        </div>
         <div className="form-group"><label>Rating</label><input name="rating" type="number" step="0.1" min="0" max="5" value={form.rating} onChange={handleChange} /></div>
         <div className="form-group"><label>Start Date</label><input name="startDate" value={form.startDate} onChange={handleChange} /></div>
         <div className="form-group"><label>Start Time</label><input name="startTime" value={form.startTime} onChange={handleChange} /></div>
@@ -213,6 +231,16 @@ export default function TourForm({ tourId = null }) {
             FAQs <span style={{ fontSize: '0.85rem', fontWeight: 'normal', color: '#64748b' }}>(Frequently Asked Questions — displayed on the Tour Detail page)</span>
           </label>
           <FaqBuilder value={form.faqs} onChange={(val) => setForm((prev) => ({ ...prev, faqs: val }))} />
+        </div>
+        <div className="form-group form-group--full">
+          <label style={{ marginBottom: '0.75rem', display: 'block' }}>
+            Cancellation Policy <span style={{ fontSize: '0.85rem', fontWeight: 'normal', color: '#64748b' }}>(Optional — displayed below the Itinerary on the Tour Detail page)</span>
+          </label>
+          <RichTextEditor
+            value={form.cancellationPolicy}
+            onChange={(html) => setForm((prev) => ({ ...prev, cancellationPolicy: html }))}
+            placeholder="Add cancellation terms, deductions and refund rules (optional)..."
+          />
         </div>
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
         <label className="checkbox-label"><input name="featured" type="checkbox" checked={form.featured} onChange={handleChange} /> Featured</label>

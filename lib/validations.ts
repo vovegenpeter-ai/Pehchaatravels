@@ -20,8 +20,9 @@ export const tourSchema = z.object({
   shortDescription: z.string().min(10),
   fullDescription: z.string().min(20),
   destination: z.string().min(2),
-  location: z.string().optional(),
   price: z.number().positive(),
+  /* Optional couple price — when set, customers can book at the couple rate */
+  couplePrice: z.number().positive().optional().nullable(),
   duration: z.string().optional().default(''),
   days: z.number().int().optional().default(0),
   startDate: z.string().optional(),
@@ -39,6 +40,8 @@ export const tourSchema = z.object({
     question: z.string(),
     answer: z.string(),
   })).optional(),
+  /* Optional free-form rich text (HTML) — no mandatory validation rules */
+  cancellationPolicy: z.string().optional().or(z.literal('')).nullable(),
   includedServices: z.array(z.string()).default([]),
   excludedServices: z.array(z.string()).default([]),
   maxGuests: z.number().int().positive().optional(),

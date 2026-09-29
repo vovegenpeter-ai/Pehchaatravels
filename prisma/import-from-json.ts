@@ -155,7 +155,6 @@ async function main() {
           shortDescription: t.shortDescription,
           fullDescription: t.fullDescription,
           destination: t.destination,
-          location: str(t.location),
           price: toNum(t.price),
           duration: t.duration,
           days: t.days,

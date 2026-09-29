@@ -9,7 +9,7 @@ export async function GET() {
   const tours = await prisma.tour.findMany({
     select: {
       id: true, slug: true, name: true, shortDescription: true,
-      price: true, rating: true, published: true, featured: true,
+      price: true, couplePrice: true, rating: true, published: true, featured: true,
       createdAt: true,
     },
     orderBy: { createdAt: 'desc' },

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import ImageGallery from '@/components/ImageGallery'
 import TourCard from '@/components/TourCard'
 import BookTourButton from '@/components/BookTourButton'
+import BookingTypeSelector from '@/components/BookingTypeSelector'
 import { SectionHeader } from '@/components/UI'
 import { getTourBySlugOrId, getRelatedTours } from '@/lib/db'
 import { formatPrice } from '@/lib/tourUtils'
@@ -154,6 +155,17 @@ export default async function TourDetailPage({ params }) {
               </div>
             )}
           </section>
+
+          {/* Cancellation Policy — optional, admin-managed rich text */}
+          {tour.cancellationPolicy?.trim() && (
+            <section className="tour-detail-block">
+              <h2 className="tour-section-title">Cancellation Policy</h2>
+              <div
+                className="tour-cancellation"
+                dangerouslySetInnerHTML={{ __html: tour.cancellationPolicy }}
+              />
+            </section>
+          )}
         </div>
 
         <aside className="tour-detail-sidebar">
@@ -167,7 +179,12 @@ export default async function TourDetailPage({ params }) {
               <li><strong>Rating</strong><span>★ {tour.rating}</span></li>
               <li><strong>Destination</strong><span>{tour.destination}</span></li>
             </ul>
-            <BookTourButton tour={tour} />
+            {tour.couplePrice != null && tour.couplePrice > 0 ? (
+              /* Couple price configured — selector picks Single or Couple rate */
+              <BookingTypeSelector tour={tour} />
+            ) : (
+              <BookTourButton tour={tour} />
+            )}
             <Link href="/make-my-trip" className="btn btn--outline btn--full">
               Customize Trip
             </Link>

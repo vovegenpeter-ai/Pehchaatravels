@@ -199,7 +199,7 @@ export default function MyBookingsPage() {
                             {item.tourName}
                           </div>
                           <div style={{ fontSize: '0.85rem', color: '#718096', marginTop: '2px' }}>
-                            Qty: {item.quantity} · PKR {Number(item.price).toLocaleString()} each
+                            {item.bookingType === 'COUPLE' ? 'Couple booking' : 'Single'} · Qty: {item.quantity} · PKR {Number(item.price).toLocaleString()} each
                           </div>
                         </div>
                         <div style={{ fontWeight: 700, color: '#1a4d3e', fontSize: '0.95rem', flexShrink: 0 }}>

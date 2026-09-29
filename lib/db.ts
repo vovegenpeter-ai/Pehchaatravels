@@ -4,11 +4,12 @@ import { mapTour, mapHotel, mapDestination, mapTestimonial } from '@/lib/mappers
 
 /* Lightweight select for listing pages — avoids loading base64 images */
 const tourListSelect = {
-  id: true, slug: true, name: true, destination: true, location: true,
+  id: true, slug: true, name: true, destination: true,
   shortDescription: true, fullDescription: true,
-  price: true, rating: true, bannerImage: true,
+  price: true, couplePrice: true, rating: true, bannerImage: true,
   startDate: true, startTime: true, endDate: true, endTime: true,
   meetingPoint: true, itinerary: true, faqs: true,
+  cancellationPolicy: true,
   includedServices: true, excludedServices: true, maxGuests: true,
   published: true, featured: true, latest: true, categoryId: true,
   createdAt: true,

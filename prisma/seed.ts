@@ -189,7 +189,6 @@ async function main() {
           shortDescription: tour.description,
           fullDescription: tour.fullDescription || tour.description,
           destination: tour.destination,
-          location: tour.destination,
           price: tour.price,
           duration: tour.duration || `${tour.days} Days`,
           days: tour.days,

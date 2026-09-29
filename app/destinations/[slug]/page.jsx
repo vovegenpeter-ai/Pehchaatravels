@@ -144,7 +144,7 @@ export default async function DestinationDetailPage({ params }) {
                 Explore more places in the same category
               </p>
             </div>
-            <div className="grid grid--4">
+            <div className="grid grid--3">
               {related.map((place) => (
                 <Link
                   key={place.id}

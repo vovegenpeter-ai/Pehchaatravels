@@ -266,6 +266,9 @@ function BookingRow({ booking, expanded, onToggle, onStatusChange, onDelete, for
           {booking.items.map((item) => (
             <div key={item.id} style={{ fontSize: '13px', marginBottom: '2px' }}>
               {item.tourName} × {item.quantity}
+              {item.bookingType === 'COUPLE' && (
+                <span style={{ marginLeft: 6, fontSize: '11px', fontWeight: 600, color: '#92400e', background: '#fef3c7', padding: '1px 6px', borderRadius: '8px' }}>Couple</span>
+              )}
             </div>
           ))}
         </td>
@@ -372,9 +375,14 @@ function BookingRow({ booking, expanded, onToggle, onStatusChange, onDelete, for
                       <img src={item.tourImage} alt={item.tourName} style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '6px' }} />
                     )}
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600 }}>{item.tourName}</div>
+                      <div style={{ fontWeight: 600 }}>
+                        {item.tourName}
+                        {item.bookingType === 'COUPLE' && (
+                          <span style={{ marginLeft: 6, fontSize: '11px', fontWeight: 600, color: '#92400e', background: '#fef3c7', padding: '1px 6px', borderRadius: '8px' }}>Couple</span>
+                        )}
+                      </div>
                       <div style={{ fontSize: '13px', color: '#718096' }}>
-                        Qty: {item.quantity} · Unit Price: PKR {Number(item.price).toLocaleString()}
+                        {item.bookingType === 'COUPLE' ? 'Couple booking' : 'Single'} · Qty: {item.quantity} · Unit Price: PKR {Number(item.price).toLocaleString()}
                       </div>
                     </div>
                     <div style={{ fontWeight: 600, color: '#1a4d3e' }}>

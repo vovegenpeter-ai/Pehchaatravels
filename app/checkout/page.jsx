@@ -92,6 +92,7 @@ export default function CheckoutPage() {
             image: item.image,
             price: item.price,
             quantity: item.quantity,
+            bookingType: item.bookingType || 'SINGLE',
           })),
         }),
       })
@@ -227,7 +228,7 @@ export default function CheckoutPage() {
                     <div className="checkout-summary__item-info">
                       <span className="checkout-summary__item-name">{item.name}</span>
                       <span className="checkout-summary__item-meta">
-                        Qty: {item.quantity}
+                        {item.bookingType === 'COUPLE' ? 'Couple' : 'Single'} · Qty: {item.quantity}
                       </span>
                     </div>
                     <span className="checkout-summary__item-price">

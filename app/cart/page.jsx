@@ -7,7 +7,7 @@ import { useCart } from '@/lib/CartContext'
 import { formatPrice } from '@/lib/tourUtils'
 
 export default function CartPage() {
-  const { items, mounted, removeItem, updateQuantity, totalPrice, totalItems } = useCart()
+  const { items, mounted, removeItem, updateQuantity, updateBookingType, totalPrice, totalItems } = useCart()
   const [removing, setRemoving] = useState(null)
   const router = useRouter()
 
@@ -86,6 +86,31 @@ export default function CartPage() {
                     </button>
                   </div>
                   <div className="cart-item__footer">
+                    {item.couplePrice != null && Number(item.couplePrice) > 0 && (
+                      <div className="cart-item__booking-type">
+                        <label>Booking Type</label>
+                        <div className="booking-type-pills" role="radiogroup" aria-label={`Booking type for ${item.name}`}>
+                          <button
+                            type="button"
+                            role="radio"
+                            aria-checked={item.bookingType !== 'COUPLE'}
+                            className={`booking-type-pill${item.bookingType !== 'COUPLE' ? ' booking-type-pill--active' : ''}`}
+                            onClick={() => updateBookingType(item.id, 'SINGLE')}
+                          >
+                            Single — PKR {formatPrice(item.singlePrice ?? item.price)}
+                          </button>
+                          <button
+                            type="button"
+                            role="radio"
+                            aria-checked={item.bookingType === 'COUPLE'}
+                            className={`booking-type-pill${item.bookingType === 'COUPLE' ? ' booking-type-pill--active' : ''}`}
+                            onClick={() => updateBookingType(item.id, 'COUPLE')}
+                          >
+                            Couple — PKR {formatPrice(item.couplePrice)}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                     <div className="cart-item__quantity">
                       <label htmlFor={`seats-${item.id}`}>Number of Seats</label>
                       <div className="cart-item__quantity-control">
