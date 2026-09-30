@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendBookingConfirmationEmail } from '@/lib/mail'
+import { TAX_RATE } from '@/lib/tourUtils'
 
 export async function POST(request) {
   try {
     const body = await request.json()
-    const { fullName, email, phone, address, city, notes, items } = body
+    const { fullName, email, phone, address, city, notes, items, paymentMethod } = body
 
     if (!fullName || !email || !phone || !items || items.length === 0) {
       return NextResponse.json(
@@ -39,11 +40,13 @@ export async function POST(request) {
       }
     }
 
-    // Calculate total
-    const totalAmount = items.reduce(
+    // Calculate total (subtotal + service charges — must match checkout math)
+    const subtotal = items.reduce(
       (sum, item) => sum + Number(item.price) * item.quantity,
       0
     )
+    const taxes = Math.round(subtotal * TAX_RATE)
+    const totalAmount = subtotal + taxes
 
     // Create order with items
     // Note: PrismaPg adapter does not support interactive $transaction(callback).
@@ -70,6 +73,29 @@ export async function POST(request) {
       },
       include: { items: true },
     })
+
+    /* Record the payment intent so the admin sees it in Transactions. */
+    const methodLabels = {
+      BANK_TRANSFER: 'Bank Transfer',
+      JAZZCASH: 'JazzCash',
+      EASYPAISA: 'EasyPaisa',
+      CASH: 'Cash on Arrival',
+    }
+    try {
+      await prisma.transaction.create({
+        data: {
+          customerName: fullName,
+          customerEmail: email,
+          amount: totalAmount,
+          status: 'Pending',
+          method: methodLabels[paymentMethod] || 'Bank Transfer',
+          order: { connect: { id: order.id } },
+        },
+      })
+    } catch (txErr) {
+      // Non-blocking — booking must not fail because of transaction logging
+      console.error('[ORDER] Failed to create transaction record:', txErr)
+    }
 
     // Send confirmation email (non-blocking — don't fail the booking if email fails)
     sendBookingConfirmationEmail({

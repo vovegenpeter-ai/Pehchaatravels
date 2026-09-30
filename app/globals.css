@@ -733,6 +733,18 @@ ul { list-style: none; }
   line-height: 1.1;
 }
 
+.tour-card-ref__price-couple {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #064e3b;
+  background: #ecfdf5;
+  border-radius: 6px;
+  padding: 3px 8px;
+  margin-top: 5px;
+  white-space: nowrap;
+  align-self: flex-start;
+}
+
 .tour-card-ref__btn {
   background-color: #064e3b;
   color: #ffffff;
@@ -3234,17 +3246,303 @@ ul { list-style: none; }
 }
 
 .booking-type-option {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.15rem;
-  padding: 0.85rem 0.5rem;
+  padding: 1rem 0.5rem;
   background: var(--beige);
   border: 2px solid transparent;
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-family: inherit;
   transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.booking-type-option__check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 50%;
+}
+
+.booking-type-selector__selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  padding: 0.75rem 1rem;
+  background: #f0fdf4;
+  border: 1px dashed var(--green);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.booking-type-selector__selected strong {
+  font-size: 1.1rem;
+  color: var(--green);
+}
+
+.booking-type-selector__book-btn {
+  font-size: 1.05rem;
+  padding: 0.9rem 1.5rem;
+  margin-top: 0.75rem;
+  box-shadow: 0 6px 16px rgba(26, 77, 62, 0.25);
+}
+
+/* Checkout step indicator */
+.checkout-steps {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+
+.checkout-step {
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  background: var(--beige);
+  color: var(--text-light);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.checkout-step--active {
+  background: #f0fdf4;
+  color: var(--green);
+}
+
+.checkout-step--current {
+  background: var(--green);
+  color: #fff;
+}
+
+/* Package rows on the summary step */
+.checkout-package-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: var(--beige);
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.6rem;
+}
+
+.checkout-package-row__info strong {
+  display: block;
+  color: var(--text);
+}
+
+.checkout-package-row__meta {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-top: 0.2rem;
+}
+
+.checkout-package-row__meta em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--green);
+}
+
+.checkout-package-row__price {
+  font-weight: 700;
+  color: var(--green);
+  white-space: nowrap;
+}
+
+.checkout-form__note {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+.checkout-form__note a {
+  color: var(--green);
+  text-decoration: underline;
+}
+
+/* Payment method selection */
+.payment-options {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.payment-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--beige);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.payment-option:hover {
+  border-color: var(--beige-dark);
+}
+
+.payment-option--active {
+  background: #f0fdf4;
+  border-color: var(--green);
+}
+
+.payment-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.payment-option__radio {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border: 2px solid var(--text-light);
+  border-radius: 50%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.payment-option--active .payment-option__radio {
+  border-color: var(--green);
+  box-shadow: inset 0 0 0 4px var(--green);
+}
+
+.payment-option__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.payment-option__label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.payment-option--active .payment-option__label {
+  color: var(--green);
+}
+
+.payment-option__desc {
+  font-size: 0.82rem;
+  color: var(--text-light);
+}
+
+.checkout-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.checkout-actions__main {
+  flex: 1;
+}
+
+/* Confirmation summary table */
+.checkout-success__details {
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+  text-align: left;
+}
+
+.checkout-success__details h3 {
+  margin: 0 0 16px;
+  text-align: center;
+  color: #1a4d3e;
+}
+
+.checkout-success__details table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.checkout-success__details td {
+  padding: 6px 0;
+  color: #2d3748;
+  vertical-align: top;
+}
+
+.checkout-success__details td:first-child {
+  color: #718096;
+  width: 150px;
+}
+
+.checkout-success__details hr {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 0;
+}
+
+.checkout-success__mono {
+  font-family: monospace;
+  font-weight: 700;
+  color: #1a4d3e;
+}
+
+.checkout-success__total-label {
+  font-weight: 700 !important;
+  color: #1e3a5f !important;
+  font-size: 16px;
+}
+
+.checkout-success__total {
+  font-weight: 700;
+  color: #1a4d3e;
+  font-size: 16px;
+}
+
+.checkout-success__save-id {
+  font-size: 13px;
+  color: #718096;
+  margin-top: 12px;
+}
+
+.checkout-success__save-id strong {
+  color: #1a4d3e;
+}
+
+@media (max-width: 768px) {
+  .booking-type-selector__options {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-actions {
+    flex-direction: column-reverse;
+  }
+
+  .checkout-actions__main {
+    width: 100%;
+  }
+
+  .checkout-actions .btn--outline {
+    width: 100%;
+  }
+
+  .checkout-package-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
 }
 
 .booking-type-option:hover {

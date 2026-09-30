@@ -17,20 +17,16 @@ export default function TourCard({ tour, dark }) {
     e.preventDefault()
     e.stopPropagation()
     setAdding(true)
-    addItem(tour)
+    addItem(tour, { bookingType: 'SINGLE' })
     setTimeout(() => {
       setAdding(false)
         startNavigation()
-      router.push('/cart')
+      router.push('/checkout')
     }, 300)
   }
 
   const rating = tour.rating ? Number(tour.rating).toFixed(1) : '5.0'
-  const displayPrice = tour.currency
-    ? `${tour.currency}${formatPrice(tour.price)}`
-    : tour.price < 5000
-      ? formatPrice(tour.price)
-      : `PKR ${formatPrice(tour.price)}`
+  const hasCouplePrice = tour.couplePrice != null && Number(tour.couplePrice) > 0
 
   const tourUrl = getTourPath(tour)
 
@@ -62,8 +58,13 @@ export default function TourCard({ tour, dark }) {
 
         <div className="tour-card-ref__footer">
           <div className="tour-card-ref__price-wrap">
-            <span className="tour-card-ref__price-label">From</span>
-            <span className="tour-card-ref__price-value">{displayPrice}</span>
+            <span className="tour-card-ref__price-label">Per Person</span>
+            <span className="tour-card-ref__price-value">PKR {formatPrice(tour.price)}</span>
+            {hasCouplePrice && (
+              <span className="tour-card-ref__price-couple">
+                Couple (2 Persons): PKR {formatPrice(tour.couplePrice)}
+              </span>
+            )}
           </div>
 
           <button

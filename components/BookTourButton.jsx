@@ -1,22 +1,21 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useCart } from '@/lib/CartContext'
 import { startNavigation } from '@/components/NavigationLoader'
 
+/** Book button for tours without a couple price — goes straight to checkout. */
 export default function BookTourButton({ tour }) {
   const { addItem } = useCart()
-  const router = useRouter()
   const [adding, setAdding] = useState(false)
 
   const handleBook = () => {
     setAdding(true)
-    addItem(tour)
+    addItem(tour, { bookingType: 'SINGLE' })
     setTimeout(() => {
       setAdding(false)
-        startNavigation()
-      router.push('/cart')
+      startNavigation()
+      window.location.href = '/checkout'
     }, 400)
   }
 
