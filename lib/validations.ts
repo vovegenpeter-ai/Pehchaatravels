@@ -14,6 +14,13 @@ export const cloudImageEntry = z.union([
   }),
 ])
 
+/** A "Points to Cover" highlight: a named location/point, orderable and toggleable. */
+export const pointToCoverSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1).max(60),
+  enabled: z.boolean().default(true),
+})
+
 export const tourSchema = z.object({
   name: z.string().min(3),
   slug: z.string().min(3).regex(/^[a-z0-9-]+$/),
@@ -30,6 +37,8 @@ export const tourSchema = z.object({
   endDate: z.string().optional(),
   endTime: z.string().optional(),
   meetingPoint: z.string().optional(),
+  /* Optional "Points to Cover" highlight chips — shown on the tour detail page */
+  pointsToCover: z.array(pointToCoverSchema).max(50).optional(),
   itinerary: z.array(z.object({
     day: z.string(),
     time: z.string(),

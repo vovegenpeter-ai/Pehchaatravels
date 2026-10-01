@@ -4,7 +4,10 @@ export type TourWithRelations = Tour & {
   images?: TourImage[]
   category?: Category | null
   faqs?: unknown
+  pointsToCover?: unknown
 }
+
+export type DestinationPoint = { id: string; label: string; enabled: boolean }
 
 export type HotelWithRelations = Hotel & {
   images?: HotelImage[]
@@ -21,6 +24,9 @@ export function mapTour(tour: TourWithRelations) {
     shortDescription: tour.shortDescription,
     fullDescription: tour.fullDescription,
     price: Number(tour.price),
+    pointsToCover: Array.isArray(tour.pointsToCover)
+      ? (tour.pointsToCover as DestinationPoint[])
+      : [],
     couplePrice: tour.couplePrice != null ? Number(tour.couplePrice) : null,
     rating: tour.rating,
     image: tour.bannerImage,

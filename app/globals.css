@@ -3302,33 +3302,6 @@ ul { list-style: none; }
   box-shadow: 0 6px 16px rgba(26, 77, 62, 0.25);
 }
 
-/* Checkout step indicator */
-.checkout-steps {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.75rem;
-}
-
-.checkout-step {
-  padding: 0.45rem 1rem;
-  border-radius: 999px;
-  background: var(--beige);
-  color: var(--text-light);
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.checkout-step--active {
-  background: #f0fdf4;
-  color: var(--green);
-}
-
-.checkout-step--current {
-  background: var(--green);
-  color: #fff;
-}
-
 /* Package rows on the summary step */
 .checkout-package-row {
   display: flex;
@@ -5572,6 +5545,89 @@ ul { list-style: none; }
 .place-detail-hero__meta-item--featured {
   background: rgba(245, 158, 11, 0.85);
   color: #0f172a;
+}
+
+/* --- Points to Cover (destination highlights) --- */
+.points-to-cover-section {
+  background: var(--beige);
+  padding: 2.5rem 0;
+}
+
+.points-to-cover {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 2.25rem 2.5rem;
+}
+
+.points-to-cover__label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 0.5rem;
+}
+
+.points-to-cover__title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 1rem;
+}
+
+.points-to-cover__divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin-bottom: 1.5rem;
+}
+
+.points-to-cover__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 1rem;
+}
+
+.points-to-cover__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--beige);
+  border: 1px solid var(--beige-dark);
+  color: var(--green);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: all var(--transition);
+}
+
+.points-to-cover__tag:hover {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--white);
+}
+
+.points-to-cover__tag:hover .points-to-cover__pin {
+  color: var(--accent);
+}
+
+.points-to-cover__pin {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .points-to-cover {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .points-to-cover__tag {
+    font-size: 0.88rem;
+    padding: 0.5rem 1rem;
+  }
 }
 
 /* --- Place Detail Layout (Main + Sidebar) --- */

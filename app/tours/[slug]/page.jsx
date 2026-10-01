@@ -70,6 +70,38 @@ export default async function TourDetailPage({ params }) {
       {/* 1b. Photo Gallery */}
       <ImageGallery images={tour.images || []} />
 
+      {/* 1c. Points to Cover — admin-managed highlight chips */}
+      {(tour.pointsToCover || []).filter((p) => p.enabled && p.label).length > 0 && (
+        <section className="points-to-cover-section">
+          <div className="container">
+            <div className="points-to-cover">
+              <span className="points-to-cover__label">Highlights</span>
+              <h2 className="points-to-cover__title">Points to Cover</h2>
+              <div className="points-to-cover__divider" />
+              <div className="points-to-cover__tags">
+                {tour.pointsToCover
+                  .filter((p) => p.enabled && p.label)
+                  .map((p) => (
+                    <span key={p.id} className="points-to-cover__tag">
+                      <svg
+                        className="points-to-cover__pin"
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        width="14"
+                        height="14"
+                        fill="currentColor"
+                      >
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z" />
+                      </svg>
+                      {p.label}
+                    </span>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* 2. Tour Information */}
       <section className="section section--beige tour-info-section">
         <div className="container">

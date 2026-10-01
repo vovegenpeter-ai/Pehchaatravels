@@ -65,6 +65,7 @@ model Tour {
   destination      String
   price            Float
   couplePrice      Float?
+  pointsToCover    Json?
   duration         String
   days             Int
   startDate        String?

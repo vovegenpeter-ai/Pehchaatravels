@@ -182,6 +182,7 @@ export default function DestinationForm({ destinationId = null }) {
             ))}
           </select>
         </div>
+
         <label className="checkbox-label"><input name="published" type="checkbox" checked={form.published} onChange={handleChange} /> Published</label>
         <label className="checkbox-label"><input name="featured" type="checkbox" checked={form.featured} onChange={handleChange} /> Featured</label>
         <div className="form-group">

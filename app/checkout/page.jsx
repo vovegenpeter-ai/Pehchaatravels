@@ -22,7 +22,7 @@ function itemPackage(item) {
 }
 
 export default function CheckoutPage() {
-  const { items, mounted, clearCart, totalPrice } = useCart()
+  const { items, mounted, clearCart, removeItem, totalPrice } = useCart()
   const { user } = useAuth()
   const [step, setStep] = useState('summary') // summary → payment → done
   const [submitting, setSubmitting] = useState(false)
@@ -144,14 +144,6 @@ export default function CheckoutPage() {
     }
   }
 
-  /* ── Step indicator ── */
-  const steps = [
-    { key: 'summary', label: '1. Booking Summary' },
-    { key: 'payment', label: '2. Payment' },
-    { key: 'done', label: '3. Confirmation' },
-  ]
-  const activeIndex = steps.findIndex((s) => s.key === (confirmedOrder ? 'done' : step))
-
   const renderSummary = () => (
     <div className="checkout-summary">
       <div className="cart-summary checkout-summary__card">
@@ -204,18 +196,6 @@ export default function CheckoutPage() {
       <section className="checkout-section">
         <div className="container">
           <h1 className="cart-title">Booking Summary</h1>
-          <div className="checkout-steps" role="list">
-            {steps.map((s, i) => (
-              <span
-                key={s.key}
-                role="listitem"
-                className={`checkout-step${i <= activeIndex ? ' checkout-step--active' : ''}${i === activeIndex ? ' checkout-step--current' : ''}`}
-              >
-                {s.label}
-              </span>
-            ))}
-          </div>
-
           <div className="checkout-layout">
             <div className="checkout-form">
               <div className="checkout-form__card">
@@ -233,6 +213,20 @@ export default function CheckoutPage() {
                       <div className="checkout-package-row__price">
                         PKR {formatPrice(pkg.price * item.quantity)}
                       </div>
+                      <button
+                        type="button"
+                        className="cart-item__remove"
+                        onClick={() => removeItem(item.id)}
+                        aria-label={`Remove ${item.name} from booking`}
+                        title="Remove tour"
+                      >
+                        <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M3 6h18" />
+                          <path d="M8 6V4h8v2" />
+                          <path d="M19 6l-1 14H6L5 6" />
+                          <path d="M10 11v5M14 11v5" />
+                        </svg>
+                      </button>
                     </div>
                   )
                 })}
@@ -304,18 +298,6 @@ export default function CheckoutPage() {
       <section className="checkout-section">
         <div className="container">
           <h1 className="cart-title">Payment</h1>
-          <div className="checkout-steps" role="list">
-            {steps.map((s, i) => (
-              <span
-                key={s.key}
-                role="listitem"
-                className={`checkout-step${i <= activeIndex ? ' checkout-step--active' : ''}${i === activeIndex ? ' checkout-step--current' : ''}`}
-              >
-                {s.label}
-              </span>
-            ))}
-          </div>
-
           <div className="checkout-layout">
             <form onSubmit={handlePayment} className="checkout-form">
               <div className="checkout-form__card">

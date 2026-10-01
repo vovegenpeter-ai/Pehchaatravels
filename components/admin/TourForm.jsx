@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import MultiImageUpload from '@/components/admin/MultiImageUpload'
 import ItineraryBuilder from '@/components/admin/ItineraryBuilder'
 import FaqBuilder from '@/components/admin/FaqBuilder'
+import PointsBuilder from '@/components/admin/PointsBuilder'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import { fetchJson } from '@/lib/fetchJson'
 import { slugify } from '@/lib/slugify'
@@ -19,6 +20,7 @@ const emptyForm = {
   endDate: '', endTime: '', meetingPoint: '',  images: [], // [{ url, publicId }] — uploaded via Cloudinary
   includedServices: '', excludedServices: '', maxGuests: '', rating: '4.5',
   published: true, featured: false,
+  pointsToCover: [],
   itinerary: [],
   faqs: [],
   cancellationPolicy: '',
@@ -52,6 +54,7 @@ export default function TourForm({ tourId = null }) {
             excludedServices: (t.excludedServices || []).join('\n'),
             maxGuests: t.maxGuests ? String(t.maxGuests) : '',
             rating: String(t.rating), published: t.published, featured: t.featured,
+            pointsToCover: Array.isArray(t.pointsToCover) ? t.pointsToCover : [],
             itinerary: Array.isArray(t.itinerary) ? t.itinerary : [],
             faqs: Array.isArray(t.faqs) ? t.faqs : [],
             cancellationPolicy: t.cancellationPolicy || '',
@@ -131,6 +134,9 @@ export default function TourForm({ tourId = null }) {
         published: form.published,
         featured: form.featured,
 
+        pointsToCover: (form.pointsToCover || [])
+          .map((p) => ({ id: p.id, label: p.label.trim(), enabled: p.enabled !== false }))
+          .filter((p) => p.label),
         itinerary: form.itinerary,
         faqs: form.faqs,
         cancellationPolicy: form.cancellationPolicy || null,
@@ -219,6 +225,12 @@ export default function TourForm({ tourId = null }) {
           value={form.images}
           onChange={(imgs) => setForm((prev) => ({ ...prev, images: imgs }))}
         />
+        <div className="form-group form-group--full">
+          <label>
+            Points to Cover <span style={{ fontSize: '0.85rem', fontWeight: 'normal', color: '#64748b' }}>(Chips shown below the photo gallery on the Tour Detail Page)</span>
+          </label>
+          <PointsBuilder value={form.pointsToCover} onChange={(points) => setForm((prev) => ({ ...prev, pointsToCover: points }))} />
+        </div>
         <div className="form-group"><label>Included Services (one per line)</label><textarea name="includedServices" rows={4} value={form.includedServices} onChange={handleChange} /></div>
         <div className="form-group"><label>Excluded Services (one per line)</label><textarea name="excludedServices" rows={4} value={form.excludedServices} onChange={handleChange} /></div>
         <div className="form-group"><label>Max Guests</label><input name="maxGuests" type="number" value={form.maxGuests} onChange={handleChange} /></div>

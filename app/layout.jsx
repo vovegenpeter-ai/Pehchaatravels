@@ -39,6 +39,16 @@ export default async function RootLayout({ children }) {
       <head>
         <meta name="color-scheme" content="light" />
         <meta name="theme-color" content="#ffffff" />
+        {/* Edge/IE "Visual Search" extensions inject bis_skin_checked="1" attributes
+            into the DOM before React hydrates, causing hydration mismatch errors
+            ("A tree hydrated but some attributes... didn't match"). Strip them as
+            they appear so React never sees the difference. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){var RX=/^bis_/;function strip(n){if(n.nodeType!==1||!n.attributes)return;for(var a=n.attributes,i=a.length-1;i>=0;i--){if(RX.test(a[i].name)){n.removeAttribute(a[i].name)}}}try{new MutationObserver(function(ms){for(var k=0;k<ms.length;k++){var m=ms[k];if(m.type==='attributes'&&RX.test(m.attributeName||'')){strip(m.target)}else if(m.type==='childList'){for(var j=0;j<m.addedNodes.length;j++){strip(m.addedNodes[j])}}}}).observe(document,{attributes:true,childList:true,subtree:true})}catch(e){}})();",
+          }}
+        />
       </head>
       <body style={{ backgroundColor: '#ffffff', colorScheme: 'light', minHeight: '100vh' }} suppressHydrationWarning>
         <SmoothScroll>
