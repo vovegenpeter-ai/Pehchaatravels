@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useCart } from '@/lib/CartContext'
 import { startNavigation } from '@/components/NavigationLoader'
 
-/** Book button for tours without a couple price — goes straight to checkout. */
+/** Book button for tours without a couple price — carries the tour to the cart. */
 export default function BookTourButton({ tour }) {
   const { addItem } = useCart()
   const [adding, setAdding] = useState(false)
@@ -15,7 +15,7 @@ export default function BookTourButton({ tour }) {
     setTimeout(() => {
       setAdding(false)
       startNavigation()
-      window.location.href = '/checkout'
+      window.location.href = '/cart'
     }, 400)
   }
 

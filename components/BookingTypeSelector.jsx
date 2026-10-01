@@ -21,14 +21,14 @@ export default function BookingTypeSelector({ tour }) {
   const selectedPrice = bookingType === 'COUPLE' ? couplePrice : singlePrice
   const selectedPersons = bookingType === 'COUPLE' ? 2 : 1
 
-  /** Book Now → selection is stored in the cart, checkout shows the summary */
+  /** Book Now → selection is stored in the cart, the cart screen shows the summary */
   const handleBookNow = () => {
     setAdding(true)
     addItem(tour, { bookingType })
     setTimeout(() => {
       setAdding(false)
       startNavigation()
-      window.location.href = '/checkout'
+      window.location.href = '/cart'
     }, 400)
   }
 

@@ -21,7 +21,7 @@ export default function TourCard({ tour, dark }) {
     setTimeout(() => {
       setAdding(false)
         startNavigation()
-      router.push('/checkout')
+      router.push('/cart')
     }, 300)
   }
 
