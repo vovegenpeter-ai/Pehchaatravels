@@ -7,7 +7,7 @@ import { useCart } from '@/lib/CartContext'
 import { formatPrice } from '@/lib/tourUtils'
 
 export default function CartPage() {
-  const { items, mounted, removeItem, updateQuantity, updateBookingType, totalPrice, totalItems } = useCart()
+  const { items, mounted, removeItem, updateQuantity, updateBookingType, totalPrice } = useCart()
   const [removing, setRemoving] = useState(null)
   const router = useRouter()
 
@@ -53,7 +53,6 @@ export default function CartPage() {
     <section className="cart-section">
       <div className="container">
         <h1 className="cart-title">Your Cart</h1>
-        <p className="cart-subtitle">{totalItems} {totalItems === 1 ? 'tour' : 'tours'} in your cart</p>
 
         <div className="cart-layout">
           <div className="cart-items">

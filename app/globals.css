@@ -3349,6 +3349,37 @@ ul { list-style: none; }
   text-decoration: underline;
 }
 
+/* Compact Edit + Delete icon pair on each checkout package row.
+   Edit opens the cart (package option/seats); both share identical
+   sizing so they sit as an aligned icon group. */
+.checkout-package-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  flex-shrink: 0;
+}
+
+.checkout-row-edit {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all var(--transition);
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkout-row-edit:hover {
+  color: var(--green);
+  background: var(--beige-dark);
+}
+
 /* Payment method selection */
 .payment-options {
   display: grid;
@@ -3515,6 +3546,11 @@ ul { list-style: none; }
     flex-direction: column;
     align-items: flex-start;
     gap: 0.35rem;
+  }
+
+  .checkout-package-row__actions {
+    align-self: flex-end;
+    margin-top: -1.75rem;
   }
 }
 

@@ -177,10 +177,6 @@ export default function CheckoutPage() {
           <span>Subtotal ({totalPersons} {totalPersons === 1 ? 'person' : 'persons'})</span>
           <span>PKR {formatPrice(subtotal)}</span>
         </div>
-        <div className="cart-summary__row">
-          <span>Service Charges</span>
-          <span>{taxes === 0 ? 'Free' : `PKR ${formatPrice(taxes)}`}</span>
-        </div>
         <div className="cart-summary__divider" />
         <div className="cart-summary__row cart-summary__row--total">
           <span>Final Total</span>
@@ -213,27 +209,36 @@ export default function CheckoutPage() {
                       <div className="checkout-package-row__price">
                         PKR {formatPrice(pkg.price * item.quantity)}
                       </div>
-                      <button
-                        type="button"
-                        className="cart-item__remove"
-                        onClick={() => removeItem(item.id)}
-                        aria-label={`Remove ${item.name} from booking`}
-                        title="Remove tour"
-                      >
-                        <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M3 6h18" />
-                          <path d="M8 6V4h8v2" />
-                          <path d="M19 6l-1 14H6L5 6" />
-                          <path d="M10 11v5M14 11v5" />
-                        </svg>
-                      </button>
+                      <div className="checkout-package-row__actions">
+                        <Link
+                          href="/cart"
+                          className="checkout-row-edit"
+                          aria-label={`Edit ${item.name} booking in cart`}
+                          title="Edit booking"
+                        >
+                          <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                            <path d="m15 5 4 4" />
+                          </svg>
+                        </Link>
+                        <button
+                          type="button"
+                          className="cart-item__remove"
+                          onClick={() => removeItem(item.id)}
+                          aria-label={`Remove ${item.name} from booking`}
+                          title="Remove tour"
+                        >
+                          <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 6h18" />
+                            <path d="M8 6V4h8v2" />
+                            <path d="M19 6l-1 14H6L5 6" />
+                            <path d="M10 11v5M14 11v5" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   )
                 })}
-                <p className="checkout-form__note">
-                  Your package selection is locked in — no need to choose it again. You can
-                  still <Link href="/cart">edit your cart</Link> before payment.
-                </p>
               </div>
 
               <div className="checkout-form__card">
