@@ -12,6 +12,7 @@ export default function AdminLoginForm() {
   const [loading, setLoading] = useState(false)
   const [navigating, setNavigating] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const sessionExpired = searchParams.get('expired') === '1'
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -43,6 +44,9 @@ export default function AdminLoginForm() {
       <form onSubmit={handleSubmit} className="auth-card admin-form">
         <h1>Admin Login</h1>
         <p className="auth-card__subtitle">Sign in to manage Pehchaan Travels</p>
+        {sessionExpired && !error && (
+          <div className="info-banner">Your session has expired. Please sign in again.</div>
+        )}
         {error && <div className="error-banner">{error}</div>}
         <div className="form-group form-group--icon">
           <label htmlFor="email">Email</label>

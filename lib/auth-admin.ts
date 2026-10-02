@@ -1,11 +1,27 @@
 import 'server-only'
 import bcrypt from 'bcryptjs'
 import { SignJWT, jwtVerify } from 'jose'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 
 const ADMIN_COOKIE = 'pehchaan_admin_token'
-const SESSION_HOURS = 12
+const SESSION_HOURS = 24 * 7 // 7 days — long-lived admin sessions
+
+/* The Secure cookie flag must only be set when the site is actually served
+   over HTTPS. Keying it off NODE_ENV breaks plain-HTTP deployments: login
+   responds 200 but the browser silently drops the Secure cookie, so every
+   admin request afterwards fails with 401 Unauthorized. Instead, trust the
+   x-forwarded-proto header set by TLS-terminating proxies and default to
+   non-secure so the cookie always sticks. */
+async function isHttpsRequest() {
+  try {
+    const h = await headers()
+    const proto = h.get('x-forwarded-proto')?.split(',')[0]?.trim().toLowerCase()
+    return proto === 'https'
+  } catch {
+    return false
+  }
+}
 
 function getSecret() {
   const secret = process.env.ADMIN_JWT_SECRET
@@ -29,7 +45,7 @@ export async function loginAdmin(email: string, password: string) {
   const cookieStore = await cookies()
   cookieStore.set(ADMIN_COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: await isHttpsRequest(),
     sameSite: 'lax',
     maxAge: SESSION_HOURS * 60 * 60,
     path: '/',
@@ -42,7 +58,7 @@ export async function logoutAdmin() {
   const cookieStore = await cookies()
   cookieStore.set(ADMIN_COOKIE, '', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: await isHttpsRequest(),
     sameSite: 'lax',
     maxAge: 0,
     path: '/',

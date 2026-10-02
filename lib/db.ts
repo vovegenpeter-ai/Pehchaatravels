@@ -44,6 +44,30 @@ export async function getFeaturedTours(limit = 6) {
   return tours.map((t) => mapTour(t as any))
 }
 
+/* Homepage "Discover Our Best Tours" carousel: featured tours come first,
+   then the newest remaining published tours top the list up so the carousel
+   has enough cards to page through even when few tours are featured. */
+export async function getHomeTours(limit = 12) {
+  const featured = await prisma.tour.findMany({
+    where: { published: true, featured: true },
+    select: tourListSelect,
+    orderBy: { createdAt: 'desc' },
+  })
+  if (featured.length >= limit) {
+    return featured.slice(0, limit).map((t) => mapTour(t as any))
+  }
+
+  const rest = await prisma.tour.findMany({
+    where: { published: true },
+    select: tourListSelect,
+    orderBy: { createdAt: 'desc' },
+  })
+  const seen = new Set(featured.map((t) => t.id))
+  return [...featured, ...rest.filter((t) => !seen.has(t.id))]
+    .slice(0, limit)
+    .map((t) => mapTour(t as any))
+}
+
 export async function getRelatedTours(currentId: string, limit = 3) {
   const tours = await prisma.tour.findMany({
     where: { published: true, id: { not: currentId } },

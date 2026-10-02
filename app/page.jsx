@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import TourCard from '@/components/TourCard'
+import CardCarousel from '@/components/CardCarousel'
 import PlacesAndHotelsSection from '@/components/PlacesAndHotelsSection'
-import { getFeaturedTours, getFeaturedDestinations, getFeaturedHotels, getDestinationCategories, getSocialMedia } from '@/lib/db'
+import { getHomeTours, getFeaturedDestinations, getFeaturedHotels, getDestinationCategories, getSocialMedia } from '@/lib/db'
 import { HERO_IMAGE, TRIP_IMAGE, defaultTours, popularPlaces, defaultHotels } from '@/lib/initialData'
 import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 import FollowUsSection from '@/components/FollowUsSection'
@@ -16,7 +17,9 @@ export default async function HomePage() {
   let categories = []
 
   const [dbTours, dbPlaces, dbHotels, dbCategories, dbSocial] = await Promise.allSettled([
-    getFeaturedTours(3),
+    /* Featured tours first, topped up with other published tours — more than
+       3 so the carousel shows prev/next arrows to scroll through */
+    getHomeTours(12),
     /* More than 4 so the featured carousel has entries to scroll through */
     getFeaturedDestinations(12),
     getFeaturedHotels(12),
@@ -27,8 +30,8 @@ export default async function HomePage() {
   categories = dbCategories.status === 'fulfilled' ? dbCategories.value : []
 
   tours = dbTours.status === 'fulfilled' && dbTours.value?.length >= 3
-    ? dbTours.value.slice(0, 3)
-    : defaultTours.slice(0, 3)
+    ? dbTours.value.slice(0, 12)
+    : defaultTours.slice(0, 12)
 
   places = dbPlaces.status === 'fulfilled'
     ? dbPlaces.value.slice(0, 12)
@@ -76,11 +79,11 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="tour-cards-grid">
+          <CardCarousel gridClassName="tour-cards-grid" navLabel="tours">
             {tours.map((tour) => (
               <TourCard key={tour.id || tour.slug} tour={tour} />
             ))}
-          </div>
+          </CardCarousel>
 
           <div className="section-view-all-wrap">
             <Link href="/tours" className="btn-view-all">
@@ -100,7 +103,7 @@ export default async function HomePage() {
                 <p className="best-tours-header__subtitle">Browse categories to discover hidden gems across the country.</p>
               </div>
             </div>
-            <div className="home-categories-grid">
+            <CardCarousel gridClassName="home-categories-grid" navLabel="destinations">
               {categories.map((cat) => (
                 <Link key={cat.id} href={`/places/${cat.slug}`} className="home-category-card">
                   <div className="home-category-card__image">
@@ -118,7 +121,7 @@ export default async function HomePage() {
                   </div>
                 </Link>
               ))}
-            </div>
+            </CardCarousel>
 
             <div className="section-view-all-wrap">
               <Link href="/places" className="btn-view-all">

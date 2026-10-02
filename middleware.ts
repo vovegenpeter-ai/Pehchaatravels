@@ -22,6 +22,11 @@ export async function middleware(request: NextRequest) {
     if (!isAdmin) {
       const loginUrl = new URL('/admin/login', request.url)
       loginUrl.searchParams.set('from', pathname)
+      // A cookie that is present but fails verification means the session
+      // expired (or the JWT secret rotated) — let the login page say so.
+      if (request.cookies.get(ADMIN_COOKIE)?.value) {
+        loginUrl.searchParams.set('expired', '1')
+      }
       return NextResponse.redirect(loginUrl)
     }
   }
