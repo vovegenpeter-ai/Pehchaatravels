@@ -27,7 +27,7 @@ export default async function PlacesPage() {
             <div className="places-hero__content">
               <span className="places-hero__tag">Explore Pakistan</span>
               <h1 className="places-hero__title">
-                Discover the Beauty of<br />Pakistan's Destinations
+                Discover the Beauty of Pakistan&apos;s Destinations
               </h1>
               <p className="places-hero__subtitle">
                 From the towering peaks of the Karakoram to the serene valleys of Kashmir — 
