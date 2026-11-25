@@ -15,7 +15,8 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "db:setup": "prisma db push && tsx prisma/seed.ts"
+    "db:setup": "prisma db push && tsx prisma/seed.ts",
+    "security:review": "tsx scripts/pokayoke-review.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -28,6 +29,7 @@
     "lenis": "^1.3.26",
     "next": "^15.5.0",
     "nodemailer": "^9.0.5",
+    "posthog-js": "1.438.13",
     "prisma": "^6.19.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -45,6 +47,7 @@
     "dotenv": "^16.6.1",
     "eslint": "^9",
     "eslint-config-next": "^15.5.0",
+    "jszip": "3.10.2",
     "to-ico": "^1.1.5",
     "tsx": "^4.23.12",
     "typescript": "^6.0.3",

@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
+import { trackEvent, EVENTS } from '@/lib/analytics'
+import { PHONE_NUMBER, EMAIL } from '@/lib/initialData'
 
 export default function Footer() {
   const [email, setEmail] = useState('')
@@ -21,6 +23,7 @@ export default function Footer() {
       })
       const data = await res.json()
       if (res.ok) {
+        trackEvent(EVENTS.newsletterSubscribe)
         setSubscribed(true)
         setEmail('')
         setTimeout(() => setSubscribed(false), 3000)
@@ -45,15 +48,20 @@ export default function Footer() {
           <p className="footer__desc">
             Your trusted partner for exploring the unseen beauty of Pakistan.
           </p>
+          <ul className="footer__contact-list">
+            <li><a href={`tel:${PHONE_NUMBER.replace(/\s/g, '')}`}>{PHONE_NUMBER}</a></li>
+            <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
+          </ul>
         </div>
 
         {/* Explore Column */}
         <div className="footer__col">
           <h4>Explore</h4>
           <ul>
-            <li><Link href="/tours">Tours</Link></li>
-            <li><Link href="/places">Places</Link></li>
-            <li><Link href="/hotels">Hotels</Link></li>
+            <li><Link href="/tours">Tour Packages</Link></li>
+            <li><Link href="/places">Places to Visit</Link></li>
+            <li><Link href="/hotels">Hotels &amp; Stays</Link></li>
+            <li><Link href="/make-my-trip">Custom Tours</Link></li>
           </ul>
         </div>
 
@@ -63,7 +71,9 @@ export default function Footer() {
           <ul>
             <li><Link href="/about">About Us</Link></li>
             <li><Link href="/contact">Contact Us</Link></li>
+            <li><Link href="/faqs">FAQs</Link></li>
             <li><Link href="/terms">Terms of Service</Link></li>
+            <li><Link href="/privacy">Privacy Policy</Link></li>
           </ul>
         </div>
 

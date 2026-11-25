@@ -6,8 +6,28 @@ import { getHomeTours, getFeaturedDestinations, getFeaturedHotels, getDestinatio
 import { HERO_IMAGE, TRIP_IMAGE, defaultTours, popularPlaces, defaultHotels } from '@/lib/initialData'
 import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 import FollowUsSection from '@/components/FollowUsSection'
+import { buildMetadata } from '@/lib/seo'
 
 export const revalidate = 60
+
+export const metadata = (() => {
+  const meta = buildMetadata({
+    title: 'Pakistan Tour Packages from Lahore',
+    description:
+      'Guided tour packages across Northern Pakistan — Hunza, Skardu, Swat, Kashmir and Kumrat Valley — with departures from Lahore and Islamabad for families and couples.',
+    path: '/',
+    keywords: [
+      'Pakistan tour packages',
+      'Northern Pakistan tour packages',
+      'tour packages from Lahore',
+      'Hunza Skardu tour package',
+      'family tour packages Pakistan',
+      'couple tour packages Pakistan',
+    ],
+  })
+  // The homepage owns the brand name, so bypass the title template.
+  return { ...meta, title: { absolute: `${meta.title} — Pehchaan Travels` } }
+})()
 
 export default async function HomePage() {
   let tours = []

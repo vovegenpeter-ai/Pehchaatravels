@@ -1,7 +1,8 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Booking Confirmed — Pehchaan Travels',
+  robots: { index: false, follow: false },
+  title: 'Booking Confirmed',
 }
 
 async function getOrder(orderId) {

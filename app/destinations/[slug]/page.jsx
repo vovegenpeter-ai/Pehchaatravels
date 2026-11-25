@@ -1,20 +1,36 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import TourCard from '@/components/TourCard'
 import HotelCard from '@/components/HotelCard'
+import Breadcrumbs from '@/components/seo/Breadcrumbs'
+import DescriptionLightbox from '@/components/DescriptionLightbox'
 import { getDestinationBySlug, getRelatedDestinations } from '@/lib/db'
 import { cloudinaryImg } from '@/lib/cloudinaryUrl'
+import { buildMetadata, stripHtml } from '@/lib/seo'
 
 export const revalidate = 60
 
 export async function generateMetadata({ params }) {
   const { slug } = await params
   const destination = await getDestinationBySlug(slug)
-  if (!destination) return { title: 'Destination Not Found — Pehchaan Travels' }
-  return {
-    title: `${destination.name} — Pehchaan Travels`,
-    description: destination.shortDescription || destination.description,
-  }
+  if (!destination) return { title: 'Destination Not Found' }
+
+  const blurb = stripHtml(
+    destination.shortDescription || destination.fullDescription || destination.description
+  ).slice(0, 150)
+
+  return buildMetadata({
+    title: `${destination.name} — Places to Visit, Tours & Hotels`,
+    description: `${blurb} See the tour packages and hotels available in ${destination.name}.`,
+    path: `/destinations/${destination.slug}`,
+    image: destination.image,
+    keywords: [
+      `${destination.name} Pakistan`,
+      `${destination.name} tourist places`,
+      `${destination.name} tour package`,
+      `things to do in ${destination.name}`,
+    ],
+  })
 }
 
 export default async function DestinationDetailPage({ params }) {
@@ -22,10 +38,22 @@ export default async function DestinationDetailPage({ params }) {
   const destination = await getDestinationBySlug(slug)
   if (!destination) notFound()
 
+  /* Lookup also accepts a raw ID — normalise to the canonical slug URL. */
+  if (destination.slug && slug !== destination.slug) {
+    redirect(`/destinations/${destination.slug}`)
+  }
+
   const related = await getRelatedDestinations(destination.id, 4, destination.categoryId)
+
+  const breadcrumbItems = [
+    { name: 'Home', path: '/' },
+    { name: 'Places', path: '/places' },
+    { name: destination.name },
+  ]
 
   return (
     <>
+      <Breadcrumbs items={breadcrumbItems} />
       {/* Hero Section */}
       <section
         className="place-detail-hero"
@@ -49,11 +77,9 @@ export default async function DestinationDetailPage({ params }) {
             <div className="place-detail-main">
               <div className="place-detail-section">
                 <h2 className="place-detail-section__title">About {destination.name}</h2>
-                <div
+                <DescriptionLightbox
                   className="place-detail-description"
-                  dangerouslySetInnerHTML={{
-                    __html: destination.fullDescription || destination.description
-                  }}
+                  html={destination.fullDescription || destination.description}
                 />
               </div>
             </div>
@@ -152,7 +178,7 @@ export default async function DestinationDetailPage({ params }) {
                   className="places-related-card"
                 >
                   <div className="places-related-card__image">
-                    <img src={cloudinaryImg(place.image, { width: 600 })} alt={place.name} loading="lazy" />
+                    <img src={cloudinaryImg(place.image, { width: 600 })} alt={`${place.name} — places to visit and tours`} loading="lazy" width="600" height="400" />
                   </div>
                   <div className="places-related-card__body">
                     <h3 className="places-related-card__name">{place.name}</h3>

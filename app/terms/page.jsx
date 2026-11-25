@@ -1,7 +1,12 @@
-export const metadata = {
-  title: 'Terms of Service — Pehchaan Travels',
+import { buildMetadata } from '@/lib/seo'
+
+/* buildMetadata feeds the title WITHOUT the brand suffix — the root layout's
+   title template appends " — Pehchaan Travels" exactly once. */
+export const metadata = buildMetadata({
+  title: 'Terms of Service',
   description: 'Terms and conditions for using Pehchaan Travels services and booking tours in Pakistan.',
-}
+  path: '/terms',
+})
 
 export default function TermsPage() {
   return (
@@ -110,7 +115,7 @@ export default function TermsPage() {
 
             <h2>10. Privacy Policy</h2>
             <p>
-              Your personal information will be handled in accordance with our Privacy Policy. 
+              Your personal information will be handled in accordance with our <a href="/privacy">Privacy Policy</a>. 
               We are committed to protecting your data and will not share it with third parties without your consent, 
               except as necessary to fulfill your booking.
             </p>

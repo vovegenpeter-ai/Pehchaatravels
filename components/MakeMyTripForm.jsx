@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { SuccessMessage, ErrorBanner } from '@/components/UI'
 import { fetchJson } from '@/lib/fetchJson'
+import { trackEvent, EVENTS } from '@/lib/analytics'
 
 export default function MakeMyTripForm() {
   const [form, setForm] = useState({
@@ -35,6 +36,8 @@ export default function MakeMyTripForm() {
         body: JSON.stringify(form),
       })
       setSubmitted(true)
+      // GA4 conversion — custom itinerary request (no-op until GA4 is configured)
+      trackEvent(EVENTS.tripRequestSubmit, { form_location: 'make_my_trip', method: 'trip_request_form' })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -51,7 +54,8 @@ export default function MakeMyTripForm() {
   return (
     <>
       {error && <ErrorBanner message={error} />}
-      <form onSubmit={handleSubmit} className="trip-form">
+      {/* data-ph-block: session replay never captures this trip form's subtree. */}
+      <form onSubmit={handleSubmit} className="trip-form" data-ph-block>
         <div className="form-row-2">
           <div className="form-group">
             <label htmlFor="name">Full Name</label>

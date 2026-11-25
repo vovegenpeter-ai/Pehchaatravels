@@ -1,34 +1,59 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import ImageGallery from '@/components/ImageGallery'
 import TourCard from '@/components/TourCard'
 import BookTourButton from '@/components/BookTourButton'
 import BookingTypeSelector from '@/components/BookingTypeSelector'
 import { SectionHeader } from '@/components/UI'
-import { getTourBySlugOrId, getRelatedTours } from '@/lib/db'
+import Breadcrumbs from '@/components/seo/Breadcrumbs'
+import JsonLd from '@/components/seo/JsonLd'
+import { getTourBySlugOrId, getRelatedTours, getTourReviewStats } from '@/lib/db'
 import { formatPrice } from '@/lib/tourUtils'
 import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 import ReviewsList from '@/components/ReviewsList'
 import WriteReviewButton from '@/components/WriteReviewButton'
 import ReviewStatusBanner from '@/components/ReviewStatusBanner'
 import TourFaq from '@/components/TourFaq'
+import {
+  buildMetadata,
+  absoluteUrl,
+  stripHtml,
+  faqPageSchema,
+  aggregateRatingSchema,
+  BUSINESS,
+} from '@/lib/seo'
 
 export const revalidate = 60
 
 export async function generateMetadata({ params }) {
   const { slug } = await params
   const tour = await getTourBySlugOrId(slug)
-  if (!tour) return { title: 'Tour Not Found — Pehchaan Travels' }
-  return {
-    title: `${tour.name} — Pehchaan Travels`,
-    description: tour.shortDescription || tour.description,
-  }
+  if (!tour) return { title: 'Tour Not Found' }
+
+  const destination = (tour.destination || '').trim()
+  const summary = stripHtml(tour.shortDescription || tour.fullDescription || tour.description)
+
+  return buildMetadata({
+    title: `${tour.name}${destination ? ` — ${destination} Tour` : ''}`,
+    description: `${summary} ${tour.duration || ''} from PKR ${formatPrice(
+      tour.price
+    )} per person. Full itinerary, inclusions and booking details.`.replace(/\s+/g, ' ').trim(),
+    path: `/tours/${tour.slug}`,
+    image: tour.image,
+    keywords: [
+      `${tour.name} tour package`,
+      `${destination} tour package`.toLowerCase(),
+      'Northern Pakistan tour',
+      'tour packages from Lahore',
+      'Pakistan family tour package',
+    ],
+  })
 }
 
 function InfoItem({ label, value, icon }) {
   return (
     <div className="tour-info-item">
-      <span className="tour-info-item__icon">{icon}</span>
+      <span className="tour-info-item__icon" aria-hidden="true">{icon}</span>
       <div>
         <span className="tour-info-item__label">{label}</span>
         <span className="tour-info-item__value">{value}</span>
@@ -43,18 +68,109 @@ export default async function TourDetailPage({ params }) {
 
   if (!tour) notFound()
 
-  const relatedTours = await getRelatedTours(tour.id, 3)
+  /* The lookup accepts a raw database ID as well as the slug, which historically
+     produced two indexable URLs for one tour. Send every ID-based request to the
+     canonical slug URL so link equity consolidates instead of splitting. */
+  if (tour.slug && slug !== tour.slug) {
+    redirect(`/tours/${tour.slug}`)
+  }
+
+  const [relatedTours, reviewStats] = await Promise.all([
+    getRelatedTours(tour.id, 3),
+    getTourReviewStats(tour.id),
+  ])
 
   const description = tour.fullDescription || tour.description
   const itinerary = tour.itinerary || []
   const faqs = Array.isArray(tour.faqs) ? tour.faqs : []
+  const tourUrl = `/tours/${tour.slug}`
+  const heroImage = cloudinaryImg(tour.image, { width: 1600 })
+
+  /* --- Structured data -------------------------------------------------
+     Only markup we can substantiate is emitted: the real price from the
+     database, the admin-authored FAQs, and an AggregateRating that is
+     suppressed entirely unless approved customer reviews actually exist. */
+  const ratingSchema = aggregateRatingSchema({
+    count: reviewStats.count,
+    average: reviewStats.average,
+    url: absoluteUrl(tourUrl),
+  })
+
+  const tourSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'TouristTrip',
+    name: tour.name,
+    description: stripHtml(tour.shortDescription || tour.fullDescription).slice(0, 800),
+    url: absoluteUrl(tourUrl),
+    touristType: ['Families', 'Couples', 'Adventure travellers'],
+    itinerary: itinerary.length
+      ? {
+          '@type': 'ItemList',
+          numberOfItems: itinerary.length,
+          itemListElement: itinerary.map((item, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: `${item.day}: ${item.title}`,
+          })),
+        }
+      : undefined,
+    provider: {
+      '@type': 'TravelAgency',
+      name: BUSINESS.name,
+      url: BUSINESS.url,
+      telephone: BUSINESS.telephone,
+      email: BUSINESS.email,
+    },
+    offers: {
+      '@type': 'Offer',
+      price: Number(tour.price || 0),
+      priceCurrency: 'PKR',
+      url: absoluteUrl(tourUrl),
+      availability: 'https://schema.org/InStock',
+      category: 'Tour package',
+      ...(tour.couplePrice
+        ? {
+            additionalType: 'https://schema.org/UnitPriceSpecification',
+            priceSpecification: [
+              {
+                '@type': 'UnitPriceSpecification',
+                name: 'Per person',
+                price: Number(tour.price || 0),
+                priceCurrency: 'PKR',
+              },
+              {
+                '@type': 'UnitPriceSpecification',
+                name: 'Per couple (2 persons)',
+                price: Number(tour.couplePrice),
+                priceCurrency: 'PKR',
+              },
+            ],
+          }
+        : {}),
+    },
+    ...(ratingSchema ? { aggregateRating: ratingSchema } : {}),
+  }
 
   return (
     <>
+      <Breadcrumbs
+        items={[
+          { name: 'Home', path: '/' },
+          { name: 'Tour Packages', path: '/tours' },
+          { name: tour.name },
+        ]}
+      />
+      <JsonLd
+        data={[
+          tourSchema,
+          faqPageSchema(faqs),
+        ]}
+      />
+
       {/* 1. Tour Banner */}
       <section
         className="tour-detail-hero"
-        style={{ backgroundImage: `url(${cloudinaryImg(tour.image, { width: 1600 })})` }}
+        style={{ backgroundImage: `url(${heroImage})` }}
       >
         <div className="tour-detail-hero__overlay">
           <div className="container">
@@ -68,7 +184,7 @@ export default async function TourDetailPage({ params }) {
       </section>
 
       {/* 1b. Photo Gallery */}
-      <ImageGallery images={tour.images || []} />
+      <ImageGallery images={tour.images || []} context={tour.name} />
 
       {/* 1c. Points to Cover — admin-managed highlight chips */}
       {(tour.pointsToCover || []).filter((p) => p.enabled && p.label).length > 0 && (
@@ -108,6 +224,7 @@ export default async function TourDetailPage({ params }) {
           <h2 className="tour-section-title">Tour Information</h2>
           <div className="tour-info-grid">
             <InfoItem label="Tour Name" value={tour.name} icon="🎒" />
+            <InfoItem label="Duration" value={tour.duration || `${tour.days} Days`} icon="⏱️" />
             <InfoItem label="Starting Date" value={tour.startDate || 'Contact for dates'} icon="📅" />
             <InfoItem label="Starting Time" value={tour.startTime || 'TBA'} icon="🕐" />
             <InfoItem label="Ending Date" value={tour.endDate || 'Contact for dates'} icon="📅" />
@@ -209,6 +326,7 @@ export default async function TourDetailPage({ params }) {
             </div>
             <ul className="tour-detail-summary">
               <li><strong>Rating</strong><span>★ {tour.rating}</span></li>
+              <li><strong>Duration</strong><span>{tour.duration || `${tour.days} Days`}</span></li>
               <li><strong>Destination</strong><span>{tour.destination}</span></li>
             </ul>
             {tour.couplePrice != null && tour.couplePrice > 0 ? (

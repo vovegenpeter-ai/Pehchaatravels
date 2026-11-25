@@ -357,6 +357,65 @@ export async function updateSocialMedia(data: {
   })
 }
 
+/* === SEO: sitemap + review stats === */
+
+/**
+ * Minimal payload for the XML sitemap: only what the crawler needs.
+ * Returns [] on any failure so the sitemap route never throws.
+ */
+export async function getSitemapEntries() {
+  try {
+    const [tours, hotels, destinations, categories] = await Promise.all([
+      prisma.tour.findMany({
+        where: { published: true },
+        select: { slug: true, updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+      }),
+      prisma.hotel.findMany({
+        where: { published: true },
+        select: { slug: true, updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+      }),
+      prisma.destination.findMany({
+        where: { published: true },
+        select: { slug: true, updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+      }),
+      prisma.category.findMany({
+        where: { published: true },
+        select: { slug: true, updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+      }),
+    ])
+    return { tours, hotels, destinations, categories }
+  } catch {
+    return { tours: [], hotels: [], destinations: [], categories: [] }
+  }
+}
+
+/**
+ * Approved-review aggregate for a tour.
+ *
+ * Used to decide whether AggregateRating structured data may be emitted.
+ * A zero count suppresses the markup entirely so we never publish a rating
+ * that no customer actually left.
+ */
+export async function getTourReviewStats(tourId: string) {
+  try {
+    const grouped = await prisma.review.groupBy({
+      by: ['tourId'],
+      where: { tourId, status: 'approved' },
+      _count: true,
+      _avg: { rating: true },
+    })
+    const row = grouped[0]
+    if (!row || !row._count) return { count: 0, average: 0 }
+    return { count: row._count, average: row._avg?.rating ?? 0 }
+  } catch {
+    return { count: 0, average: 0 }
+  }
+}
+
 // Backward-compatible aliases for existing pages
 export const getTours = getPublishedTours
 export const getHotels = getPublishedHotels

@@ -1,21 +1,36 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import HotelCard from '@/components/HotelCard'
 import TourCard from '@/components/TourCard'
 import { SectionHeader } from '@/components/UI'
+import Breadcrumbs from '@/components/seo/Breadcrumbs'
+import JsonLd from '@/components/seo/JsonLd'
 import { getHotelBySlugOrId, getRelatedHotels } from '@/lib/db'
 import { cloudinaryImg } from '@/lib/cloudinaryUrl'
+import { buildMetadata, absoluteUrl, stripHtml, BUSINESS } from '@/lib/seo'
 
 export const revalidate = 60
 
 export async function generateMetadata({ params }) {
   const { slug } = await params
   const hotel = await getHotelBySlugOrId(slug)
-  if (!hotel) return { title: 'Hotel Not Found — Pehchaan Travels' }
-  return {
-    title: `${hotel.name} — Pehchaan Travels`,
-    description: hotel.shortDescription || hotel.description,
-  }
+  if (!hotel) return { title: 'Hotel Not Found' }
+
+  const blurb = stripHtml(
+    hotel.shortDescription || hotel.fullDescription || hotel.description
+  ).slice(0, 150)
+
+  return buildMetadata({
+    title: `${hotel.name} — ${hotel.location} Hotel`,
+    description: `${blurb} PKR ${hotel.pricePerNight.toLocaleString('en-US')} per night in ${hotel.location}. Check-in times, amenities and booking.`,
+    path: `/hotels/${hotel.slug}`,
+    image: hotel.image,
+    keywords: [
+      `${hotel.name} ${hotel.location}`,
+      `hotels in ${hotel.location}`,
+      `${hotel.location} hotel booking`,
+    ],
+  })
 }
 
 export default async function HotelDetailPage({ params }) {
@@ -23,11 +38,63 @@ export default async function HotelDetailPage({ params }) {
   const hotel = await getHotelBySlugOrId(slug)
   if (!hotel) notFound()
 
+  /* Lookup also accepts a raw ID — normalise to the canonical slug URL. */
+  if (hotel.slug && slug !== hotel.slug) {
+    redirect(`/hotels/${hotel.slug}`)
+  }
+
   const relatedHotels = await getRelatedHotels(hotel.id, 3)
   const roomTypes = Array.isArray(hotel.roomTypes) ? hotel.roomTypes : []
 
+  const hotelUrl = `/hotels/${hotel.slug}`
+  const breadcrumbItems = [
+    { name: 'Home', path: '/' },
+    { name: 'Hotels', path: '/hotels' },
+    { name: hotel.name },
+  ]
+
+  /* Lodging markup uses only values stored in the database. No invented
+     star ratings, amenities or review scores. */
+  const hotelSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Hotel',
+    name: hotel.name,
+    description: stripHtml(hotel.shortDescription || hotel.description).slice(0, 600),
+    url: absoluteUrl(hotelUrl),
+    image: hotel.image,
+    telephone: hotel.contactPhone || BUSINESS.telephone,
+    email: hotel.contactEmail || BUSINESS.email,
+    address: hotel.address
+      ? { '@type': 'PostalAddress', streetAddress: hotel.address, addressLocality: hotel.location, addressCountry: 'PK' }
+      : { '@type': 'PostalAddress', addressLocality: hotel.location, addressCountry: 'PK' },
+    checkinTime: hotel.checkInTime || '14:00',
+    checkoutTime: hotel.checkOutTime || '12:00',
+    amenityFeature: (hotel.amenities || []).map((a) => ({
+      '@type': 'LocationFeatureSpecification',
+      name: a,
+    })),
+    offers: {
+      '@type': 'Offer',
+      price: Number(hotel.pricePerNight || 0),
+      priceCurrency: 'PKR',
+      url: absoluteUrl(hotelUrl),
+      availability: 'https://schema.org/InStock',
+      priceSpecification: {
+        '@type': 'UnitPriceSpecification',
+        unitText: 'night',
+        price: Number(hotel.pricePerNight || 0),
+        priceCurrency: 'PKR',
+      },
+    },
+    /* No aggregateRating: `rating` here is our own editorial score, not
+       customer reviews, and Google requires AggregateRating to reflect real
+       posted reviews. Leaving it out keeps the markup policy-compliant. */
+  }
+
   return (
     <>
+      <Breadcrumbs items={breadcrumbItems} />
+      <JsonLd data={hotelSchema} />
       <section className="tour-detail-hero" style={{ backgroundImage: `url(${cloudinaryImg(hotel.image, { width: 1600 })})` }}>
         <div className="tour-detail-hero__overlay">
           <div className="container">
@@ -92,7 +159,7 @@ export default async function HotelDetailPage({ params }) {
               <h2 className="tour-section-title">Gallery</h2>
               <div className="grid grid--3">
                 {hotel.images.map((img) => (
-                  <img key={img} src={cloudinaryImg(img, { width: 800 })} alt={hotel.name} style={{ borderRadius: 'var(--radius)', width: '100%', height: '200px', objectFit: 'cover' }} />
+                  <img key={img} src={cloudinaryImg(img, { width: 800 })} alt={`${hotel.name} — ${hotel.location}`} loading="lazy" width="800" height="533" style={{ borderRadius: 'var(--radius)', width: '100%', height: '200px', objectFit: 'cover' }} />
                 ))}
               </div>
             </section>

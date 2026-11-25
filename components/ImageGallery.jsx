@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 
-export default function ImageGallery({ images = [] }) {
+export default function ImageGallery({ images = [], context = 'Tour' }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
@@ -45,7 +45,13 @@ export default function ImageGallery({ images = [] }) {
               className={`tour-gallery__item ${i === activeIndex ? 'tour-gallery__item--active' : ''}`}
               onClick={() => { setActiveIndex(i); setLightboxOpen(true) }}
             >
-              <img src={cloudinaryImg(url, { width: 900 })} alt={`Tour photo ${i + 1}`} />
+              <img
+                src={cloudinaryImg(url, { width: 900 })}
+                alt={`${context} photo ${i + 1} of ${validImages.length}`}
+                loading="lazy"
+                width="900"
+                height="600"
+              />
             </div>
           ))}
         </div>
@@ -56,7 +62,7 @@ export default function ImageGallery({ images = [] }) {
           <div className="tour-gallery__lightbox-inner" onClick={(e) => e.stopPropagation()}>
             <button className="tour-gallery__lightbox-close" onClick={() => setLightboxOpen(false)}>&times;</button>
             <button className="tour-gallery__lightbox-arrow tour-gallery__lightbox-arrow--left" onClick={() => go(-1)}>‹</button>
-            <img src={cloudinaryImg(validImages[activeIndex], { width: 1600 })} alt={`Photo ${activeIndex + 1}`} className="tour-gallery__lightbox-img" />
+            <img src={cloudinaryImg(validImages[activeIndex], { width: 1600 })} alt={`${context} photo ${activeIndex + 1} of ${validImages.length}`} className="tour-gallery__lightbox-img" />
             <button className="tour-gallery__lightbox-arrow tour-gallery__lightbox-arrow--right" onClick={() => go(1)}>›</button>
             <div className="tour-gallery__lightbox-counter">{activeIndex + 1} / {validImages.length}</div>
           </div>

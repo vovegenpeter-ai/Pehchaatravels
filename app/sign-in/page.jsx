@@ -2,7 +2,8 @@ import SignInForm from '@/components/SignInForm'
 import { HERO_IMAGE } from '@/lib/initialData'
 
 export const metadata = {
-  title: 'Sign In — Pehchaan Travels',
+  robots: { index: false, follow: false },
+  title: 'Sign In',
 }
 
 export default function SignInPage() {

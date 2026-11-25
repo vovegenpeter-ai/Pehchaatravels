@@ -6,7 +6,7 @@ export default function HotelCard({ hotel, dark }) {
   return (
     <article className={`card hotel-card${dark ? ' card--dark' : ''}`}>
       <div className="card__image">
-        <img src={cloudinaryImg(hotel.image, { width: 600 })} alt={hotel.name} loading="lazy" />
+        <img src={cloudinaryImg(hotel.image, { width: 600 })} alt={`${hotel.name} — hotel in ${hotel.location}`} loading="lazy" />
         <span className="card__badge card__badge--rating">★ {hotel.rating}</span>
       </div>
       <div className="card__body">

@@ -2,7 +2,8 @@ import SignUpForm from '@/components/SignUpForm'
 import { HERO_IMAGE } from '@/lib/initialData'
 
 export const metadata = {
-  title: 'Sign Up — Pehchaan Travels',
+  robots: { index: false, follow: false },
+  title: 'Create an Account',
 }
 
 export default function SignUpPage() {

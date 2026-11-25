@@ -29,6 +29,8 @@ export function mapTour(tour: TourWithRelations) {
       : [],
     couplePrice: tour.couplePrice != null ? Number(tour.couplePrice) : null,
     rating: tour.rating,
+    days: tour.days,
+    duration: tour.duration,
     image: tour.bannerImage,
     bannerImage: tour.bannerImage,
     bannerImagePublicId: tour.bannerImagePublicId ?? null,

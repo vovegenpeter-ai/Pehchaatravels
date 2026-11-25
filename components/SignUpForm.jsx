@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { SuccessMessage, ErrorBanner } from '@/components/UI'
 import { fetchJson } from '@/lib/fetchJson'
 import { startNavigation } from '@/components/NavigationLoader'
+import { trackEvent, EVENTS } from '@/lib/analytics'
 
 export default function SignUpForm() {
   const router = useRouter()
@@ -55,6 +56,8 @@ export default function SignUpForm() {
       })
 
       setSuccess(true)
+      // GA4 conversion — account created (no-op until GA4 is configured)
+      trackEvent(EVENTS.signUp, { method: 'email' })
       window.dispatchEvent(new Event('user-profile-updated'))
       startNavigation()
       setTimeout(() => router.push('/'), 2000)

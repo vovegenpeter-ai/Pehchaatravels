@@ -6,6 +6,7 @@ import { useCart } from '@/lib/CartContext'
 import { formatPrice, priceBreakdown } from '@/lib/tourUtils'
 
 import { useAuth } from '@/lib/AuthContext'
+import { trackEvent, EVENTS } from '@/lib/analytics'
 
 const PAYMENT_METHODS = [
   { value: 'BANK_TRANSFER', label: 'Bank Transfer', desc: 'Pay via bank transfer — details shared after booking' },
@@ -134,6 +135,14 @@ export default function CheckoutPage() {
         total: Number(data.order?.totalAmount) || total,
       })
       setConfirmedOrder(data.order)
+      // GA4 conversion — completed booking (no-op until GA4 is configured)
+      trackEvent(EVENTS.purchase, {
+        transaction_id: data.order?.id,
+        value: Number(data.order?.totalAmount) || total,
+        currency: 'PKR',
+        payment_type: paymentMethod,
+        num_items: items.length,
+      })
       clearCart()
       setStep('done')
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -153,7 +162,7 @@ export default function CheckoutPage() {
           return (
             <div key={item.id} className="checkout-summary__item">
               <div className="checkout-summary__item-img">
-                <img src={item.image} alt={item.name} />
+                <img src={item.image} alt={`${item.name} tour package`} loading="lazy" />
               </div>
               <div className="checkout-summary__item-info">
                 <span className="checkout-summary__item-name">{item.name}</span>
@@ -284,7 +293,17 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 className="btn btn--primary btn--full btn--lg"
-                onClick={() => { setError(''); setStep('payment'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                onClick={() => {
+                  setError('')
+                  // GA4 conversion — checkout started (no-op until GA4 is configured)
+                  trackEvent(EVENTS.beginCheckout, {
+                    value: total,
+                    currency: 'PKR',
+                    num_items: items.length,
+                  })
+                  setStep('payment')
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                }}
               >
                 Continue to Payment — PKR {formatPrice(total)}
               </button>

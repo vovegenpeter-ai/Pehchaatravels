@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { SuccessMessage, ErrorBanner } from '@/components/UI'
 import { fetchJson } from '@/lib/fetchJson'
+import { trackEvent, EVENTS } from '@/lib/analytics'
 
 export default function ContactForm() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' })
@@ -25,6 +26,8 @@ export default function ContactForm() {
         body: JSON.stringify(form),
       })
       setSubmitted(true)
+      // GA4 conversion — contact form submission (no-op until GA4 is configured)
+      trackEvent(EVENTS.contactSubmit, { form_location: 'contact_page', method: 'contact_form' })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -39,7 +42,8 @@ export default function ContactForm() {
   return (
     <>
       {error && <ErrorBanner message={error} />}
-      <form onSubmit={handleSubmit} className="contact-form">
+      {/* data-ph-block: session replay never captures this lead form's subtree. */}
+      <form onSubmit={handleSubmit} className="contact-form" data-ph-block>
         <div className="form-group">
           <label htmlFor="name">Full Name</label>
           <input id="name" name="name" required value={form.name} onChange={handleChange} />

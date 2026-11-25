@@ -35,7 +35,7 @@ export default function TourCard({ tour, dark }) {
       <Link href={tourUrl} className="tour-card-ref__image-wrap" tabIndex={-1}>
         <img
           src={cloudinaryImg(tour.image || tour.bannerImage, { width: 600 })}
-          alt={tour.name}
+          alt={`${tour.name}${tour.destination ? ` — ${tour.destination}` : ''} tour package photo`}
           loading="lazy"
           className="tour-card-ref__image"
         />

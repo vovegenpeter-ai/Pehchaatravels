@@ -12,6 +12,7 @@ const nextConfig = {
       { source: '/admin/destinations', destination: '/admin/explore-places', permanent: true },
       { source: '/admin/destinations/new', destination: '/admin/explore-places/new', permanent: true },
       { source: '/admin/destinations/:id', destination: '/admin/explore-places/:id', permanent: true },
+      { source: '/faq', destination: '/faqs', permanent: true },
     ]
   },
   images: {

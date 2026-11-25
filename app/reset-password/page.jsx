@@ -2,7 +2,8 @@ import { Suspense } from 'react'
 import ResetPasswordForm from './ResetPasswordForm'
 
 export const metadata = {
-  title: 'Reset Password — Pehchaan Travels',
+  robots: { index: false, follow: false },
+  title: 'Reset Password',
 }
 
 export default function ResetPasswordPage() {
