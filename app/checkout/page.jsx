@@ -67,6 +67,8 @@ export default function CheckoutPage() {
   const checkoutLineItems = items.map((item) => ({
     content_id: item.slug || item.id,
     content_name: item.name,
+    /* The booked tour's destination is the city TikTok's travel events need. */
+    city: item.destination || undefined,
     price: itemPackage(item).price,
     quantity: item.quantity,
   }))

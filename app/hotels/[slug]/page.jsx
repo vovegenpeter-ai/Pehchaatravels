@@ -101,6 +101,7 @@ export default async function HotelDetailPage({ params }) {
         name={hotel.name}
         type="hotel"
         category={hotel.location || 'Hotel'}
+        city={hotel.location || undefined}
         value={Number(hotel.pricePerNight) || undefined}
         description={hotel.shortDescription || undefined}
       />

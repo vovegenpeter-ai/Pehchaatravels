@@ -24,9 +24,9 @@ event.
 | TikTok event | Fires when | Key parameters |
 | --- | --- | --- |
 | `PageView` | The pixel loads and on every client-side route change (not on admin pages) | — |
-| `ViewContent` | A tour, hotel or destination detail page opens | `content_id`, `content_ids`, `content_name`, `content_type` (`product` / `hotel` / `destination`), `content_category`, `contents[]`, `value`, `currency` |
+| `ViewContent` | A tour, hotel or destination detail page opens | `content_id`, `content_ids`, `content_name`, `content_type` (`destination` / `hotel`), `content_category`, `city`, `country`, `contents[]`, `value`, `currency` |
 | `Search` | The FAQ search box settles on a query (800 ms debounce, min 2 characters) | `search_string`, `content_category` |
-| `AddToCart` | "Book Now" adds a tour to the cart (single or couple package) | `content_id`, `content_ids`, `content_name`, `content_type`, `content_category`, `contents[]`, `value`, `currency`, `quantity` |
+| `AddToCart` | "Book Now" adds a tour to the cart (single or couple package) | `content_id`, `content_ids`, `content_name`, `content_type`, `content_category`, `city`, `country`, `contents[]`, `value`, `currency`, `quantity` |
 | `InitiateCheckout` | "Continue to Payment" is pressed on the booking summary — once per checkout | `contents[]`, `content_ids`, `value`, `currency`, `quantity` |
 | `AddPaymentInfo` | The payment step opens, and on each different method the visitor picks — once per method | `content_name` (method), `content_category`, `contents[]`, `value`, `currency` |
 | `Purchase` | The booking is created and stored by `/api/orders` | `contents[]`, `content_ids`, `content_name`, `value`, `currency`, `quantity`, `description`, plus `event_id` |
@@ -38,6 +38,21 @@ event.
 `value` is always in PKR with `currency: "PKR"`. Tour prices use the selected
 package rate (single or couple), and `contents[].quantity` is the number of
 packages booked.
+
+### Travel content types and location parameters
+
+TikTok's travel-vertical checker requires travel content types and location
+parameters on the funnel events
+([Events & Parameters for Travel Ads](https://ads.tiktok.com/help/article/available-events-and-parameters-for-travel-ads)):
+
+- `content_type` is one of TikTok's travel values — `destination` for tour
+  packages and destination pages, `hotel` for hotel pages. `PageView` carries
+  no properties, and the lead/contact/account events keep `product`.
+- `city` is the record's own location (`tour.destination`, `hotel.location`,
+  destination name), never guessed from the URL; `region` is sent where the
+  record has one (destination pages); `country` is always `Pakistan`.
+- `Purchase` requires `city` and `country` — they come from the first booked
+  tour, while every booked tour stays in `contents[]`.
 
 ### `content_id`
 

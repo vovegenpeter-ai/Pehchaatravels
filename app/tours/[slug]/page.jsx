@@ -170,8 +170,9 @@ export default async function TourDetailPage({ params }) {
       <ViewContentTracker
         id={tour.slug || tour.id}
         name={tour.name}
-        type="product"
+        type="destination"
         category={tour.destination || 'Tour Package'}
+        city={tour.destination || undefined}
         value={Number(tour.price) || undefined}
         description={tour.duration || undefined}
       />

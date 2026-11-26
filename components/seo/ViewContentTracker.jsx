@@ -14,8 +14,10 @@ import { trackViewContent } from '@/lib/analytics'
 export default function ViewContentTracker({
   id,
   name,
-  type = 'product',
+  type = 'destination',
   category,
+  city,
+  region,
   value,
   description,
 }) {
@@ -26,8 +28,8 @@ export default function ViewContentTracker({
     const key = `${type}:${id}`
     if (fired.current === key) return
     fired.current = key
-    trackViewContent({ id, name, type, category, value, description })
-  }, [id, name, type, category, value, description])
+    trackViewContent({ id, name, type, category, city, region, value, description })
+  }, [id, name, type, category, city, region, value, description])
 
   return null
 }

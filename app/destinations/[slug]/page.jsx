@@ -60,6 +60,8 @@ export default async function DestinationDetailPage({ params }) {
         name={destination.name}
         type="destination"
         category="Destination"
+        city={destination.name}
+        region={destination.location || undefined}
         description={destination.shortDescription || undefined}
       />
       {/* Hero Section */}
