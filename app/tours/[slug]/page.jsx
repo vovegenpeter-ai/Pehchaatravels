@@ -7,6 +7,7 @@ import BookingTypeSelector from '@/components/BookingTypeSelector'
 import { SectionHeader } from '@/components/UI'
 import Breadcrumbs from '@/components/seo/Breadcrumbs'
 import JsonLd from '@/components/seo/JsonLd'
+import ViewContentTracker from '@/components/seo/ViewContentTracker'
 import { getTourBySlugOrId, getRelatedTours, getTourReviewStats } from '@/lib/db'
 import { formatPrice } from '@/lib/tourUtils'
 import { cloudinaryImg } from '@/lib/cloudinaryUrl'
@@ -165,6 +166,14 @@ export default async function TourDetailPage({ params }) {
           tourSchema,
           faqPageSchema(faqs),
         ]}
+      />
+      <ViewContentTracker
+        id={tour.slug || tour.id}
+        name={tour.name}
+        type="product"
+        category={tour.destination || 'Tour Package'}
+        value={Number(tour.price) || undefined}
+        description={tour.duration || undefined}
       />
 
       {/* 1. Tour Banner */}

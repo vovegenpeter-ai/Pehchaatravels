@@ -4,6 +4,7 @@ import TourCard from '@/components/TourCard'
 import HotelCard from '@/components/HotelCard'
 import Breadcrumbs from '@/components/seo/Breadcrumbs'
 import DescriptionLightbox from '@/components/DescriptionLightbox'
+import ViewContentTracker from '@/components/seo/ViewContentTracker'
 import { getDestinationBySlug, getRelatedDestinations } from '@/lib/db'
 import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 import { buildMetadata, stripHtml } from '@/lib/seo'
@@ -54,6 +55,13 @@ export default async function DestinationDetailPage({ params }) {
   return (
     <>
       <Breadcrumbs items={breadcrumbItems} />
+      <ViewContentTracker
+        id={destination.slug || destination.id}
+        name={destination.name}
+        type="destination"
+        category="Destination"
+        description={destination.shortDescription || undefined}
+      />
       {/* Hero Section */}
       <section
         className="place-detail-hero"

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useCart } from '@/lib/CartContext'
 import { formatPrice, priceBreakdown } from '@/lib/tourUtils'
@@ -29,6 +29,10 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('BANK_TRANSFER')
+  /* One InitiateCheckout per checkout session, and one AddPaymentInfo per
+     payment method the visitor actually selects. */
+  const checkoutStarted = useRef(false)
+  const paymentInfoSent = useRef(new Set())
   const [confirmedOrder, setConfirmedOrder] = useState(null)
   /* Snapshot of the summary at confirmation time — the cart is cleared after
      the order is created, so derived totals must be captured before that. */
@@ -57,6 +61,15 @@ export default function CheckoutPage() {
   const subtotal = totalPrice
   const { taxes, total } = priceBreakdown(subtotal)
   const totalPersons = items.reduce((sum, item) => sum + itemPackage(item).persons * item.quantity, 0)
+
+  /* TikTok `contents` payload — price is the selected package rate, quantity
+     the number of packages booked. */
+  const checkoutLineItems = items.map((item) => ({
+    content_id: item.slug || item.id,
+    content_name: item.name,
+    price: itemPackage(item).price,
+    quantity: item.quantity,
+  }))
 
   if (!mounted) {
     return (
@@ -91,6 +104,19 @@ export default function CheckoutPage() {
   const handleChange = (e) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  /** Report the payment method once per method, on arrival and on each change. */
+  const sendPaymentInfo = (value) => {
+    if (paymentInfoSent.current.has(value)) return
+    paymentInfoSent.current.add(value)
+    const label = PAYMENT_METHODS.find((p) => p.value === value)?.label || value
+    trackEvent(EVENTS.addPaymentInfo, {
+      payment_method: label,
+      items: checkoutLineItems,
+      value: total,
+      currency: 'PKR',
+    })
   }
 
   const handlePayment = async (e) => {
@@ -135,14 +161,22 @@ export default function CheckoutPage() {
         total: Number(data.order?.totalAmount) || total,
       })
       setConfirmedOrder(data.order)
-      // GA4 conversion — completed booking (no-op until GA4 is configured)
-      trackEvent(EVENTS.purchase, {
-        transaction_id: data.order?.id,
-        value: Number(data.order?.totalAmount) || total,
-        currency: 'PKR',
-        payment_type: paymentMethod,
-        num_items: items.length,
-      })
+
+      /* The API answers 201 for a re-submitted booking it already stored. That
+         is not a new conversion, so only a newly created order is reported. */
+      const duplicated = data.message === 'Booking already exists.'
+      if (!duplicated) {
+        trackEvent(EVENTS.purchase, {
+          order_id: data.order?.id,
+          transaction_id: data.order?.id,
+          content_name: items.map((item) => item.name).join(', '),
+          items: checkoutLineItems,
+          value: Number(data.order?.totalAmount) || total,
+          currency: 'PKR',
+          payment_type: paymentMethod,
+          num_items: items.length,
+        })
+      }
       clearCart()
       setStep('done')
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -295,12 +329,16 @@ export default function CheckoutPage() {
                 className="btn btn--primary btn--full btn--lg"
                 onClick={() => {
                   setError('')
-                  // GA4 conversion — checkout started (no-op until GA4 is configured)
-                  trackEvent(EVENTS.beginCheckout, {
-                    value: total,
-                    currency: 'PKR',
-                    num_items: items.length,
-                  })
+                  if (!checkoutStarted.current) {
+                    checkoutStarted.current = true
+                    trackEvent(EVENTS.beginCheckout, {
+                      items: checkoutLineItems,
+                      value: total,
+                      currency: 'PKR',
+                      num_items: totalPersons,
+                    })
+                  }
+                  sendPaymentInfo(paymentMethod)
                   setStep('payment')
                   window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}
@@ -337,7 +375,10 @@ export default function CheckoutPage() {
                         name="paymentMethod"
                         value={pm.value}
                         checked={paymentMethod === pm.value}
-                        onChange={() => setPaymentMethod(pm.value)}
+                        onChange={() => {
+                          setPaymentMethod(pm.value)
+                          sendPaymentInfo(pm.value)
+                        }}
                       />
                       <span className="payment-option__radio" aria-hidden="true" />
                       <span className="payment-option__body">

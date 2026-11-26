@@ -1,61 +1,92 @@
-# TikTok Pixel
+# TikTok Pixel — events and parameters
 
-Status: implemented with the site pixel ID **`DC3JSVJC77U703IGKRCG`** built in
-(override with `NEXT_PUBLIC_TIKTOK_PIXEL_ID`). No remote TikTok setting was
-touched by this change.
+Pixel ID: **`DC3JSVJC77U703IGKRCG`** (built into [lib/tiktok.js](lib/tiktok.js);
+`NEXT_PUBLIC_TIKTOK_PIXEL_ID` overrides it, e.g. for a staging pixel).
 
-The official snippet's `ttq.load('DC3JSVJC77U703IGKRCG'); ttq.page();` is
-executed by [lib/tiktok.js](lib/tiktok.js) after the visitor grants consent —
-it is not pasted a second time in the layout `<head>`, because two copies of the
-base code would send duplicate PageViews and events.
+Only one pixel is installed. TikTok's base code (`ttq.load` + `ttq.page`) lives
+in [lib/tiktok.js](lib/tiktok.js) and is mounted once from
+[app/layout.jsx](app/layout.jsx). Do not paste the Events Manager snippet into
+the layout `<head>` as well — that would load the SDK twice and double every
+event.
 
-## What was added
+## Where things live
 
 | File | Role |
 | --- | --- |
-| [lib/tiktok.js](lib/tiktok.js) | Pixel loader (TikTok's documented `ttq` queue shim, with the pixel ID built in), `trackTikTokEvent`, `trackTikTokPage`, `disableTikTokCookies`. Every export is a no-op without consent. |
-| [components/seo/TikTokPixel.jsx](components/seo/TikTokPixel.jsx) | Mounted in [app/layout.jsx](app/layout.jsx). Loads the pixel once the visitor grants consent and sends a PageView on the first page and every App Router navigation. |
-| [lib/analytics.js](lib/analytics.js) | Existing `trackEvent` calls now go to GA4 **and** TikTok, mapped to TikTok standard events. No call site changed. |
+| [lib/tiktok.js](lib/tiktok.js) | Loader (TikTok's `ttq` queue shim), `trackTikTokPage`, `trackTikTokEvent`, `createEventId`, `disableTikTokCookies`. |
+| [lib/analytics.js](lib/analytics.js) | Maps the site's own events to TikTok standard events with documented parameters, forwards the same calls to GA4, and deduplicates purchases. |
+| [components/seo/TikTokPixel.jsx](components/seo/TikTokPixel.jsx) | Mounts the pixel and sends one PageView per route change (admin excluded). |
+| [components/seo/ViewContentTracker.jsx](components/seo/ViewContentTracker.jsx) | Fires `ViewContent` on tour, hotel and destination detail pages. |
+| [components/seo/ClickTracking.jsx](components/seo/ClickTracking.jsx) | One click listener for every `tel:` link and `wa.me` link on the site → `Contact`. |
+
+## Events
+
+| TikTok event | Fires when | Key parameters |
+| --- | --- | --- |
+| `PageView` | The pixel loads and on every client-side route change (not on admin pages) | — |
+| `ViewContent` | A tour, hotel or destination detail page opens | `content_id`, `content_ids`, `content_name`, `content_type` (`product` / `hotel` / `destination`), `content_category`, `contents[]`, `value`, `currency` |
+| `Search` | The FAQ search box settles on a query (800 ms debounce, min 2 characters) | `search_string`, `content_category` |
+| `AddToCart` | "Book Now" adds a tour to the cart (single or couple package) | `content_id`, `content_ids`, `content_name`, `content_type`, `content_category`, `contents[]`, `value`, `currency`, `quantity` |
+| `InitiateCheckout` | "Continue to Payment" is pressed on the booking summary — once per checkout | `contents[]`, `content_ids`, `value`, `currency`, `quantity` |
+| `AddPaymentInfo` | The payment step opens, and on each different method the visitor picks — once per method | `content_name` (method), `content_category`, `contents[]`, `value`, `currency` |
+| `Purchase` | The booking is created and stored by `/api/orders` | `contents[]`, `content_ids`, `content_name`, `value`, `currency`, `quantity`, `description`, plus `event_id` |
+| `SubmitForm` | Contact form or "Make My Trip" request saved successfully | `content_name` (form), `content_id` (method), `content_category` |
+| `Contact` | WhatsApp click (floating button, FAQ CTA) or any `tel:` link click | `content_name`, `content_category`, `content_id` (page path) |
+| `CompleteRegistration` | Account created on `/sign-up` | `content_name`, `content_category`, `content_id` |
+| `Subscribe` | Newsletter subscription succeeds in the footer | `content_name`, `content_category` |
+
+`value` is always in PKR with `currency: "PKR"`. Tour prices use the selected
+package rate (single or couple), and `contents[].quantity` is the number of
+packages booked.
+
+## Correct triggers, no duplicates
+
+- **One pixel.** Verified: a single `#tiktok-pixel-sdk` script and one `ttq`
+  instance; nothing else in the codebase references `analytics.tiktok.com`.
+- **SPA pageviews.** The pixel's own history observer is disabled
+  (`ttq.load(id, { historyObserver: false })`) because the app calls `ttq.page()`
+  itself on each navigation. Otherwise every route change would be counted twice.
+- **Purchase.** Goes through `event_id` (`pehchaan-<orderId>`) so the same order
+  can never be counted twice, and `/api/orders` answering "Booking already
+  exists." for a re-submitted booking does **not** report a conversion. Recent
+  order IDs are also remembered in `sessionStorage`.
+- **InitiateCheckout / AddPaymentInfo.** Guarded by refs, so going back and
+  forth in the two-step checkout does not re-send them.
+- **Contact.** The floating WhatsApp button reports itself; the global click
+  listener skips it, so one click is one `Contact`.
+- **Admin.** `/admin` pages never load the pixel or send events.
+
+## Purchase is a booking, not a card payment
+
+This site takes no online card payment: checkout creates a `PENDING` order and
+the team collects payment by bank transfer, JazzCash, EasyPaisa or cash. The
+`Purchase` event therefore means "booking placed", with `value` equal to the
+order total and the chosen method in `description`. If you later add a real
+payment gateway, fire it on the gateway's success callback instead.
 
 ## Consent
 
-The pixel is gated on the existing banner ([components/ConsentBanner.jsx](components/ConsentBanner.jsx),
-[lib/consent.js](lib/consent.js)) — the same `granted` value that enables PostHog
-session replay:
+The pixel is gated on the existing banner ([lib/consent.js](lib/consent.js)) —
+the same `granted` value that enables PostHog session replay:
 
-- `unknown` / `denied`: no TikTok script is injected and `trackTikTokEvent` drops every event.
-- `granted`: the pixel loads and cookies are written.
-- Withdrawing consent calls `ttq.disableCookie()` and stops all further events
-  (`disableCookie` stops new cookie/`ttclid` storage; the already-loaded SDK
-  cannot be unloaded).
+- `unknown` / `denied`: no script is injected and every event is dropped.
+- `granted`: the pixel loads and writes `_ttp`.
+- Withdrawal calls `ttq.disableCookie()` and stops further events.
 
-## Event mapping
-
-| Site event (`EVENTS`) | TikTok standard event |
-| --- | --- |
-| `add_to_cart` | `AddToCart` |
-| `begin_checkout` | `InitiateCheckout` |
-| `purchase` | `CompletePayment` |
-| `generate_lead` (contact + make-my-trip forms) | `SubmitForm` |
-| `whatsapp_click` | `Contact` |
-| `sign_up` | `CompleteRegistration` |
-| `newsletter_subscribe` | `Subscribe` |
-
-`value` / `currency` (`PKR`) are sent with cart, checkout and purchase events.
+Nothing loads before the visitor clicks **Allow analytics**, so ad traffic that
+ignores or declines the banner is not attributed.
 
 ## Verify
 
-1. Optionally set `NEXT_PUBLIC_TIKTOK_PIXEL_ID` to override the built-in ID
-   (e.g. a staging pixel) and redeploy.
-2. Open the site, click **Allow analytics**, then use TikTok's **Pixel Helper**
-   browser extension (or Events Manager → Test Events) and confirm: one
-   PageView per page navigation, `ViewContent`-free browsing, `AddToCart` when a
-   tour is added, `InitiateCheckout` at checkout, `CompletePayment` after a
-   booking, `SubmitForm` after the contact or make-my-trip form.
-3. Click **Decline** (or clear site data and decline) and confirm the pixel no
-   longer fires.
+1. Open the site, click **Allow analytics**.
+2. Network tab: one request to
+   `analytics.tiktok.com/i18n/pixel/events.js?sdkid=DC3JSVJC77U703IGKRCG&lib=ttq`.
+3. Navigate between pages: exactly one `PageView` per navigation (TikTok Pixel
+   Helper shows this, and no duplicate).
+4. Open a tour page → `ViewContent`; add it to the cart → `AddToCart`; continue
+   to payment → `InitiateCheckout`, then `AddPaymentInfo`; complete the booking
+   → `Purchase` with the order total.
+5. Events Manager → **Test Events** shows the same stream in real time.
 
-Optional next step if you want product-level ad reporting: send a `ViewContent`
-event from the tour detail page (`app/tours/[slug]/page.jsx`) and enable the
-TikTok **Events API** with a server-side access token — that needs a private
-secret and is deliberately not part of this client-side install.
+Not covered: the TikTok Events API (server-side). It needs a private access
+token and is a separate integration.

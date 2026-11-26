@@ -4,6 +4,7 @@ import ConditionalConsentBanner from '@/components/ConditionalConsentBanner'
 import SmoothScroll from '@/components/SmoothScroll'
 import Analytics from '@/components/seo/Analytics'
 import TikTokPixel from '@/components/seo/TikTokPixel'
+import ClickTracking from '@/components/seo/ClickTracking'
 import JsonLd from '@/components/seo/JsonLd'
 import { CartProvider } from '@/lib/CartContext'
 import { AuthProvider } from '@/lib/AuthContext'
@@ -99,6 +100,7 @@ export default async function RootLayout({ children }) {
         <SmoothScroll>
           <Analytics />
           <TikTokPixel />
+          <ClickTracking />
           <AuthProvider initialUser={currentUser}>
             <CartProvider>
               <LayoutShell>{children}</LayoutShell>

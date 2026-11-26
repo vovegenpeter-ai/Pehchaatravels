@@ -5,6 +5,7 @@ import TourCard from '@/components/TourCard'
 import { SectionHeader } from '@/components/UI'
 import Breadcrumbs from '@/components/seo/Breadcrumbs'
 import JsonLd from '@/components/seo/JsonLd'
+import ViewContentTracker from '@/components/seo/ViewContentTracker'
 import { getHotelBySlugOrId, getRelatedHotels } from '@/lib/db'
 import { cloudinaryImg } from '@/lib/cloudinaryUrl'
 import { buildMetadata, absoluteUrl, stripHtml, BUSINESS } from '@/lib/seo'
@@ -95,6 +96,14 @@ export default async function HotelDetailPage({ params }) {
     <>
       <Breadcrumbs items={breadcrumbItems} />
       <JsonLd data={hotelSchema} />
+      <ViewContentTracker
+        id={hotel.slug || hotel.id}
+        name={hotel.name}
+        type="hotel"
+        category={hotel.location || 'Hotel'}
+        value={Number(hotel.pricePerNight) || undefined}
+        description={hotel.shortDescription || undefined}
+      />
       <section className="tour-detail-hero" style={{ backgroundImage: `url(${cloudinaryImg(hotel.image, { width: 1600 })})` }}>
         <div className="tour-detail-hero__overlay">
           <div className="container">

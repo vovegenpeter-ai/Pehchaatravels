@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { PHONE_NUMBER, EMAIL } from '@/lib/initialData'
+import { trackSearch } from '@/lib/analytics'
 
 import { FAQ_DATA, FAQ_CATEGORIES as CATEGORIES } from '@/lib/faq-data'
 
@@ -11,6 +12,18 @@ export default function FaqClient() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
   const [openIds, setOpenIds] = useState(new Set(['book-1', 'tour-1']))
+  const lastSearchTerm = useRef('')
+
+  /* Report the settled query once, not on every keystroke. */
+  useEffect(() => {
+    const term = searchQuery.trim()
+    if (term.length < 2 || term === lastSearchTerm.current) return undefined
+    const timer = setTimeout(() => {
+      lastSearchTerm.current = term
+      trackSearch(term, 'faqs')
+    }, 800)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
 
   const toggleItem = (id) => {
     setOpenIds((prev) => {
