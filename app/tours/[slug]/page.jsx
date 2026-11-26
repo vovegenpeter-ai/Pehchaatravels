@@ -82,6 +82,9 @@ export default async function TourDetailPage({ params }) {
   ])
 
   const description = tour.fullDescription || tour.description
+  /* Duration is optional on a tour record: fall back to the day count, and to
+     neutral copy rather than rendering "undefined Days" when neither is set. */
+  const durationLabel = tour.duration || (tour.days ? `${tour.days} Days` : 'Contact for details')
   const itinerary = tour.itinerary || []
   const faqs = Array.isArray(tour.faqs) ? tour.faqs : []
   const tourUrl = `/tours/${tour.slug}`
@@ -234,7 +237,7 @@ export default async function TourDetailPage({ params }) {
           <h2 className="tour-section-title">Tour Information</h2>
           <div className="tour-info-grid">
             <InfoItem label="Tour Name" value={tour.name} icon="🎒" />
-            <InfoItem label="Duration" value={tour.duration || `${tour.days} Days`} icon="⏱️" />
+            <InfoItem label="Duration" value={durationLabel} icon="⏱️" />
             <InfoItem label="Starting Date" value={tour.startDate || 'Contact for dates'} icon="📅" />
             <InfoItem label="Starting Time" value={tour.startTime || 'TBA'} icon="🕐" />
             <InfoItem label="Ending Date" value={tour.endDate || 'Contact for dates'} icon="📅" />
@@ -336,7 +339,7 @@ export default async function TourDetailPage({ params }) {
             </div>
             <ul className="tour-detail-summary">
               <li><strong>Rating</strong><span>★ {tour.rating}</span></li>
-              <li><strong>Duration</strong><span>{tour.duration || `${tour.days} Days`}</span></li>
+              <li><strong>Duration</strong><span>{durationLabel}</span></li>
               <li><strong>Destination</strong><span>{tour.destination}</span></li>
             </ul>
             {tour.couplePrice != null && tour.couplePrice > 0 ? (
