@@ -39,6 +39,22 @@ event.
 package rate (single or couple), and `contents[].quantity` is the number of
 packages booked.
 
+### `content_id`
+
+TikTok's "Content ID is missing in your events" diagnostic flags events without
+`content_id`, so every event now carries one:
+
+- tours/hotels/destinations use the page's slug (the same ID the URL and
+  catalog feed would use);
+- cart, checkout, payment and purchase use the first booked tour's slug, with
+  every item still listed in `contents[]` and `content_ids[]`;
+- non-product events use a stable site ID: `contact_page` / `make_my_trip`,
+  `/the-page-path` for Contact, `email` for registration, `newsletter`, and
+  `<area>-search` for Search.
+
+`PageView` is the one exception: TikTok's `ttq.page()` takes no properties, so
+page views cannot carry a `content_id`.
+
 ## Correct triggers, no duplicates
 
 - **One pixel.** Verified: a single `#tiktok-pixel-sdk` script and one `ttq`
