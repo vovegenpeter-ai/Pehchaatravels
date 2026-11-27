@@ -9,9 +9,10 @@ const WHATSAPP_HOST = 'wa.me'
 /**
  * Contact-intent tracking for the whole site.
  *
- * Phone (`tel:`) links and WhatsApp (`wa.me`) links are scattered through the
- * footer, FAQ page and contact page, so instead of editing each one this listens
- * for clicks once and reports them as TikTok `Contact` events.
+ * Phone (`tel:`) links, WhatsApp (`wa.me`) links, email links and "Contact Us"
+ * buttons are scattered through the footer, FAQ page and contact page, so
+ * instead of editing each one this listens for clicks once and reports them as
+ * `Contact` events (TikTok + Meta).
  *
  * The floating WhatsApp button (`#whatsapp-fab`) reports itself with a known
  * location, so it is skipped here to avoid a duplicate Contact event.
@@ -36,6 +37,18 @@ export default function ClickTracking() {
           location,
           phone: href.replace(/^tel:/, ''),
         })
+        return
+      }
+
+      if (href.startsWith('mailto:')) {
+        /* The address itself is never sent to an ad platform. */
+        trackEvent(EVENTS.contactClick, { location, channel: 'Email' })
+        return
+      }
+
+      /* Any internal link to the contact page (header, footer, CTA buttons). */
+      if (href === '/contact' || href.startsWith('/contact?') || href.startsWith('/contact#')) {
+        trackEvent(EVENTS.contactClick, { location, channel: 'Contact Page' })
         return
       }
 
