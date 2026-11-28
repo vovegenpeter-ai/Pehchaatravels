@@ -6,6 +6,7 @@ import Analytics from '@/components/seo/Analytics'
 import TikTokPixel from '@/components/seo/TikTokPixel'
 import MetaPixel from '@/components/seo/MetaPixel'
 import ClickTracking from '@/components/seo/ClickTracking'
+import TawkTo from '@/components/seo/TawkTo'
 import JsonLd from '@/components/seo/JsonLd'
 import { CartProvider } from '@/lib/CartContext'
 import { AuthProvider } from '@/lib/AuthContext'
@@ -103,6 +104,7 @@ export default async function RootLayout({ children }) {
           <TikTokPixel />
           <MetaPixel />
           <ClickTracking />
+          <TawkTo />
           <AuthProvider initialUser={currentUser}>
             <CartProvider>
               <LayoutShell>{children}</LayoutShell>

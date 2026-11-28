@@ -2115,7 +2115,8 @@ ul { list-style: none; }
 /* ===== WhatsApp Floating Button ===== */
 .whatsapp-fab {
   position: fixed;
-  bottom: 24px;
+  /* Sits below the Tawk.to launcher, which is raised via Tawk_API.customStyle. */
+  bottom: 16px;
   right: 24px;
   left: auto;
   z-index: 9999;
@@ -2136,6 +2137,12 @@ ul { list-style: none; }
 }
 .whatsapp-fab:active {
   transform: scale(0.95);
+}
+
+/* Tawk.to attention grabber ("We Are Here!" text bubble): keep the launcher
+   icon but hide the callout text shown beside it. */
+#chat-bubble {
+  display: none !important;
 }
 
 /* ===== Footer ===== */
